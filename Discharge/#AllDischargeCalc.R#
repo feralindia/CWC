@@ -1,0 +1,75 @@
+## Take rating curves from all wlrs and convert to discharge for each wlr unit
+## list wlr units measuring stage from streams (not weirs or flumes)
+site <- "Nilgiris"
+
+data.dir <- paste("/home/udumbu/rsb/OngoingProjects/CWC/Data", site, sep="/")
+StnType <- read.csv(file=paste(data.dir, "/discharge/StnType.csv", sep=""))
+
+for(i in 15:nrow(StnType)){
+    
+    if(StnType$type[i]=="flume"){
+        pat <- as.character(StnType$unit_no[i])
+        wlr.flst <- list.files(path=paste(data.dir,"/wlr/csv", sep=""),
+                               pattern=pat, full.names=TRUE)
+        for(j in 1:length(wlr.flst)){
+            wlr.dat <- read.csv(wlr.flst[j])
+            names(wlr.dat)[3] <- "Stage"
+            wlr.dat$Discharge <-  0.1771 * (wlr.dat$Stage^1.55)
+            write.csv(file=wlr.flst[j], wlr.dat)
+            print(paste("File", wlr.flst[j], "written.", sep=" "))
+        }
+    }
+
+    if(StnType$type[i]=="stream"){
+        ##-- calculate the rating parameters
+        pat <- as.character(StnType$unit_no[i])
+        wlr.flst <- list.files(path=paste(data.dir,"/wlr/csv", sep=""),
+                               pattern=pat, full.names=TRUE)
+        sd.flst <- list.files(path=paste(data.dir, "/rating/csv/", sep=""),
+                              pattern="_Stage_Discharge.csv", full.names=TRUE)
+        sd.no <- as.data.frame(as.numeric(gsub("[^0-9]", "", sd.flst)))
+        unit.no <-  as.numeric(gsub("[^0-9]", "", StnType$unit_no[i]))
+        sd.fl <- read.csv(sd.flst[unit.no==sd.no])
+        sd.fl <- subset(sd.fl, select=c("stage", "avg.disch"))
+        names(sd.fl) <- c("Stage", "Discharge")
+        ##-- run non-linear least square regression
+        nls.res <- nls(Discharge~p1*(Stage)^p3,data=sd.fl, start=list(p1=3,p3=5))
+        coef.p1 <- as.numeric(coef(nls.res)[1])
+        coef.p3 <- as.numeric(coef(nls.res)[2])
+        for(j in 1:length(wlr.flst)){
+            wlr.dat <- read.csv(wlr.flst[j])
+            names(wlr.dat)[3] <- "Stage"
+            wlr.dat$Discharge <- coef.p1 * (wlr.dat$Stage)^coef.p3
+            ## form <- RCformulae[wlr.units[i]==RCformulae$stn_no,]
+            ## if(is.na(form$p2)){
+            ##     wlr.dat$Discharge <- form$p1 * (wlr.dat$Stage)^form$p3
+            ## }
+            write.csv(file=wlr.flst[j], wlr.dat)
+            print(paste("File", wlr.flst[j], "written.", sep=" "))
+        }
+    }
+
+    if(StnType$type[i]=="weir" && StnType$unit_no=="wlr_101"){
+        pat <- as.character(StnType$unit_no[i])
+        wlr.flst <- list.files(path=paste(data.dir,"/wlr/csv", sep=""),
+                               pattern=pat, full.names=TRUE)
+        for(j in 1:length(wlr.flst)){
+            wlr.dat <- read.csv(wlr.flst[j])
+            names(wlr.dat)[3] <- "Stage"
+            wlr.lowstage <- wlr.dat[wlr.dat$Stage<=0.603, ]
+            wlr.highstage <-  wlr.dat[wlr.dat$Stage>0.603, ]
+            wlr.lowstage$discharge <- 1.09*(1.393799*((wlr.lowstage$Stage-0.2065)^2.5))
+            wlr.highstage$discharge <- 1.09*((1.394*(((wlr.highstage$Stage-0.2065)^2.5) - ((wlr.highstage$Stage-0.603)^2.5))) + (0.719*(wlr.highstage$Stage-0.603)^1.5))
+            wlr.discharge <- rbind(wlr.lowstage, wlr.highstage)
+            wlr.discharge$date_time <- as.POSIXct(wlr.discharge$date_time)
+            wlr.discharge.sorted <- wlr.discharge[order(wlr.discharge$date_time, na.last=FALSE),]
+            discharge_wlr_101 <- subset(wlr.discharge.sorted, select=c("raw", "Stage", "date_time", "dt","discharge"))
+
+            
+            names(discharge_wlr_101) <- c("raw", "Stage", "date_time", "dt","Discharge")
+            discharge_wlr_101$Discharge <- round(discharge_wlr_101$Discharge, digits=6)
+            write.csv(discharge_wlr_101, file=wlr.flst[j])
+            print(paste("File", wlr.flst[j], "written.", sep=" "))
+        }
+    }
+}

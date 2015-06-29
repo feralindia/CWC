@@ -1,0 +1,15 @@
+## This script sets the environment for Nilgiris
+wk.dr <- "/home/udumbu/rsb/OngoingProjects/CWC/rdata" # default working directory
+setwd(wk.dr) # set the working directory
+disch.dr <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/disch/" # discharge data folder
+cx.dr <- paste(disch.dr, "cx/", sep="") # profile data folder
+pyg.dr <- paste(disch.dr, "pyg/", sep="") # pygmy current meter data folder
+flt.dr <- paste(disch.dr, "flt/", sep="") # float method data folder 
+csv.dr <- paste(disch.dr, "csv/", sep="") # output csv files
+fig.dr <- paste(disch.dr, "fig/", sep="") # output figures
+sites <- paste("wlr_", 101:109, sep="") # list sites NOTE: all these directories need to have data
+fltpe <- "*.[Cc][Ss][Vv]" # filter so that only csv files are listed
+res <- as.data.frame(matrix(ncol = 10)) # create matrix of 10 cols to hold results
+names(res) <- c("site", "obsfile", "stage", "areaR1", "areaR2", "areaR3", "velR1", "velR2", "velR3", "avg_disch") # give names to cols 
+## call the routine
+source("disch.R", echo=TRUE)  call the sub-routine to do the calculations

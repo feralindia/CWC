@@ -1,0 +1,67 @@
+## Define the files and directories
+
+## Location of types of data folders
+data.dir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/"
+site.datadir <- paste(data.dir, site, "/", sep="")
+disch.dr <- paste(site.datadir, "disch/", sep="")
+
+pyg.dr <- paste(disch.dr, "pyg", sep="") # pygmy current meter data folder
+flt.dr <- paste(disch.dr, "flt", sep="") # float method data folder 
+csv.dr <- paste(disch.dr, "csv", sep="") # output csv files
+fig.dr <- paste(disch.dr, "fig", sep="") # output figures
+cx.dr <- paste(disch.dr, "cx_pyg", sep="") # profile data folder
+cx_flt.dr <- paste(disch.dr, "cx_flt", sep="") # profile data folder
+cxfix.dr <- paste(disch.dr, "cx_sec", sep="") # profile data folder
+shape.dr <- paste(disch.dr, "cx_shape", sep="") # profile data folder
+wlr.dir <- paste(data.dir, site, "/wlr/csv/", sep="") # wlr data output
+
+pyg.loc <- list.dirs(path=pyg.dr, recursive=FALSE, full.names=FALSE)
+## pyg.locnum <- unlist(regmatches(pyg.loc,gregexpr('\\w\\w\\w\\w[[:digit:]]+', pyg.loc))) ## remove the characters after wlr no.
+pyg.locnum <- as.numeric(gsub("[^[:digit:] ]", "", pyg.loc))
+pyg.locnum <- paste("wlr_00",pyg.locnum, sep="")
+pyg.name <- pyg.loc
+pyg.id <- paste("wlr", substr(pyg.loc, start=5, stop=9), sep="") ## remove underscore
+
+## List of folders under data types
+
+pyg.dir <- list.files(pyg.dr, full.names=TRUE, recursive=FALSE )
+cx.pyg.man <- paste(disch.dr, "cx_pyg_man/", pyg.name, sep="")
+cx.pyg.res <- paste(disch.dr, "cx_pyg_res/", pyg.name, sep="")
+cx.shape <- paste(shape.dr, pyg.name, sep="/")
+cx.drlst <- gsub(pattern="/pyg/", replacement="/cx_pyg/", x=pyg.dir)
+cx_flt.drlst <- list.dirs(path = cx_flt.dr, full.names = TRUE, recursive=FALSE)
+cxfix.drlst <- list.dirs(path=cxfix.dr, full.names=TRUE, recursive=FALSE)
+
+
+## pyg.locnum <- pyg.loc
+
+
+## cx.drlst <- list.dirs(path = cx.dr, full.names = TRUE, recursive=FALSE)
+
+## list all files 
+flt.dir <- list.files(flt.dr, full.names=TRUE, recursive=FALSE )
+flt.drlst <- list.files(flt.dr, full.names=TRUE, recursive=FALSE )
+flt.name <- list.files(flt.dr, full.names=FALSE, recursive=FALSE)
+flt.loc <- list.dirs(path=flt.dr, full.names=FALSE, recursive=FALSE)
+flt.id <- paste("wlr", substr(flt.name, start=5, stop=9), sep="") ## remove underscore
+flt.locnum <- as.numeric(gsub("[^[:digit:] ]", "", flt.loc))
+flt.locnum <- paste("wlr_00",flt.locnum, sep="")
+
+stn.dir <- c(pyg.dir, flt.dir )
+stn.name <- c(pyg.name, flt.name ) 
+
+stn.id <- c(pyg.id, flt.id )
+
+disch.stn.name <- tolower(paste(stn.name, "_stage.txt",sep="")) ## made lower case
+oneminfile <- tolower(paste(substr(stn.name, start=5, stop=9), "_onemin.merged.csv",sep="")) 
+delfiles <- function(x){
+    delfile <- paste(disch.dr, x,"/*", sep="")
+    unlink(delfile, recursive = FALSE, force = FALSE)
+}
+
+## list folder names to be deleted
+del.cxres <- dir(path=paste(disch.dr, "cx_pyg_res", sep=""), full.names=TRUE, no..=TRUE)
+del.cxres <- substrRight(del.cxres, 17)
+todel <- c("csv", "fig", "stage", "cx_pyg_res", del.cxres)
+lapply(todel, delfiles)
+

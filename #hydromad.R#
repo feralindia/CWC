@@ -1,0 +1,27 @@
+library(spgrass6)
+##----- This section is for Hydromad--- ###
+##-- Taken from the hydromad tutorial - citation to be added
+library(hydromad)
+library(zoo)
+## load the binned dataset
+data(Cotter)
+# Plot the dataset
+xyplot(Cotter)
+# Plot for specific time period
+xyplot(window(Cotter, start = "1974-01-01", end = "1975-01-01"))
+# Plot for monthly aggregates
+monthlyPQE <- aggregate(Cotter, as.yearmon, mean)
+xyplot(monthlyPQE, screens = c("Streamflow (mm/day)",
+                               "Areal rain (mm/day)", "Temperature (deg. C)"),
+       xlab = NULL)
+## Calculate the runoff ratio sum(Q)/sum(P)
+## Remove missing values as you need pairs of Q and P
+ok <- complete.cases(Cotter[, 1:2])
+runoffratio<-with(Cotter, sum(Q[ok])/sum(P[ok]))
+runoffratio
+## Calculate the cross correlation function to estimate the delay between rainfall and streamflow
+## rollccf calculates the cross-correlation in a moving window through the data
+x <- rollccf(Cotter)
+xyplot(x, xlim = extendrange(as.Date(c("1990-01-01", "2000-01-01"))))
+## estimateDelay calculates lag time corresponding to the maximum correlation between rainfall and rises in streamflow
+estimateDelay(Cotter) ## this case it is zero, 0.

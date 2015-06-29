@@ -1,0 +1,2 @@
+## Plot the rainfall and discharge on the same graph
+library(hydroTSM)

@@ -1,0 +1,19 @@
+
+Call:
+lm(formula = tmp$y ~ tmp$x)
+
+Residuals:
+      1       2       3       4 
+ 1.3572 -0.6713 -1.5612  0.8752 
+
+Coefficients:
+              Estimate Std. Error t value Pr(>|t|)    
+(Intercept) -1.160e+02  2.224e+00  -52.17 0.000367 ***
+tmp$x        5.550e-02  5.843e-04   94.99 0.000111 ***
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Residual standard error: 1.658 on 2 degrees of freedom
+Multiple R-squared:  0.9998,	Adjusted R-squared:  0.9997 
+F-statistic:  9023 on 1 and 2 DF,  p-value: 0.0001108
+

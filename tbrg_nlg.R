@@ -1,0 +1,46 @@
+ ## This scrips is meant to hold the variables for Nilgiris and call sub routines for the actual processing.
+library(timeSeries)
+library(ggplot2)
+##library(parallel)
+## library(doParallel)
+## library(foreach)
+## Set up cores for multithreading
+## registerDoParallel(cores=3)
+## set the financial centre
+setRmetricsOptions(myFinCenter = "Asia/Calcutta")
+
+
+site <- "nilgiris."
+tbrgdatadir<-"/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/tbrg/raw"
+tbrg_nulldatadir<-"/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/tbrg/null"
+wkdir<-"/home/udumbu/rsb/OngoingProjects/CWC/rdata/"
+setwd(wkdir)
+## Create tables to hold the tbrg and wlr datasets
+## num_tbrg<- 101:126 # the number of tbrgs, max is 129 e.g.101:129
+num_tbrg <- 101:126
+## num_tbrg <- 102
+## Ensure the diretories for the data are created
+## in the console "mkdir tbrg_{101..130}" will create directories tbrg_101 to tbrg_130
+calibfile <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/tbrg/calib/nilgiri_tbrg_calibration_fnl.csv"
+figdir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/tbrg/fig/"
+csvdir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/tbrg/csv/"
+for (i in 1: length(num_tbrg)){ ## to be replaced with foreach command
+## resultlist <- foreach(i=1:length(num_tbrg)) %dopar% { ## this needs fixing
+  ## List the names of the files
+  tbrgtab<-paste("tbrg_", num_tbrg[i], sep="") # Directory/table per tbrg holding csv files are stored.
+  tbrgtab_raw<-paste("tbrg_", num_tbrg[i], "_raw", sep="")
+  tbrgtab_pseudo<-paste("tbrg_", num_tbrg[i], "_pdeudo", sep="")
+  tbrgdir<-paste(tbrgdatadir, tbrgtab, sep="/") # Directory holding all tbrg sub folders
+  tbrgdir_null<-paste(tbrg_nulldatadir, tbrgtab, sep="/") # Directory holding all tbrg_null sub folders
+  tbrgtab_null_all<-paste(tbrgtab, "_null_all",sep="") # Directory holding all tbrg_null sub folders
+  filelist <- list.files(tbrgdir, pattern="\\.csv$|\\.dat$", ignore.case=TRUE, full.names=FALSE)
+  filelist.full <- list.files(tbrgdir, pattern="\\.csv$|\\.dat$" , ignore.case=TRUE, full.names=TRUE)
+  filelist_null<- list.files(tbrgdir_null, pattern="\\.csv$|\\.dat$" , ignore.case=TRUE, full.names=FALSE)
+  filelist_null.full <- list.files(tbrgdir_null, pattern="\\.csv$|\\.dat$", ignore.case=TRUE, full.names=TRUE)
+  csv.out <- paste(csvdir, tbrgtab, "_onemin.csv", sep="")
+
+source(paste(wkdir,"tbrg_import.R", sep=""), echo=TRUE)
+source(paste(wkdir,"tbrg_fillnull.R", sep=""), echo=TRUE)
+source(paste(wkdir,"tbrg_aggreg.R", sep=""), echo=TRUE)
+
+}

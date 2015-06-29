@@ -1,0 +1,30 @@
+
+##---- Chunk 3 - create the DEM
+execGRASS("g.mapset",
+          flags="c", 
+	parameters=list(mapset='elevation')
+) # switch to elevation
+execGRASS("db.connect", flags="d")
+execGRASS("g.region", flags="p",
+	parameters=list(vect='tmp_tbrg_hull_buffer@PERMANENT', res='10')
+) # set region to vect res to 10
+execGRASS("r.mask",
+          flags="overwrite",
+          parameters=list(vector='tmp_tbrg_hull_buffer@PERMANENT')
+)# generate mask
+execGRASS("v.to.rast",
+	flags=c("d", "overwrite"),
+	parameters=list(input='soi_contours@PERMANENT', type='line', 
+                  output='soi.contour', use='attr', attrcolumn='contour_li')
+) # rasterise contours
+execGRASS("r.thin",
+	flags="overwrite",
+	parameters=list(input='soi.contour', output='soi.contour.thin')
+) # thin the raster
+execGRASS("r.surf.contour",
+	flags="overwrite",
+	parameters=list(input='soi.contour.thin@elevation', 
+                  output='soi.dem')
+) # generate the dem
+
+## execGRASS("r.out.gdal", 

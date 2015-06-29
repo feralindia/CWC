@@ -1,0 +1,120 @@
+## This script converts the x,y coordinates from a CSV file into area measured in cm2
+## Note: the stage is taken from the timestamp on the WLR cx header.
+
+## @knitr chunk1
+
+for (i in 1:length(pyg.dir)){
+    res <- as.data.frame(matrix(ncol = 5)) # 5 col matrix to hold final results
+    tmp.res <- as.data.frame(matrix(ncol = 8)) # 8 col matrix to hold temporary results
+    prf.res <- as.data.frame(matrix(ncol = 8)) # 8 col matrix to hold profile results
+    ## give names to cols
+    names(res) <- c("Sl.No.", "site", "obs.file", "stage", "avg.disch")
+    names(tmp.res) <- c("Sl.No.", "site", "obs.file", "stage", "cx.no", "cx.area", "avg.vel", "avg.disch")
+    names(prf.res) <- c("Sl.No.", "site", "obs.file", "stage", "cx.no", "cx.area", "avg.vel", "avg.disch")
+    ## list files with and without directory names
+    
+    pyg.fldirlst <- list.files(path=pyg.dir[i], pattern=".csv$", full.names=TRUE, ignore.case=TRUE)
+    cx.fldirlst <- gsub(pattern="/pyg/", replacement="/cx_pyg/", x=pyg.fldirlst)
+    flst <- list.files(path=pyg.dir[i], pattern=".csv$", ignore.case=TRUE) # same for pyg, cx and cx_fix
+
+    
+    ## pyg.flst <- list.files(path=pyg.dir[i], pattern=".csv$", ignore.case=TRUE) # nonsensical    
+    ## cx.flst <- gsub(pattern="/pyg/", replacement="/cx_pyg/", x=pyg.flst) # nonsensical
+    ## cx.fixlst <- gsub(pattern="/pyg/", replacement="/cx_pyg/", x=pyg.flst) # nonsensical Dec '14
+    
+    ## the lines below were changed to the ones above to ensure
+    ## the names of files in the pyg and cx_pyg match
+    ## cx.flst <- list.files(path=cx.drlst[i], pattern=".csv$", ignore.case=TRUE)
+    ## cx.fldirlst  <- list.files(path=cx.drlst[i], full.names=TRUE, pattern=".csv$", ignore.case=TRUE)
+    ## @knitr chunk2
+    
+    ## loop for profiles and velocities
+    for (j in 1: length(flst)){  # changed from cx.flst Dec 14
+        tmp <- read.csv(file=cx.fldirlst[j], header = T, skip=5) # read in the csv
+        crd <- subset(tmp, select=c(Length, Depth)) # extract coordinates
+        rw.crd <- nrow(crd)
+        crd[rw.crd+1, ] <- c(0, 0) # close the polygon
+        crd[ , 2] <- crd[ , 2]*-1 # covert y values to negative (depth)
+        gpc.crd <- as(crd, "gpc.poly") # convert to a gpc.poly object
+        ##---get the timestamp
+        cxt <- read.csv(cx.fldirlst[j], header=FALSE)
+        tmp$dt  <- cxt[2,2, drop=TRUE]
+        tmp$tm  <- cxt[3,2, drop=TRUE]
+        tmp$dt <- as.Date(tmp$dt, format="%d/%m/%y")
+        tmp <- transform(tmp, dt.tm = paste(dt, tm, sep=' '))
+        tmp$dt.tm <- as.POSIXct(tmp$dt.tm, format="%Y-%m-%d %I:%M:%S %p") ## format converts from pm 
+        stn.obj <- paste(stn.id[i], ".stage", sep="") 
+        stg <- get(stn.obj)
+        ## stg$dt.tm <- as.POSIXct(stg$dt.tm) ## not needed
+        tmp.mrg <- merge(tmp, stg, by="dt.tm", all=FALSE)
+        tmp.mrg <- tmp.mrg[1,] ## uncomment if you want only one row
+        if (nrow(tmp.mrg) > 0){
+            stage <- tmp.mrg$cal ##[[1]]
+        }  else {stage <- NA}
+        
+        mn <- paste("Site: ", pyg.loc[i], "|| File: ",flst[j], sep=" ") # create title was cx.flst dec14
+
+        cx.fig <- paste(str_sub(flst[j], end =-5L), ".png", sep="") # names for cross section output was cx.flst dec14
+       
+        cx.figout <- paste(cx.pyg.man[i], cx.fig, sep="/")
+        cx.csvout <- paste(cx.pyg.man[i], "/cx_results.csv", sep="")
+        ## postscript(figout, horizontal=TRUE, onefile=TRUE) # eps output parameters
+        CairoPNG(filename=cx.figout, width=1800, height=800, units="px", pointsize=12, onefile = TRUE) # png output parameters
+        ab.x <- seq(from=0, to= max(crd$Length), by=max(crd$Length/100))
+        ab.y <- seq(to=0, from=round(min(crd$Depth))-1, by=1)
+        max.x <- max(crd$Length)
+        par(mar=c(6,5,4,2)+0.1,mgp=c(5,1,0))
+        plot(gpc.crd, xlab="Stream Width (cm)", ylab="Stream Depth (cm)", xaxp=c(0, max.x, 100), las=2, main=mn, add = FALSE) # plot the cx
+        abline(v=ab.x, col="lightgray", lty="dashed")
+        ## abline(h=ab.y, col="lightgray", lty="dotted")
+      
+        tmp.pyg <- read.csv(file=pyg.fldirlst[j], header = T, skip=5) # read in the csv, skip first 5 lines.
+        names(tmp.pyg) <- c("Sl.No.", "Length", "Depth", "Measure.Depth", "vel.rd1", "vel.rd2", "vel.rd3")
+        ## tmp.pyg <- read.csv(file="~/tmp/01sept2014.csv", header = T, skip=5)
+        n.rect <- length(unique(substr(tmp.pyg$Sl.No., start=1, stop=1)))
+        
+        max.xy <- c(max(crd$Length), min(crd$Depth))
+        min.xy <- c(min(crd$Length), max(crd$Depth))
+        max.x <- max(crd$Length)
+        min.y <- min(crd$Depth)
+        steps.x <- tmp.pyg$Length ## taking measurement lengths from pyg file
+        steps.y <- tmp.pyg$Measure.Depth
+    
+   
+        for (k in 1 : nrow(tmp.pyg)){ ## changed from 1: n.rect
+            rect <- as.data.frame(matrix(ncol = 2)) # Needs to be fixed from here 25Nov2014
+            names(rect) <- c("x", "y")
+            if(k == 1){
+                step.x <- steps.x[k] ## k is 1
+                step.xprev <- 0
+            } else {
+                step.x <- steps.x[k]
+                step.xprev <- step.x-steps.x[k-1]
+            }
+            step.y <- steps.y[k]*-1
+            
+            rect[1, ] <- c(step.x , 0.0) # min x, min y
+            rect[2, ] <- c(step.x, 0.0) # max x, min y
+            rect[3, ] <- c(step.x, step.y) # max x, max y
+            rect[4, ] <- c(step.x, step.y) # min x, max y
+            rect[5, ] <- c(step.x , 0.0) # min x, min y
+
+            step.x <- steps.x[k]+step.xprev
+
+            
+            if(is.odd(k)){
+                lnstl <- 1
+            } else {
+                lnstl <- 2
+            }
+            
+            gpc.rect <- as(rect, "gpc.poly") # convert to gpc polygon object
+            plot(gpc.rect, poly.args = list(border = k + 1, lty = lnstl), add = TRUE) # uncomment to plot the segment
+        
+        }
+        dev.off() # dump the data into the png driver
+        ## from HERE, Oct '14
+  
+}
+ rm(tmp.res,tmp, tmp.mrg, tmp.pyg, crd, rw.crd, gpc.crd, mn, figout, max.xy, min.xy, max.x, min.y, step.x, step.y, cx.csv, cx.fig)
+}

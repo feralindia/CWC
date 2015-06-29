@@ -1,0 +1,8 @@
+csvdir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/tbrg/csv/"
+daily.files <- paste("tbrg_",101:126,"_Daily.csv", sep="")
+for (i in 1:length(daily.files)){
+    dailydat <- paste(csvdir, daily.files[i], sep="")
+    dat <- read.csv(file=dailydat)
+    dat <- subset(dat, mm_rain> 100, select = c(dt, mm_rain))
+    plot(as.Date(dat$dt), dat$mm_rain)
+}

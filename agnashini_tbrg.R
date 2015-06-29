@@ -1,0 +1,178 @@
+## Needs to be updated with new directory structure
+## This script is to organise the various data sets throuth PostgreSQL and PostGIS
+## It automatically transfers unique datasets from csv files to database tables.
+tbrgdatadir<-"/home/udumbu/rsb/OngoingProjects/CWC/Data/Aghnashini/tbrg/raw/"
+wkdir<-"/home/udumbu/rsb/OngoingProjects/CWC/rdata/"
+setwd(wkdir)
+library(RPostgreSQL)
+library(yaml)
+## Define the connection
+conf <- yaml.load_file(paste("db.config.yml", sep="")) # this is to avoid sharing credentials for the database
+con <- dbConnect(PostgreSQL(), host=conf$db$host, dbname=conf$db$name, user=conf$db$user, password=conf$db$pass)
+## Create tables to hold the tbrg and wlr datasets
+## num_tbrg<-c(paste("tbrg_00", (1:9), sep=""), paste("tbrg_0", (10:26), sep=""))
+num_tbrg<-c(paste("tbrg_0", (24:26), sep=""))
+## Ensure the diretories for the data are created
+i=1
+while(i<=length(num_tbrg)){
+  ## List the names of the files
+  tbrgtab<-paste(num_tbrg[i], sep="") # Directory/table per tbrg holding csv files are stored.
+  tbrgtab_raw<-paste(num_tbrg[i], "_raw", sep="")
+  tbrgtab_pseudo<-paste(num_tbrg[i], "_pseudo", sep="")
+  tbrgdir<-paste(tbrgdatadir, tbrgtab, sep="/") # Directory holding all tbrg sub folders
+  dirliststm<-paste("ls ", tbrgdir, sep="") # List contents of tbrg## folder.
+  filelist<-system(dirliststm, intern=TRUE) # Save the list of contents to an object
+  ## This statement is to create a table for each tbrg
+  stm<-paste("DROP TABLE IF EXISTS agnashini.", tbrgtab_raw, ";",
+             "CREATE TABLE IF NOT EXISTS agnashini.", tbrgtab_raw, "(date date, time time, tips REAL);", sep="")
+  rs <- dbSendQuery(con, stm)
+  rm(stm)
+  ## This statement is to copy the data from the respective tbrg folders into the tables.
+  ## Note that only CSV files are supported - don't stick in xls sheets.
+  
+  ## run another loop within the earlier one
+  ## This loop copies all the csv/dat files onto a raw tbrg table
+  j=1
+  while(j<=length(filelist)){
+    stm<-paste("COPY agnashini.", tbrgtab_raw, " FROM '", 
+               tbrgdir, "/", filelist[j], "' DELIMITER ',' CSV;", sep="")
+    rs<-dbSendQuery(con,stm)
+    rm(stm)
+    j=j+1;
+  }
+  ## Create the tables to hold tbrg data - one per tbrg 
+  stm<-paste("DROP TABLE IF EXISTS agnashini.", tbrgtab, "; 
+             CREATE TABLE IF NOT EXISTS agnashini.",tbrgtab, 
+             "(id SERIAL PRIMARY KEY, date_time timestamp, tips real);", sep="")
+  rs <- dbSendQuery(con, stm)
+  rm(stm)
+  ## Now transfer the data from the raw table to the clean table.
+  stm<-paste("INSERT INTO agnashini.", tbrgtab, "(date_time, tips) 
+             SELECT DISTINCT concat(agnashini.", tbrgtab_raw, ".date, ' ', agnashini.", tbrgtab_raw, ".time)::timestamp, 
+             agnashini.", tbrgtab_raw, ".tips
+             FROM agnashini.", tbrgtab_raw, " LEFT JOIN agnashini.", tbrgtab, "
+             ON concat(agnashini.", tbrgtab_raw, ".date, ' ', agnashini.", tbrgtab_raw, ".time)::timestamp=", tbrgtab, ".date_time
+             WHERE ", tbrgtab, ".date_time IS NULL;", sep="")
+  rs <- dbSendQuery(con, stm)
+  rm(stm)
+  ## Now fill in all the blank values for timestamps where there were no tips
+  ## First create a table for each tbrg with pseudo values corresponding to the period of data
+  stm<-paste("DROP TABLE IF EXISTS agnashini.", tbrgtab_pseudo, ";",
+"CREATE TABLE agnashini.",tbrgtab_pseudo, " AS
+             SELECT * FROM 
+             generate_series((select min(date_time) from agnashini.",tbrgtab ,"),
+             (select max(date_time) from agnashini.",tbrgtab,"), '1 minute') as date_time,
+             generate_series(0, 0) AS tips;", sep="")
+  rs <- dbSendQuery(con, stm)
+  rm(stm)
+  ## Now do a join to fill in missing values in the actual tbrgtab
+  stm<-paste("INSERT INTO agnashini.", tbrgtab, "(date_time, tips) 
+             SELECT DISTINCT agnashini.", tbrgtab_pseudo, ".date_time, 
+             agnashini.", tbrgtab_pseudo, ".tips
+             FROM agnashini.", tbrgtab_pseudo, " LEFT JOIN agnashini.", tbrgtab, "
+             ON agnashini.", tbrgtab_pseudo, ".date_time =", tbrgtab, ".date_time
+             WHERE ", tbrgtab, ".tips IS NULL;", sep="")
+  ## need to add a statement where values smaller than the pervious date-time are declared NA
+  rs <- dbSendQuery(con, stm)
+  rm(stm)
+  ## DROP redundant tables
+  stm<-paste("DROP TABLE agnashini.", tbrgtab_raw, ";
+             DROP TABLE agnashini.",tbrgtab_pseudo,";", sep="")
+  rs <- dbSendQuery(con, stm)
+  rm(stm)
+  ## and VACUUM the good tables to remove dead tuples
+  
+  stm<-paste("VACUUM agnashini.", tbrgtab, ";", sep="")
+  rs <- dbSendQuery(con, stm)
+  rm(stm)
+  i=i+1;
+}
+
+## Pull in the calibration data
+## First delete the tbrg_calib file
+## This is to ensure that the new calibration file is used.
+
+stm<-"DELETE FROM agnashini.tbrg_calib;"
+rs <- dbSendQuery(con, stm)
+rm(stm)
+
+## Please note that the timestamp is not being imported from the CSV.
+## This should be fixed first in the csv and then in the SQL statement.
+
+stm<-"COPY agnashini.tbrg_calib( tbrg_id, rawml_pertip, tbrg_area, mm_pertip)
+FROM '/home/udumbu/rsb/OngoingProjects/CWC/Data/Aghnashini/tbrg/calib/agnashini_tbrg_calibration_fnl.csv'
+DELIMITER ',' CSV header;"
+rs <- dbSendQuery(con, stm)
+rm(stm)
+
+## Now create a loop which generates the actual rainfall in mm per tip for each tbrg
+## The loop requires you to state the intervals at which the data is to be pooled
+## This script uses seconds as a basis (can we do it in hours and then divide)
+## This does it by 15 mins, 1/2 hour, 1 hour, 4 hours, 6 hours, 12 hours and 24 hours
+text_agg<-c("One minute", "Five minutes", "15 minutes", "Half hour", "One hour", "Six hours", "Twelve hours")
+min_agg<-c("60", "300", "900", "1800", "3600", "21600", "43200")
+# should this be changed - 86400 to 88399 as one second is added in the rounding off. To be tested.
+tbrg_list<-paste(num_tbrg, sep="")
+i=1
+while(i<=length(tbrg_list)){
+    pngout<-paste("/home/udumbu/rsb/OngoingProjects/CWC/Data/Aghnashini/tbrg/fig/", tbrg_list[i],".png", sep="")
+  csvdir<-paste("/home/udumbu/rsb/OngoingProjects/CWC/Data/Aghnashini/tbrg/csv/", sep="")   
+  png(file=pngout, width = 1680, height = 780, units = "px", pointsize = 12, res=100,  bg = "white")
+  par(mfrow=c(2,4), oma=c(0,0,2,0))
+  j=1
+  while(j<=length(min_agg)){
+    ## The multiplication factor needs confirmation.
+
+#     stm<-paste("SELECT TIMESTAMP WITH TIME ZONE 'epoch' +
+#     INTERVAL '1 second' * round(extract('epoch' from a.date_time) / ", min_agg[j], ") * ", min_agg[j], 
+#                " AS date_time, 
+#     sum(a.tips * b.mm_pertip *100) AS mm_rain
+#     FROM agnashini.", tbrg_list[i], " a, agnashini.tbrg_calib b
+#     WHERE b.tbrg_id='", tbrg_list[i], "'
+#     GROUP BY round(extract('epoch' from a.date_time) / ", min_agg[j], " )
+#     ORDER BY date_time;", sep="")
+    ## original code from <https://beagle.whoi.edu/redmine/projects/ibt/wiki/Summarizing_time_series_data_in_PostgreSQL>
+    
+        stm<-paste("SELECT to_timestamp(((extract (epoch from date_time)::int / ", min_agg[j],
+        ") * ", min_agg[j], ") + ", min_agg[j], ") AS dt,
+        sum(round(a.tips * 100))::INTEGER AS tips,
+        sum(round(a.tips * 100) * b.mm_pertip) AS mm_rain
+        FROM agnashini.", tbrg_list[i], " a, agnashini.tbrg_calib b
+        WHERE b.tbrg_id='", tbrg_list[i], "'
+        GROUP BY dt
+        ORDER BY dt;", sep="") # the rounding is to ensure we don't get funny numbers
+    
+    rs <- dbSendQuery(con, stm)
+    data <- fetch(rs, n = -1)
+    csvout<-paste(csvdir, tbrg_list[i] ,"_", text_agg[j], ".csv", sep="")
+    write.csv(data, file=csvout)
+    rm(stm)
+    plot(data$dt, data$mm_rain, type="l", main=c(text_agg[j]), xlab="Day/date", ylab="Rainfall in mm") 
+        j=j+1;
+  }
+  
+  ## Do for the daily aggregation separately
+  ## Added to fix error pointed out by Naresh and Susan
+  stm<-paste("SELECT to_timestamp(((extract (epoch from date_time)::int / 86400) * 86400)) AS dt,
+        sum(round(a.tips * 100))::INTEGER AS tips,
+        sum(round(a.tips * 100) * b.mm_pertip) AS mm_rain
+        FROM agnashini.", tbrg_list[i], " a, agnashini.tbrg_calib b
+        WHERE b.tbrg_id='", tbrg_list[i], "'
+        GROUP BY dt
+        ORDER BY dt;", sep="") # the rounding is to ensure we don't get funny numbers
+  rs <- dbSendQuery(con, stm)
+  data <- fetch(rs, n = -1)
+  csvout<-paste(csvdir, tbrg_list[i] ,"_Daily.csv", sep="")
+  write.csv(data, file=csvout)
+  rm(stm)
+  plot(data$dt, data$mm_rain, type="l", main="Daily", xlab="Day/date", ylab="Rainfall in mm") 
+  
+  
+  
+  title(tbrg_list[i], outer=TRUE)
+  dev.off()
+  i=i+1;
+}
+
+## Close the connection
+postgresqlCloseConnection(con)
