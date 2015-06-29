@@ -1,7 +1,7 @@
 ## Needs to be updated with new directory structure
 library(RPostgreSQL)
 ## Define the connection
-con <- dbConnect(PostgreSQL(), user= "rsb", password="kar4nahi9", dbname="cwc");
+con <- dbConnect(PostgreSQL(), user= [username], password=[password], dbname="cwc");
 ## Read all CSV files but chop the first 10 lines which contain the headers
 
 ## tail -n +10 WLR104_104_001_31_05_2013.CSV > new.csv
