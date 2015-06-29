@@ -1,0 +1,14 @@
+## Graph the data into years and JJASON and DJFMAM
+figdat <- get(datname)
+figdat$dt <- as.Date(figdat$dt)
+years.txt <- c("2012", "2013", "2013")
+months.txt <- c("JJASON", "DJFMAM", "JJASON")
+start <- as.Date(c("2012-06-01", "2012-12-01", "2013-06-01"))
+end <-  as.Date(c("2012-12-01", "2013-06-01", "2013-12-01"))
+for (x in 1:length(end)){
+    year <- years.txt[x]
+    month <- months.txt[x]
+    ssfigdat <- subset(figdat, dt >= start[x] & dt < end[x])
+    try(plot(ssfigdat$dt, ssfigdat$mm_rain, type="l", main=paste(agg, "|", month, year, sep=" "),
+         xlab="Month", ylab="Rainfall in mm"), silent=TRUE)
+}

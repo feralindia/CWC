@@ -1,0 +1,40 @@
+## Graph the data into years and JJASON and DJFMAM
+figdat <- get(datname)
+figdat$dt <- as.Date(figdat$dt)
+years.txt <- c("2012", "2013", "2013")
+months.txt <- c("JJASON", "DJFMAM", "JJASON")
+start <- as.Date(c("2012-06-01", "2012-12-01", "2013-06-01"))
+end <-  as.Date(c("2012-12-01", "2013-06-01", "2013-12-01"))
+for (x in 1:length(end)){
+    year <- years.txt[x]
+    month <- months.txt[x]
+    ssfigdat <- subset(figdat, dt >= start[x] & dt < end[x])
+    try(plot(ssfigdat$dt, ssfigdat$mm_rain, type="l", main=paste(agg, "|", month, year, sep=" "),
+         xlab="Month", ylab="Rainfall in mm"), silent=TRUE)
+}
+## library(reshape2)
+## library(ggplot2)
+## meltdat <- melt(ssfigdat, id = "dt")
+    
+## qplot(dt, mm_rain, data=ssfigdat, geom=c("point", "line"),
+##       main=paste(agg, month, year, sep=" "), xlab="Month", ylab="Rainfall in mm") +
+##     geom_point(colour= "red") +
+##     geom_line(colour = "blue")
+
+
+### library(lattice)
+## xyplot(dt~mm_rain ,data=ssfigdat,type="l",
+##        scales=list(y=list(relation="free")),
+##        layout=c(8,3))
+## library(reshape2)
+## dt.df <- melt(ssfigdat, measure.vars = "mm_rain")
+## ggplot(dt.df, aes(x = dt, y = variable)) +
+##   geom_line(aes(color = variable))
+
+## +
+##   facet_warp(variable ~ ., scales = "free_y")
+
+## +
+##   # Suppress the legend since color isn't actually providing any information
+##   opts(legend.position = "none")
+
