@@ -1,5 +1,6 @@
  ## This scrips is meant to hold the variables for Nilgiris and call sub routines for the actual processing.
 library(timeSeries)
+
 library(ggplot2)
 ##library(parallel)
 ## library(doParallel)
@@ -8,7 +9,8 @@ library(ggplot2)
 ## registerDoParallel(cores=3)
 ## set the financial centre
 setRmetricsOptions(myFinCenter = "Asia/Calcutta")
-
+## set the timezone
+Sys.setenv(TZ='Asia/Kolkata')
 
 site <- "nilgiris."
 tbrgdatadir<-"/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/tbrg/raw"
