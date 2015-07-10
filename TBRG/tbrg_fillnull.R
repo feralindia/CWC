@@ -9,11 +9,11 @@ for (k in 1:length(filelist_null)){
     tmp.null$dt <- as.Date(tmp.null$dt, format="%m/%d/%Y") ## NOTE THAT NULL VALUE SHOULD BE IN YYYY NOT IN YY FORMAT
     ## THIS MIGHT CAUSE ERRORS IN AGHNASHINI DATASET - CHECK THE NULL FILES
     tmp.null<-transform(tmp.null, dt.tm = paste(dt, tm, sep=' '))
-    tmp.null$dt.tm<-as.POSIXct(tmp.null$dt.tm)
+    tmp.null$dt.tm<-as.POSIXct(tmp.null$dt.tm, tz="Asia/Kolkata") ## added timezone here
     tmp.null$dt.tm<-round(x=tmp.null$dt.tm, units="mins")
     start.hr <- min(tmp.null$dt.tm)
     end.hr <- max(tmp.null$dt.tm)
-    tint1min <- seq.POSIXt(start.hr, end.hr,by="1 min",na.rm=T)
+    tint1min <- seq.POSIXt(start.hr, end.hr,by="1 min",na.rm=T, tz="Asia/Kolkata") ## added timezone here
     tmp.null.1min <-as.data.frame(tint1min)
     colnames(tmp.null.1min)<-c("dt.tm")
 
@@ -23,6 +23,7 @@ for (k in 1:length(filelist_null)){
     ##    tbrg.null.1min <- subset(tbrg.null.1min, select=c("dt.tm", "tips"))
     tbrg.null <- rbind(tbrg.null, tbrg.null.1min)
 }
+
 tbrg.null$dt.tm <- as.POSIXct(tbrg.null$dt.tm, tz="Asia/Kolkata")
 ## tbrg.null$dt.tm <- tbrg.null$dt.tm + 19800 ## add five and half hours
 tbrg.null <- tbrg.null[,c(2,3,1)]
@@ -40,9 +41,10 @@ tmp <- data.frame(tips=tmp.merge$tips.x+tmp.merge$tips.y, mm=tmp.merge$mm.x+tmp.
 ## 5) replace all negative values with NAs
 tmp[tmp<0] <- NA
 tbrg.merged <- tmp
-tbrg.merged$dt.tm<-as.POSIXct(tbrg.merged$dt.tm)
+tbrg.merged$dt.tm<-as.POSIXct(tbrg.merged$dt.tm, tz="Asia/Kolkata")
 ## tbrg.merged$dt.tm <- tbrg.merged$dt.tm + 19800 ## add five and half hours
 tbrg.merged <- tbrg.merged[with(tbrg.merged, order(dt.tm)),]
+trbr.merged <- tbrg.merged[!duplicated(tbrg.merged),]
 write.csv(file=csv.out, tbrg.merged)
 } else {
     tbrg.merged <- tbrg.raw[with(tbrg.raw, order(dt.tm)),]

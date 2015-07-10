@@ -1,6 +1,5 @@
  ## This scrips is meant to hold the variables for Nilgiris and call sub routines for the actual processing.
 library(timeSeries)
-
 library(ggplot2)
 ##library(parallel)
 ## library(doParallel)

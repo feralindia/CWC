@@ -1,8 +1,22 @@
 ## This scrips is meant to hold the variables for Nilgiris and call sub routines for the actual processing.
 library(timeSeries)
 library(ggplot2)
+
+## function to list top few non-zero tips for checking
+tips <- function(x){
+    return(head(subset(x, subset=x$tips>0)))
+}
+
+searchdate <- function(x, dt, tm){
+    dt <- as.Date(dt, format="%m/%d/%y")
+    tmstmp <- paste(dt, tm, sep=' ')
+    return(x[x$dt.tm==tmstmp,])
+}
+         
+
 ## set the financial centre
 setRmetricsOptions(myFinCenter = "Asia/Calcutta")
+Sys.setenv(TZ='Asia/Kolkata')
 ## setRmetricsOptions(tz = "Asia/Kolkata")
 site <- "agnashini."
 tbrgdatadir<-"/home/udumbu/rsb/OngoingProjects/CWC/Data/Aghnashini/tbrg/raw"

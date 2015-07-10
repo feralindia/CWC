@@ -23,7 +23,7 @@ for (j in 1:length(filelist)){
     start.hr <- min(tmp.raw$dt.tm)
     end.hr <- max(tmp.raw$dt.tm)
     tint1min <- seq.POSIXt(start.hr, end.hr,by="1 min",na.rm=TRUE)
-    attributes(tint1min)$tzone <- "Asia/Kolkata"
+    ## attributes(tint1min)$tzone <- "Asia/Kolkata" ## not required, already defined
     tmp.raw.seq <-as.data.frame(tint1min)
     colnames(tmp.raw.seq)<-c("dt.tm")
     tmp.raw.1min <- merge(tmp.raw, tmp.raw.seq, by="dt.tm", all=TRUE)
@@ -41,7 +41,10 @@ for (j in 1:length(filelist)){
     tbrg.raw <- rbind(tbrg.raw, tmp.raw)
 }
 tbrg.raw$dt.tm <- as.POSIXct(tbrg.raw$dt.tm, tz="Asia/Kolkata")
-tbrg.raw$dt.tm <- tbrg.raw$dt.tm + 19800 ## add five and half hours
+## tbrg.raw$dt.tm <- tbrg.raw$dt.tm + 19800 ## add five and half hours
 ## The need to do this implies there is something wrong with the code. Fix it when you have time.
 assign(tbrgtab_raw, tbrg.raw)
 ## rm(tmp.raw)
+
+
+## head(subset(tmp.raw.1min, subset=tips>0))

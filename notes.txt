@@ -82,6 +82,9 @@ sed -i 's/-/\// g' c.csv
 ## rename file by adding underscore after r in wlr
 ## remove the n to run the actual command
 rename 's/r/r_/g' * -vn
+## add underscore between the letter s and number in bs##
+rename 's/s/s_/g' * -vn
+
 
 ## change file names to lowercase
 find ./ -depth -exec rename 's/(.*)\/([^\/]*)/$1\/\L$2/' {} \;
