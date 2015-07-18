@@ -1,8 +1,11 @@
 ##---- import raw and zero fill for each minute ----##
 ## read in calibration file
+print(paste("Processing TBRG No.", num_tbrg[i], sep=" "))
+
 cal.file <- read.csv(calibfile)
 tbrg.raw <- data.frame(tips=numeric(0), mm=numeric(0), dt.tm=numeric(0))
 for (j in 1:length(filelist)){
+    print(paste("Importing raw data from", filelist[j], sep=" "))
     tmp.raw <- read.csv(filelist.full[j], header=FALSE, sep=",", quote="", blank.lines.skip = TRUE)
     names(tmp.raw) <- c("dt", "tm", "tips")
     tmp.raw$dt <- as.Date(tmp.raw$dt, format="%m/%d/%y")
@@ -10,9 +13,11 @@ for (j in 1:length(filelist)){
     tmp.raw$dt.tm<-as.POSIXct(tmp.raw$dt.tm, tz="Asia/Kolkata")
     tmp.year <- format(tmp.raw$dt.tm, "%Y")
     if(min(tmp.year) < 2012){
-        print(paste("File name ", filelist.full[j], " has a date smaller that year 2012.", sep=""))
+        print(paste("File name ", filelist[j], " starts before 2012.", sep=""))
+        stop("script stopped")
     } else if (max(tmp.year) > 2015) {
-        print(paste("File name ", filelist.full[j], " has a date greater that year 2015.", sep=""))
+        print(paste("File name ", filelist[j], " ends after 2015.", sep=""))
+        stop("script stopped")
     }
     
     tmp.raw$dt.tm<-round(x=tmp.raw$dt.tm, units="mins")
@@ -41,10 +46,12 @@ for (j in 1:length(filelist)){
     tbrg.raw <- rbind(tbrg.raw, tmp.raw)
 }
 tbrg.raw$dt.tm <- as.POSIXct(tbrg.raw$dt.tm, tz="Asia/Kolkata")
+tbrg.raw <-  tbrg.raw[!duplicated(tbrg.raw$dt.tm), ] # Added to remove duplicated values
 ## tbrg.raw$dt.tm <- tbrg.raw$dt.tm + 19800 ## add five and half hours
 ## The need to do this implies there is something wrong with the code. Fix it when you have time.
 assign(tbrgtab_raw, tbrg.raw)
 ## rm(tmp.raw)
 
+print(paste("Finished importing data for TBRG No.", num_tbrg[i], sep=" "))
 
 ## head(subset(tmp.raw.1min, subset=tips>0))

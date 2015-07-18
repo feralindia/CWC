@@ -1,4 +1,5 @@
 ## Aggregate tbrg output into various periods
+print(paste("Aggregating data for TBRG No.", num_tbrg[i], sep=" "))
 charvec <- tbrg.merged$dt.tm
 tbrg.merged <- subset(tbrg.merged, select=c("tips", "mm"))
 ts.tbrg <- timeSeries(data=tbrg.merged, charvec=charvec)
@@ -33,3 +34,4 @@ ggsave(tbrgplot, filename=pngfile, width=397, height=210, units="mm")
 ggsave(tbrgplot, filename=epsfile, width=297, height=210, units="mm")
 ggsave(tbrgplot, filename=pdffile, width=297, height=210, units="mm")
 tbrgplot
+print(paste("Finished aggregating data for TBRG No.", num_tbrg[i], sep=" "))
