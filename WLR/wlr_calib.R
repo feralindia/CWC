@@ -1,7 +1,7 @@
 ## modified from <http://stackoverflow.com/a/7963963/2548841>
 substrLeft <- function(x, n){
     substr(x, 0, nchar(x)-n)}
-wlr_calib_list <- list.files(path=dir_calib_wlr, pattern="new.csv$")
+wlr_calib_list <- list.files(path=dir_calib_wlr, pattern="*new.csv$")
 col_names <- c("y", "x")
 
 ## Loop to build calibration from raw observations

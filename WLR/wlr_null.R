@@ -4,12 +4,15 @@ for(i in 1:length(num_wlr)){
     wlrtab<-paste("wlr_", num_wlr[i], sep="")
     nulldir<-paste(wlr.nulldir, wlrtab, sep="")
     nullfile.list <- list.files(nulldir, full.names=TRUE, ignore.case=TRUE, pattern='CSV$')
+    nullfile.name <- list.files(nulldir, full.names=FALSE, ignore.case=TRUE, pattern='CSV$')
     if(length(nullfile.list)>0){  # don't run if no null files
-    wlr.null.onemin<-paste("wlr_", num_wlr[i],"null", sep="")
+        cat(paste("Processing null files for WLR station", num_wlr[i], sep=" "), sep="\n")
+        wlr.null.onemin<-paste("wlr_", num_wlr[i],"null", sep="")
         wlr.null.csv <- paste(csvdir, num_wlr[i], "_null.csv", sep="")
         xyall <- as.data.frame(matrix(ncol = 5))
         names(xyall) <- c("date", "time", "raw", "cal","date_time")
         for (j in 1:length(nullfile.list)){
+            cat(paste("Reading null file", nullfile.name[j], sep=" "), sep="\n")
             xy <- read.csv(file=nullfile.list[j], header=FALSE, strip.white = TRUE, blank.lines.skip = TRUE)
             names(xy)<- c("date", "time", "raw", "cal")
             xy$date <- gsub(pattern="-", replacement="/", x=xy$date)
@@ -36,5 +39,7 @@ for(i in 1:length(num_wlr)){
         xyall <- xyall[complete.cases(xyall$date_time),] # ensure there are no nulls in the timestamp
         write.csv(xyall, file=wlr.null.csv, row.names=FALSE)
         assign(wlr.null.onemin, xyall)
+    } else {
+        cat(paste("No null files for WLR station", num_wlr[i], sep=" "), sep="\n")
     }
 }

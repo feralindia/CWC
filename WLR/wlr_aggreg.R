@@ -2,6 +2,7 @@
 
 ## foreach(i=1:length(num_wlr)) %dopar% {
 for(i in 1:length(num_wlr)){
+    cat(paste("Aggregating data for WLR station", num_wlr[i], sep=" "), sep="\n")
     wlr.merged.onemin<-paste("wlr_", num_wlr[i],"merged", sep="")
     wlr.merged <- get(wlr.merged.onemin)
     wlr.merged$date_time<-as.POSIXct(wlr.merged$date_time, tz="Asia/Kolkata")
@@ -38,4 +39,5 @@ for(i in 1:length(num_wlr)){
     ggsave(wlrplot, filename=pngfile, width=297, height=210, units="mm")
     ggsave(wlrplot, filename=epsfile, width=297, height=210, units="mm")
     wlrplot
+    cat(paste("WLR station", num_wlr[i], "processed", sep=" "), sep="\n")
 }

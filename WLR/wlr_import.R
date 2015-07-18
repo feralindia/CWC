@@ -4,15 +4,18 @@
 ## Original written by Srinivas V, modified by RSB.
 ## foreach(i=1:length(num_wlr)) %dopar% {
 for(i in 1:length(num_wlr)){
+    cat(paste("Importing WLR station", num_wlr[i], sep=" "), sep = "\n")
     wlrtab<-paste("wlr_", num_wlr[i], sep="")
     wlrtab.cal<-paste("wlr_", num_wlr[i],"_new", sep="") ## changed on Sept '14
     wlr.fill.onemin<-paste("wlr_", num_wlr[i],"onemin", sep="")
     wlrdir<-paste(wlrdatadir, wlrtab, sep="")
     filelist <- list.files(wlrdir, full.names=TRUE, ignore.case=TRUE, pattern='CSV$')
+    filename <- list.files(wlrdir, full.names=FALSE, ignore.case=TRUE, pattern='CSV$')
     wlronemincsv <- paste(csvdir, num_wlr[i], "_onemin.csv", sep="")
     xyall <- as.data.frame(matrix(ncol = 6))
     names(xyall) <- c("scan",  "date", "time", "raw", "cal","date_time")
     for (j in 1:length(filelist)){
+        cat(paste("Reading in data file", filename[j], sep=" "), sep = "\n")
         xy <- read.csv(file=filelist[j], skip=8, header=FALSE, strip.white = TRUE, blank.lines.skip = TRUE)
         names(xy)<- c("scan", "date", "time", "raw", "cal")
         xy$date <- gsub(pattern="-", replacement="/", x=xy$date)
@@ -39,11 +42,10 @@ for(i in 1:length(num_wlr)){
     xx2 <-  xx2[!duplicated(xx2$date_time), ] # remove duplicates
     ## IMPORTANT this will remove data from xyall unless the merge
     ## lists xyall first.
-    ## xx2$cal[is.na(xx2$cal)] <- -999
-## FIX HERE  THE TIME SERIES COMMAND BELOW FLIPS THE DATE_TIME TO GMT
     ## see  <https://stat.ethz.ch/pipermail/r-devel/2010-August/058112.html>
     xx3<-as.timeSeries(xx2)
-## financial centre to be set in wlr_nlg and wlr_agn    setFinCenter(xx3) <- "Asia/Calcutta"
+    ## financial centre to be set in wlr_nlg and wlr_agn    setFinCenter(xx3) <- "Asia/Calcutta"
+    ## ensure that the calibrated values are not NA
     xx3<-interpNA(xx3, method="before")
     xx3$date_time<-row.names(xx3)
     mmx<-as.data.frame(xx3)
@@ -53,4 +55,5 @@ for(i in 1:length(num_wlr)){
     ## write.csv(mmx, file=wlronemincsv, row.names=FALSE) ## changed sept 14
     ## should not be written causes confusion as null hasn't been merged yet
     assign(wlr.fill.onemin, mmx) # assign the output to an R object named after each wlr
+    cat(paste("Finished importing data for WLR station", num_wlr[i], sep=" "), sep = "\n")
 }

@@ -11,7 +11,7 @@ library(ggplot2) # for plotting
 ## XInitThreads
 
 ## Set directory locations - fix for your system
-rdata.dr <- "/home/udumbu/rsb/OngoingProjects/CWC/rdata/WLR/"
+rdata.dr <- "/home/udumbu/rsb/GitHub/CWC/WLR/"
 csvdir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/wlr/csv/"
 figdir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/wlr/fig/"
 site <- "nilgiris."
@@ -21,7 +21,7 @@ dir_calib_res<-"/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/wlr/calibres/
 wlr.nulldir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/wlr/null/" # null dir location
 ## --- set the wlr on which you want to run the script
 # num_wlr<- c(108:112)
-num_wlr <- 108 ## c(101:112, "103a", "104a","105a", "106a") # wlr names
+num_wlr <- c(101:114, "103a", "104a", "106a") # wlr names
 ## num_wlr <- c("103a", "104a","105a", "106a") # wlr names
 loggers <- paste("wlr_", num_wlr, sep="") # logger name
 tabname <- paste(site, loggers, sep="") # name of pg wlr table
