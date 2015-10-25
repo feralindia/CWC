@@ -1,6 +1,6 @@
 ## This script sets the environment for Nilgiris
 
-wk.dr <- "/home/udumbu/rsb/OngoingProjects/CWC/rdata/RatingCurves/" # default working dir
+wk.dr <- "/home/udumbu/rsb/GitHub/CWC/RatingCurves/" # default working dir
 setwd(wk.dr) # set the working directory
 site <- "Nilgiris"
 
@@ -12,8 +12,8 @@ source("disch_ExtractStage.R", echo=TRUE) # get stage values from wlr
 ## use only when necessary
 ## source("disch_pyg_figs.R")  # draw velocity profiles for manual analysis.
 source("disch_pyg.R", echo=TRUE) # process pygmy data
-source("disch_flt.R", echo=TRUE) # process float data
-source("disch_sdg.R", echo=TRUE) # process float data
+# source("disch_flt.R", echo=TRUE) # process float data
+source("disch_appendSDG.R", echo=TRUE) # append salt dilution gauging results
 source("disch_fig.R", echo=TRUE) # draw figures
 
 

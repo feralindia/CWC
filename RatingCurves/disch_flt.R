@@ -6,12 +6,12 @@ stn.id <- gsub(pattern="_", replacement="", flt.loc)
 for (i in 1:length(flt.drlst)){
 ## res <- as.data.frame(matrix(ncol = 11)) # create matrix of 10 cols to hold results
 ## names(res) <- c("S.No", "site", "obsfile", "stage", "areaR1", "areaR2", "areaR3", "velR1", "velR2", "velR3", "avg_disch") # give names to cols 
-    res <- as.data.frame(matrix(ncol = 6)) # 5 col matrix to hold final results
-    names(res) <- c("Sl.No.", "site", "obs.file", "method", "stage", "avg.disch")
+    res <- as.data.frame(matrix(ncol = 7)) # 5 col matrix to hold final results
+    names(res) <- c("Sl.No.", "site", "obs.file", "method", "stage", "avg.disch", "timestamp")
 ## resSD <- as.data.frame(matrix(ncol = 3)) # create matrix of 3 cols to hold results
 ## names(resSD) <- c("S.No", "Stage", "Discharge")
-    resSD <- as.data.frame(matrix(ncol = 6)) # 5 col matrix to hold final results
-    names(resSD) <- c("Sl.No.", "site", "obs.file", "method", "stage", "avg.disch")
+    resSD <- as.data.frame(matrix(ncol = 7)) # 5 col matrix to hold final results
+    names(resSD) <- c("Sl.No.", "site", "obs.file", "method", "stage", "avg.disch", "timestamp")
     
     cx_flt.flst <- list.files(path=cx_flt.drlst[i], pattern=".csv$", ignore.case=TRUE)
     cx_flt.fldirlst  <- list.files(path=cx_flt.drlst[i], full.names=TRUE, pattern=".csv$", ignore.case=TRUE)
@@ -52,10 +52,11 @@ for (i in 1:length(flt.drlst)){
     dev.off() # dump the data into the png driver
         
         ##---- chunk 8: Bung in initial results
+        stage <- tmp.mrg$cal[[1]]
+        timestamp <- tmp.mrg$dt.tm[[1]]
         res[j, 1] <- j
         res[j, 2] <- flt.loc[i]
         res[j, 3] <- cx_flt.flst[j]###
-        stage <- tmp.mrg$cal[[1]]
         res[j, 4] <- "float"
         res[j, 5] <- stage
         ## resSD[j, 1] <- j
@@ -81,6 +82,7 @@ for (i in 1:length(flt.drlst)){
         ## res[j, 11] <- discharge###
         res[j, 6] <- discharge
         ## resSD[j, 3] <- discharge
+        res[j, 7] <- timestamp
         
         ##---- chunk 10: Clean up and repeat for every cx and velocity value
         rm(tmp, crd, rw.crd, gpc.crd, mn, figout) # clean up

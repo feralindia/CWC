@@ -16,6 +16,7 @@ for (j in 1: length(type)){
     loc.dirs <-  list.dirs(paste(disch.dr, type[j], sep=""), recursive=FALSE)
     for (k in 1:length(loc.dirs)){
         cx.files <- list.files(loc.dirs[k], pattern="csv$", ignore.case=TRUE, include.dirs=FALSE, full.names=TRUE)
+        cx.filenames <- list.files(loc.dirs[k], pattern="csv$", ignore.case=TRUE, include.dirs=FALSE, full.names=FALSE)
         
         for (l in 1: length(cx.files)){
             cxt <- read.csv(cx.files[l], header=FALSE)
@@ -43,6 +44,7 @@ ts.cxall$dt.tm<-as.POSIXct(ts.cxall$dt.tm, format="%Y-%m-%d %I:%M:%S %p")
         stn.csv$date_time<-as.POSIXct(stn.csv$date_time)
         stn.csv <- subset(stn.csv, select=c("raw", "cal", "date_time"))
         names(stn.csv) <- c("raw", "cal", "dt.tm")
+        cat(paste("Merging station file:", oneminfile[m], "with stage.", sep=" "), sep="\n")
         tmp.ext <- merge(stn.csv, ts.cx.stn, by="dt.tm", all=FALSE)
         tmp.ext <-  tmp.ext[!duplicated(tmp.ext), ]
         stn.obj <- paste(stn.id[m], ".stage", sep="")

@@ -9,10 +9,10 @@ pyg.dr <- paste(disch.dr, "pyg", sep="") # pygmy current meter data folder
 flt.dr <- paste(disch.dr, "flt", sep="") # float method data folder 
 csv.dr <- paste(disch.dr, "csv", sep="") # output csv files
 fig.dr <- paste(disch.dr, "fig", sep="") # output figures
-cx.dr <- paste(disch.dr, "cx_pyg", sep="") # profile data folder
-cx_flt.dr <- paste(disch.dr, "cx_flt", sep="") # profile data folder
-cxfix.dr <- paste(disch.dr, "cx_sec", sep="") # profile data folder
-shape.dr <- paste(disch.dr, "cx_shape", sep="") # profile data folder
+cx.dr <- paste(disch.dr, "cx_pyg", sep="") # profile data folder for pygmy current meter
+cx_flt.dr <- paste(disch.dr, "cx_flt", sep="") # profile data folder for float method (to be discarded)
+cxfix.dr <- paste(disch.dr, "cx_sec", sep="") # profile data folder fixed manually
+shape.dr <- paste(disch.dr, "cx_shape", sep="") # profile data folder shape files for checking
 wlr.dir <- paste(data.dir, site, "/wlr/csv/", sep="") # wlr data output
 
 pyg.loc <- list.dirs(path=pyg.dr, recursive=FALSE, full.names=FALSE)
@@ -64,4 +64,25 @@ del.cxres <- dir(path=paste(disch.dr, "cx_pyg_res", sep=""), full.names=TRUE, no
 del.cxres <- substrRight(del.cxres, 17)
 todel <- c("csv", "fig", "stage", "cx_pyg_res", del.cxres)
 lapply(todel, delfiles)
+
+## list missing files between the velocity measures and cross section
+if(site == "Nilgiris"){
+    pyg.fl <- list.files(pyg.dir, full.names=TRUE)
+    pyg.fl <- substr(pyg.fl, start=62, stop=nchar(pyg.fl))
+    cx.pyg.fl <- list.files(cx.drlst, full.names=TRUE)
+    cx.pyg.fl <- substr(cx.pyg.fl, start=65, stop=nchar(cx.pyg.fl))
+    missing.pyg.files <- cx.pyg.fl[!(cx.pyg.fl %in% pyg.fl)]
+    missing.cx.files <- pyg.fl[!(pyg.fl %in% cx.pyg.fl)]
+} else if(site == "Aghnashini") {
+    pyg.fl <- list.files(pyg.dir, full.names=TRUE)
+    pyg.fl <- substr(pyg.fl, start=64, stop=nchar(pyg.fl))
+    cx.pyg.fl <- list.files(cx.drlst, full.names=TRUE)
+    cx.pyg.fl <- substr(cx.pyg.fl, start=67, stop=nchar(cx.pyg.fl))
+    missing.pyg.files <- cx.pyg.fl[!(cx.pyg.fl %in% pyg.fl)]
+    missing.cx.files <- pyg.fl[!(pyg.fl %in% cx.pyg.fl)]
+}
+
+if(length(missing.pyg.files) > 0 || length(missing.cx.files) > 0){
+    stop("The numberof velocity readings and cross sections don't match")
+}
 
