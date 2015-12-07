@@ -51,11 +51,11 @@ execGRASS("v.what.vect",
           )
 execGRASS("v.out.ogr",
           flags=c("e", "overwrite"),
-          parameters=list(input='selbasins@elevation', dsn='./', format='ESRI_Shapefile', olayer='tbrg_basins')
+          parameters=list(input='selbasins@elevation', output=dsn, format='ESRI_Shapefile', olayer='tbrg_basins')
           )
 execGRASS("v.out.ogr",
           flags=c("s", "e", "overwrite"),
-          parameters=list(input='tbrg_mar14@gps', dsn='./', format='ESRI_Shapefile', olayer='tbrg_wpt')
+          parameters=list(input='tbrg_mar14@gps', output=dsn, format='ESRI_Shapefile', olayer='tbrg_wpt')
           )
 
 

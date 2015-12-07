@@ -1,5 +1,5 @@
 ##setting work directory##
-setwd("C:/Users/Vivekr/Desktop/slug injection/Nilgiris26-27Aug") 
+## setwd("C:/Users/Vivekr/Desktop/slug injection/Nilgiris26-27Aug") 
 
 ## reading all files from the diectory##
 Nilgiris = list.files(pattern="*.csv")

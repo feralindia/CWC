@@ -5,6 +5,8 @@ for(i in 1:length(num_wlr)){
     wlr.merged.onemin<-paste("wlr_", num_wlr[i],"merged", sep="")
     wlr.raw <- get(wlr.fill.onemin)
     raw <- subset(wlr.raw, select=c("raw", "cal", "date_time"))
+    ## ensure there are no duplicated dates
+    ## raw[!duplicated(raw$date_time), ]
     ## raw$date_time <- as.POSIXct(raw$date_time, tz="Asia/Kolkata")
     if (exists(wlr.null.onemin)){
         cat(paste("Merging null data for WLR station", num_wlr[i], sep=" "), sep="\n")

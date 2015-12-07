@@ -3,18 +3,19 @@
 library(stringr) # to manipulate strings
 library(timeSeries) # for aggregation
 library(ggplot2) # for plotting
+library(scales) ## for manipulating dates on ggplot2
 ## Set directory locations - fix for your system
-rdata.dr <- "/home/udumbu/rsb/OngoingProjects/CWC/rdata/"
+rdata.dr <- "/home/udumbu/rsb/GitHub/CWC/WLR/"
 csvdir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Aghnashini/wlr/csv/"
 figdir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Aghnashini/wlr/fig/"
 site <- "agnashini."
 wlrdatadir<-"/home/udumbu/rsb/OngoingProjects/CWC/Data/Aghnashini/wlr/raw/" # raw data
 dir_calib_wlr<-"/home/udumbu/rsb/OngoingProjects/CWC/Data/Aghnashini/wlr/calib/"  # calibration
 dir_calib_res<-"/home/udumbu/rsb/OngoingProjects/CWC/Data/Aghnashini/wlr/calibres/" # calibration results
-## --- set the wlr on which you want to run the script
 wlr.nulldir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Aghnashini/wlr/null/" # null dir location
+## num_wlr <- c("020a")
  ##num_wlr<- "003"   ## c("001","002", "003")
-num_wlr <- c("001","002","003","004","005","006","010","011","020","021","01b","01c", "03b", "04b", "05b") 
+num_wlr <- c("001","002","003","004","005","006","010","011","020","021","01b","01c", "01d", "03b", "03b", "03c", "04b", "05b", "06b", "020a")
 loggers <- paste("wlr_", num_wlr, sep="")
 tabname <- paste(site, loggers, sep="") # name of pg wlr table
 tabonemin <- paste(tabname, "_1_minute", sep="")

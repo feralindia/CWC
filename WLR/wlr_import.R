@@ -19,8 +19,21 @@ for(i in 1:length(num_wlr)){
         xy <- read.csv(file=filelist[j], skip=8, header=FALSE, strip.white = TRUE, blank.lines.skip = TRUE)
         names(xy)<- c("scan", "date", "time", "raw", "cal")
         xy$date <- gsub(pattern="-", replacement="/", x=xy$date)
-        xy$date <- as.Date(xy$date, format="%d/%m/%Y")
-        xy<-transform(xy, date_time = paste(date, time, sep=' '))
+        ## If statement to check for date format
+        ## convert date to a set of strings using "-" as a separator.
+        brk.date <- strsplit(xy$date, split="/")
+        brk.date <- head(brk.date[[2]])
+        if(nchar(brk.date[1])==2) {
+               dt.format <- "%d/%m/%Y"} else {
+                   dt.format <- "%Y/%m/%d" }
+        if(nchar(brk.date[1])==2 & nchar(brk.date[3])==2)
+        {
+            stop(paste("Dates for file ", filename[j], "need fixing.", sep=""))
+        }
+        
+        xy$date <- as.Date(xy$date, format=dt.format)## "%d/%m/%Y")
+           xy<-transform(xy, date_time = paste(date, time, sep=' '))
+           xy <- xy[complete.cases(xy),]
         xy$date_time<-as.POSIXct(xy$date_time, tz="Asia/Kolkata")
         xyall <- rbind(xyall, xy)
     }

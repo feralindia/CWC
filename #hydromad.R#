@@ -1,4 +1,3 @@
-library(spgrass6)
 ##----- This section is for Hydromad--- ###
 ##-- Taken from the hydromad tutorial - citation to be added
 library(hydromad)

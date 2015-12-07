@@ -17,7 +17,7 @@ for (i in 1:length(pyg.dir)){
     cx.fldirlst <- gsub(pattern="/pyg/", replacement="/cx_pyg/", x=pyg.fldirlst)
     flst <- list.files(path=pyg.dir[i], pattern=".csv$", ignore.case=TRUE) # same for pyg, cx and cx_fix
 
-    
+    cat(paste("Processing files for pygmy velocity meter:", pyg.locnum[i], sep=" "), sep="\n")
     ## pyg.flst <- list.files(path=pyg.dir[i], pattern=".csv$", ignore.case=TRUE) # nonsensical    
     ## cx.flst <- gsub(pattern="/pyg/", replacement="/cx_pyg/", x=pyg.flst) # nonsensical
     ## cx.fixlst <- gsub(pattern="/pyg/", replacement="/cx_pyg/", x=pyg.flst) # nonsensical Dec '14
@@ -30,6 +30,7 @@ for (i in 1:length(pyg.dir)){
     
     ## loop for profiles and velocities
     for (j in 1: length(flst)){  # changed from cx.flst Dec 14
+        cat(paste("Processing:", flst[j], sep=" "), sep="\n")
         tmp <- read.csv(file=cx.fldirlst[j], header = T, skip=5) # read in the csv
         crd <- subset(tmp, select=c(Length, Depth)) # extract coordinates
         rw.crd <- nrow(crd)
@@ -117,4 +118,6 @@ for (i in 1:length(pyg.dir)){
   
 }
  rm(tmp.res,tmp, tmp.mrg, tmp.pyg, crd, rw.crd, gpc.crd, mn, cx.figout, max.xy, min.xy, max.x, min.y, step.x, step.y, cx.csv, cx.fig)
+
 }
+cat("Finished processing figures for manual section selection", sep="\n")

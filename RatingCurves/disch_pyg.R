@@ -12,23 +12,30 @@ writeshape <- function(coords, cx.shapeout){
 }
 
 for (i in 1:length(pyg.dir)){
-    res <- as.data.frame(matrix(ncol = 6)) # 5 col matrix to hold final results
-    tmp.res <- as.data.frame(matrix(ncol = 9)) # 8 col matrix to hold temporary results
-    prf.res <- as.data.frame(matrix(ncol = 9)) # 8 col matrix to hold profile results
+    cat(paste("Processing", pyg.id[i], sep=" "), sep="\n")
+    res <- as.data.frame(matrix(ncol = 7)) # 5 col matrix to hold final results
+    tmp.res <- as.data.frame(matrix(ncol = 10)) # 8 col matrix to hold temporary results
+    prf.res <- as.data.frame(matrix(ncol = 10)) # 8 col matrix to hold profile results
     ## give names to cols
-    names(res) <- c("Sl.No.", "site", "obs.file", "method", "stage", "avg.disch")
-    names(tmp.res) <- c("Sl.No.", "site", "obs.file", "method", "stage", "cx.no", "cx.area", "avg.vel", "avg.disch")
-    names(prf.res) <- c("Sl.No.", "site", "obs.file", "method", "stage", "cx.no", "cx.area", "avg.vel", "avg.disch")
+    names(res) <- c("Sl.No.", "site", "obs.file", "method", "stage", "avg.disch","timestamp")
+    names(tmp.res) <- c("Sl.No.", "site", "obs.file", "method", "stage", "cx.no", "cx.area", "avg.vel", "avg.disch","timestamp")
+    names(prf.res) <- c("Sl.No.", "site", "obs.file", "method", "stage", "cx.no", "cx.area", "avg.vel", "avg.disch","timestamp")
     
     ## @knitr chunk2
-    
+    ## ENSURE THE CX.FLST AND CXX.FIXFLST HAVE THE SAME NUMBER OF ENTERIES
     cx.flst <- list.files(path=cx.drlst[i], pattern=".csv$", ignore.case=TRUE)
 cx.fldirlst  <- list.files(path=cx.drlst[i], full.names=TRUE, pattern=".csv$", ignore.case=TRUE)
     cx.fixflst <- list.files(path=cxfix.drlst[i], pattern=".csv$", ignore.case=TRUE)
 cx.fixfldirlst  <- list.files(path=cxfix.drlst[i], full.names=TRUE, pattern=".csv$", ignore.case=TRUE)
 pyg.flst <- list.files(path=pyg.dir[i], pattern=".csv$", full.names=TRUE, ignore.case=TRUE)
+   
     ## loop for profiles and velocities
-    for (j in 1: length(cx.flst)){ 
+    for (j in 1: length(cx.flst)){
+        if(cx.flst[j]==cx.fixflst[j]){
+        cat(paste("Processing file:", cx.flst[j], pyg.loc[i],  sep=" "), sep="\n")
+    } else {
+        stop(paste("File name mismatch, pygmy and cx file is", cx.flst[j], "but cx_sec file is", cx.fixflst[j]))
+    }
         tmp <- read.csv(file=cx.fldirlst[j], header = T, skip=5) # read in the csv, skip first 5 lines.
         crd <- subset(tmp, select=c(Length, Depth)) # extract coordinates
         rw.crd <- nrow(crd)
@@ -49,7 +56,11 @@ pyg.flst <- list.files(path=pyg.dir[i], pattern=".csv$", full.names=TRUE, ignore
         tmp.mrg <- tmp.mrg[1,] ## uncomment if you want only one row
         if (nrow(tmp.mrg) > 0){
             stage <- tmp.mrg$cal ##[[1]]
-        }  else {stage <- NA}
+            timestamp <- tmp.mrg$dt.tm
+        }  else {
+            stage <- NA
+            timestamp <- NA
+        }
         ## @knitr chunk3
         ## initialise png dump for cx
         
@@ -104,7 +115,7 @@ pyg.flst <- list.files(path=pyg.dir[i], pattern=".csv$", full.names=TRUE, ignore
             ## for manual cross sections (cxfix)
       
 
-        tmp.cxfix <- read.csv(file=cx.fixfldirlst[j], header = T)
+        tmp.cxfix <- read.csv(file=cx.fixfldirlst[j], header = T) ## CHECK FILE NAME
         n.rect.cxfix <- nrow(tmp.cxfix)
 
         shp.coords <- as.data.frame(matrix(ncol = 3, nrow=0))
@@ -166,6 +177,7 @@ pyg.flst <- list.files(path=pyg.dir[i], pattern=".csv$", full.names=TRUE, ignore
             ## tmp.res[k, 6] <- (ar.rect + ar.crd - ar.rectUcrd)/10000 #  Divide by 10000 to convert to metres from cm
             tmp.res[k, 8] <- sorted[k, 2]
             tmp.res[k, 9] <- tmp.res[k, 7] * tmp.res[k, 8] ## stage into area
+            tmp.res[k,10] <- timestamp
             rm(ptlist)
         }
         ids <- unique(shp.coords$Id)
@@ -184,70 +196,7 @@ pyg.flst <- list.files(path=pyg.dir[i], pattern=".csv$", full.names=TRUE, ignore
         res[j, 5] <- stage
         ## average out the reading for tmp.res to a single reading
         res[j, 6] <- sum(tmp.res$avg.disch) ## CHECK FROM HERE
-       
-### Need to change the recording of results here. HERE Oct, 2014
-        
-        ##---- chunk 8: Bung in initial results
-        ##  res[j, 1] <- j
-        ## res[j, 2] <- pyg.loc[i]
-        ##  res[j, 3] <- cx.flst[j]
-        ##  res[j, 4] <- stage
-        
-        
-        ##---- chunk 9: Calculate flow rates for each reach
-        ## It is assumed that the number of stream profiles and velocity measures are the same
-        ## site.dr <- paste(pyg.dr,"/",  pyg.loc[i], sep="")
-        ## pyg.flst <- list.files(path=site.dr, pattern=".csv$", full.names=TRUE, ignore.case=TRUE)
-###  pyg.flst <- list.files(path=pyg.dir[i], pattern=".csv$", full.names=TRUE, ignore.case=TRUE)
-###  tmp.pyg <- read.csv(file=pyg.flst[j], header = T, skip=5) # read in the csv, skip first 5 lines.
-        ## vel <- subset(tmp.pyg, select=c(velR1, velR2, velR3)) # extract reach velocity readings FROM HERE
-        ## Note: naming is alpha numerical such as a6, b6, a2, a8, b2, b8 where 6 is 60% height, 2 is 20% and 8, 80%
-        ##  moved up so that it could be added to the tmp.res ## Oct, '14
-        ## vel6 <- subset(tmp.pyg, subset=(substr(Sl.No.,2,2)==6 | (substr(Sl.No.,2,2)=="")), select=c(vel.rd1, vel.rd2, vel.rd3)) 
-        ## vel2 <- subset(tmp.pyg, subset=(substr(Sl.No.,2,2)==2), select=c(vel.rd1, vel.rd2, vel.rd3))#####
-        ## vel8 <- subset(tmp.pyg, subset=(substr(Sl.No.,2,2)==8), select=c(vel.rd1, vel.rd2, vel.rd3))
-        ## need to add an if statement as such
-        ## count Sl.No. with duplicate entries. These use the two point method.
-        ## The subsequent code will need to be turned into a loop to handle raw data which
-        ## covers more than three reaches and more than a single
-        ## depth measure (.8 and .2 instead of .6 of stream depth).
-        ## res[j, 8] <- mean(vel$velR1) # mean for reach 1
-        ## MAJOR CORRECTION IN SCRIPT
-        ## corrected this is reading 1, reading 2 and reading 3 not reach
-        ## res[j, 9] <- mean(vel$velR2) # mean for reach 2
-        ## res[j, 10] <- mean(vel$velR3) # mean for reach 3
-        ## Above three lines can be changed as below
-        ##  if(nrow(vel6)>0){
-        ##     avgvel6 <- apply(vel6, 1, mean)
-        ## } else {vel6 <- NULL}
-        ##     if(nrow(vel2)>0){
-        ##         vel28 <- (vel2 + vel8)/2
-        ##         avgvel28 <- apply(vel28, 1, mean)
-        ##     } else {vel28 <- NULL}
-        ##     ## sort according to names so sequence is correct
-        ##     avgvel <- c(avgvel6,avgvel28)
-        ##     seq <- as.numeric(names(avgvel))
-        ##     seq.avgvel <- as.data.frame(cbind(seq,avgvel))
-        ##     sorted <- seq.avgvel[with(seq.avgvel, order(seq,avgvel)),]
-        ##     avgvel <- sorted$avgvel
-        
-        ## res[j, 8:10] <- avgvel
-        ## bung in the discharge values NEED TO FIX FROM HERE
-
-
-
-        ## discharge <- (res[j, 5]*res[j, 8])+(res[j, 6]*res[j, 9])+(res[j, 7]*res[j, 10])
-        
-        ## res[j, 11] <- discharge
-        
-        ## resSD[j, 1] <- j
-        ## resSD[j, 2] <- stage
-        
-        ## resSD[j, 3] <- discharge
-
-        
-        ##---- chunk 10: Clean up and repeat for every cx and velocity value
-        ## rm(tmp, tmp.mrg, tmp.pyg, crd, rw.crd, gpc.crd, mn, figout, max.xy, min.xy, max.x, min.y, step.x, step.y) # clean up
+        res[j, 7] <-  timestamp
     }
 
 

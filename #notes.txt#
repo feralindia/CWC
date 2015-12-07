@@ -1,0 +1,102 @@
+Turc method for PET to be incorporated
+Work on catchment delienation using ASTER and toposheets
+see if we use the "cumsum" r function or the "date_trunc" sql command
+
+Two options exist for SQL statements for grouping the data into different intervals.
+Using the date_trunc function, however limited to specified intervals only.
+## -----
+select date_trunc('minutes',a.date_time) as minutes, 
+sum(a.volume * b.mm_pertip *10) AS mm_rain
+FROM nilgiris.tbrg_101 a, nilgiris.tbrg_calib b
+WHERE b.tbrg_id='tbrg_101'
+GROUP BY minutes
+ORDER BY minutes;
+
+Using the epoch function to break the value down to milliseconds and then group by rounding:
+
+SELECT
+    TIMESTAMP WITHOUT TIME ZONE 'epoch' +
+    INTERVAL '1 second' * round(extract('epoch' from a.date_time) / 300) * 300
+    as date_time, 
+    sum(a.volume * b.mm_pertip *10) AS mm_rain
+FROM nilgiris.tbrg_101 a, nilgiris.tbrg_calib b
+WHERE b.tbrg_id='tbrg_101'
+GROUP BY round(extract('epoch' from a.date_time) / 300)
+ORDER BY date_time;
+
+This statement works in hours - easier to understand.
+SELECT
+    TIMESTAMP WITHOUT TIME ZONE 'epoch' +
+    INTERVAL '1 second' * round(extract('epoch' from a.date_time)/300) * 600
+    as date_time, 
+    sum(a.volume * b.mm_pertip *1000) AS mm_rain
+FROM nilgiris.tbrg_101 a, nilgiris.tbrg_calib b
+WHERE b.tbrg_id='tbrg_101'
+GROUP BY round(extract('epoch' from a.date_time)/300)
+ORDER BY date_time;
+
+## Linux statement to copy a file across to multiple directories
+echo tbrg_{102..130} | xargs -n 1 cp ./tbrg_101/null_12062013_13062013.dat
+## Linux loop to convert the names of these files so the extension is removed
+for subdir in *; do mv $subdir/null_12062013_13062013.dat  $subdir/null_12062013_13062013; done;
+## Linux command to remove files from all subdirectories
+find . -name \* -type f -print0 | xargs -0 rm -f 
+## Command to copy all files in sub folders to a given folder
+cp TBRG\ 030/*/* ../../raw/tbrg_030 
+## Command to remove inverted commas from list of files in sub-folders
+sed -i 's/["]//g' */*/* 
+## NOTE only use the -i for the actual
+procedure, run it first without -i to see if it works.
+## Linux command to find date errors in files and dump them to a file errors.txt
+grep -Hrn '/01,' */* >errors.txt
+## Replace spaces with underscore in sub directories
+find ./ -depth -name "* *" -execdir rename 's/ /_/g' "{}" \;
+
+## apply example
+for(i in 1:6) {
+  rnd <- paste("rnd", i, sep="") # nam is the names of random numbers
+  assign(rnd, sample(1:50, 15, replace=F))
+  mn <- paste("mn", i, sep="") # mn is the mean of the numbers
+  assign(mn, mean(sample(1:50, 15, replace=F)))
+  mdn <- paste("mdn", i, sep="") # mdn is the median
+  assign(mdn, median(sample(1:50, 15, replace=F)))
+  sdev <- paste("sdev", i, sep="") # sd is the standard devi ation
+  assign(sdev, sd(sample(1:50, 15, replace=F)))
+}
+
+## To change the code from one system to another
+file --mime [filename] # find out the encoding of a file
+recode utf-16le [filename] # recode from utf-16le to default system (utf-8)
+
+## compress files
+tar czf calib.tar.gz [file1] [file2]
+
+
+## Replace tab seperated files with commas
+sed 's/\t/,/g' input_file > output_file
+## This will keep the input file unchanged and will create a new file output_file with the changes.
+##If you want to change the input file itself without creating a new file you can use -i option to sed to do inplace changes:
+sed -i 's/\t/,/g' input_file 
+## Replace - with / using sed
+sed -i 's/-/\// g' c.csv
+## rename file by adding underscore after r in wlr
+## remove the n to run the actual command
+rename 's/r/r_/g' * -vn
+## add underscore between the letter s and number in bs##
+rename 's/s/s_/g' * -vn
+
+
+## change file names to lowercase
+find ./ -depth -exec rename 's/(.*)\/([^\/]*)/$1\/\L$2/' {} \;
+
+
+## copy directories but not the files inside them
+## from <http://stackoverflow.com/questions/4073969/copy-folder-structure-sans-files-from-one-location-to-another>
+
+find . -type d >dirs.txt
+
+xargs mkdir -p <dirs.txt
+
+
+### copy directory structure and just the files with the specified extension - in this case *MTL.txt
+find . -name '*MTL.txt' | cpio -pdm /home/pambu/rsb/tmp/MTLflist

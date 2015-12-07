@@ -1,4 +1,5 @@
 
+
 ##---- Chunk 3 - create the DEM
 execGRASS("g.mapset",
           flags="c", 
@@ -6,7 +7,7 @@ execGRASS("g.mapset",
 ) # switch to elevation
 execGRASS("db.connect", flags="d")
 execGRASS("g.region", flags="p",
-	parameters=list(vect='tmp_tbrg_hull_buffer@PERMANENT', res='10')
+	parameters=list(vector='tmp_tbrg_hull_buffer@PERMANENT', res='10')
 ) # set region to vect res to 10
 execGRASS("r.mask",
           flags="overwrite",
@@ -15,7 +16,7 @@ execGRASS("r.mask",
 execGRASS("v.to.rast",
 	flags=c("d", "overwrite"),
 	parameters=list(input='soi_contours@PERMANENT', type='line', 
-                  output='soi.contour', use='attr', attrcolumn='contour_li')
+                  output='soi.contour', use='attr', attribute_column='contour_li')
 ) # rasterise contours
 execGRASS("r.thin",
 	flags="overwrite",
