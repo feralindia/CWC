@@ -18,7 +18,11 @@ source("disch_ExtractStage.R", echo=TRUE) # get stage values from wlr
 
 source("disch_pyg.R", echo=TRUE) ## process pygmy data
 
+<<<<<<< HEAD
 ## source("disch_flt.R", echo=TRUE) ## process float data
+=======
+source("disch_flt.R", echo=TRUE) ## process float data
+>>>>>>> 789b06ffaa372221217ba5c7e04b6e6e03f250b3
 
 source("disch_sdg.R", echo=TRUE) ## process SDG data
 
