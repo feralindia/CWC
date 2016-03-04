@@ -1,5 +1,5 @@
 # CWC
-R scripts to process rain gauge data for the CWC project.
+R scripts to process hydro-met data for the CWC project.
 There are number of related scripts which basically run the following steps:
 
 * Process data from loggers and convert it into CSV files with corrected (time zone is IST) time stamps and uni
