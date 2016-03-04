@@ -1,3 +1,4 @@
+## This routine is called by the disch_nlg, disch_agn and disch.R scripts
 ## Extract the stage for a given WLR given the data and time of
 ## the stream profile and put in csv file and r object
 ## Need to run separately for nilgiris and aghnashini as different

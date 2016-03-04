@@ -1,6 +1,0 @@
-## This script sets the environment for Nilgiris
-wk.d <- "/home/udumbu/rsb/OngoingProjects/CWC/rdata"
-prf.dr <- "~/OngoingProjects/CWC/Data/Nilgiris/profile/"
-vel.dr <- "~/OngoingProjects/CWC/Data/Nilgiris/vel/"
-pyg.dr <- "~/OngoingProjects/CWC/Data/Nilgiris/vel/pyg/"
-flt.dr <- "~/OngoingProjects/CWC/Data/Nilgiris/vel/flt/"

@@ -19,13 +19,13 @@ for(i in 1:length(dirlist)){
     cat(paste("Started processing", dirlist[i], sep=" "), sep = "\n")
     
     fig.dir <- paste("/home/udumbu/rsb/OngoingProjects/CWC/Data/", site, "/wlr/check/", dirlist[i], "/", sep="")
-<<<<<<< HEAD
-    filelist <- list.files(path=dirpath[i], full.names=FALSE, pattern="*.csv$")
-    filepath <- list.files(path=dirpath[i], full.names=TRUE, pattern="*.csv$")
-=======
-    filelist <- list.files(path=dirpath[i], full.names=FALSE)
-    filepath <- list.files(path=dirpath[i], full.names=TRUE)
->>>>>>> 789b06ffaa372221217ba5c7e04b6e6e03f250b3
+##<<<<<<< HEAD
+    filelist <- list.files(path=dirpath[i], full.names=FALSE, pattern="*.csv$", ignore.case=TRUE)
+    filepath <- list.files(path=dirpath[i], full.names=TRUE, pattern="*.csv$", ignore.case=TRUE)
+##=======
+##    filelist <- list.files(path=dirpath[i], full.names=FALSE)
+##    filepath <- list.files(path=dirpath[i], full.names=TRUE)
+##>>>>>>> 789b06ffaa372221217ba5c7e04b6e6e03f250b3
     filename <- gsub(pattern=".csv", replacement="", ignore.case=TRUE, x=filelist)
     dat <- as.data.frame(matrix(nrow=0, ncol=7))
     names(dat) <- c("Sl", "Date", "Time", "Raw", "Calibrated", "FileName", "Timestamp")
@@ -37,7 +37,7 @@ for(i in 1:length(dirlist)){
         rawdat$FileName <- filename[j]
         ## fix mixed up date formats before binding rows
         brk.date <- strsplit(as.character(rawdat$Date), split="/")
-        brk.date <- head(brk.date[[2]])
+        brk.date <- head(brk.date[[1]])
         if(nchar(brk.date[1]) <4) {
             dt.format <- "%d/%m/%Y"} else {
                 dt.format <- "%Y/%m/%d" }

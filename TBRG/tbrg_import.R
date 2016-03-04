@@ -15,7 +15,7 @@ for (j in 1:length(filelist)){
     if(min(tmp.year) < 2012){
         print(paste("File name ", filelist[j], " starts before 2012.", sep=""))
         stop("script stopped")
-    } else if (max(tmp.year) > 2015) {
+    } else if (max(tmp.year) > 2016) {
         print(paste("File name ", filelist[j], " ends after 2015.", sep=""))
         stop("script stopped")
     }

@@ -1,6 +1,0 @@
-## Get the timestamp for a given filename
-wkdir <- "./"
-setwd(wkdir)
-cxfile.list <- list.dirs(cxdir.loc, full.names=FALSE, recursive=FALSE)
-for (i in 1:length(pyg.name)){
-    

@@ -1,4 +1,4 @@
-## This scrips is meant to hold the variables for Nilgiris and call sub routines.
+ ## This script is meant to hold the variables for Nilgiris and call sub routines.
 library(timeSeries)
 library(ggplot2)
 
@@ -14,7 +14,7 @@ tbrg_nulldatadir<-"/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/tbrg/null"
 wkdir <-"/home/udumbu/rsb/GitHub/CWC/TBRG/"
 setwd(wkdir)
 ## Create tables to hold the tbrg and wlr datasets
-num_tbrg <- 101:126
+num_tbrg <- c(101:135, "110a")
 ## Ensure the diretories for the data are created
 ## in the console "mkdir tbrg_{101..130}" will create directories tbrg_101 to tbrg_130
 calibfile <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/tbrg/calib/nilgiri_tbrg_calibration_fnl.csv"

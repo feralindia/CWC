@@ -1,7 +1,15 @@
 ## Script modified from original written by Jagdish K and Vivek R.
+## Used to calculate the SDG based stages for loggers.
+## updated 16 feb 2016.
+##-- uncomment to select all stations
+## src.dirs <- list.dirs(path="/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/saltdilution/raw", recursive=FALSE)
+## stn.name <- list.dirs(path="/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/saltdilution/raw", full
+##                      .names=FALSE, recursive=FALSE)
+##--OR specify as below
+data.dir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/saltdilution/raw"
+stn.name <- c("wlr_108", "wlr_108a", "wlr_109",  "wlr_114")
+src.dirs <- paste(data.dir, stn.name, sep="/")
 
-src.dirs <- list.dirs(path="/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/saltdilution/raw", recursive=FALSE)
-stn.name <- list.dirs(path="/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/saltdilution/raw", full.names=FALSE, recursive=FALSE)
 wlr.csvdir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/wlr/csv/"
 dest.dir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/saltdilution/"
 rating.dir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/rating/csv"
@@ -113,11 +121,13 @@ for(h in 1:length(src.dirs)){  ## note the numbers
     res.out <- paste(csv.dir,"/", stn.name[h], ".csv", sep="")
     write.csv(Output,res.out,row.names=FALSE,quote=FALSE)
 
-
+    ## add file names to Discharge
+    Discharge$FileName <- file.names
+    
     ## plot using ggplot2
     library(ggplot2)
     timestamp <- as.POSIXct(Discharge$DateTime, origin="1970-01-01", tz="Asia/Kolkata")
-    sd.plot <- ggplot(data = Discharge, aes(Stage, Discharge, label=as.Date(as.POSIXct(timestamp, origin="1970-01-01")))) + 
+    sd.plot <- ggplot(data = Discharge, aes(Stage, Discharge,  label=FileName)) + ## label=as.Date(as.POSIXct(timestamp, origin="1970-01-01")))) + 
         geom_point(aes(position="jitter")) +
             geom_text(size=3,angle = 45, position="jitter") +
             ggtitle(stn.name[h]) + labs(x = "Stage (m)", y = "Discharge (m3/s)") +

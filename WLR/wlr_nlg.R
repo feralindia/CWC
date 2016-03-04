@@ -14,8 +14,9 @@ dir_calib_wlr<-"/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/wlr/calib/" #
 dir_calib_res<-"/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/wlr/calibres/" # calibration results
 wlr.nulldir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/wlr/null/" # null dir location
 ## --- set the wlr on which you want to run the script
-## num_wlr <- c(101:104, 106:114, "103a", "104a", "105a", "106a") # wlr names WLR_105 removed
- num_wlr <- 110
+num_wlr <- 115##, "103a", "104a", "105a", "106a", "108a") # wlr names WLR_105 removed
+## num_wlr <- c(101:104, 106:115, "103a", "104a", "105a", "106a", "108a") # wlr names WLR_105 removed
+## num_wlr <- 110
 ## NOTE WLR108a calibration yet to be sent
 loggers <- paste("wlr_", num_wlr, sep="") # logger name
 tabname <- paste(site, loggers, sep="") # name of pg wlr table

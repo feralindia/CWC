@@ -202,7 +202,8 @@ pyg.flst <- list.files(path=pyg.dir[i], pattern=".csv$", full.names=TRUE, ignore
 
     ## @knitr chunk7
     ## Dump results to fig and csv directories
-
+  prf.res$timestamp <- as.POSIXct(prf.res$timestamp, , origin="1970-01-01", tz="Asia/Kolkata")
+    prf.res <- na.omit(prf.res)
 
  ##    resfile <- paste(csv.dr,"/", pyg.locnum[i],".txt", sep="") # location of csv result
     resSDfile <- paste(csv.dr,"/", pyg.locnum[i],"_SD.csv", sep="") # location of csv result
@@ -210,6 +211,8 @@ pyg.flst <- list.files(path=pyg.dir[i], pattern=".csv$", full.names=TRUE, ignore
     
     write.table(prf.res, file=cx.csvout, quote=FALSE, sep = ", ", row.names=FALSE, append=TRUE) # write it
 ##     write.table(res, file=resfile, quote=FALSE, sep = "\t", row.names=FALSE, col.names=FALSE, append=TRUE) # write it
+  res$timestamp <- as.POSIXct(res$timestamp, , origin="1970-01-01", tz="Asia/Kolkata")
+    res <- na.omit(res)
     
     write.table(res, file=resSDfile, quote=FALSE, sep = ",", row.names=FALSE, col.names=FALSE, append=TRUE) # write it    
 ##    write.table(summary(prf.res), file=ressummary, quote=FALSE, sep = "\t", append=TRUE) # write it    

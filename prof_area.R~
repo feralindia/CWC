@@ -1,5 +1,0 @@
-## This script converts the x,y coordinates from a CSV file into area measured in cm2
-prf.f <- 
-library(geosphere)
-
-areaPolygon(coords)
