@@ -1,17 +1,12 @@
-## Station 103 is associated with:
-## wlr: 103, 103a
-## flume: 113
-## tbrg: 103, 109
-## bs: 102, 123
-## this script collates data for wlr 103 & 103a and
-## runs a routine for flume 113
+##- note coding in progress- this is based on stn_103
+## updated 10th March 2016
 
-##--- define constants
-stn.no <- 103
-ar.cat <- 495862.50 # checked March '16
+##-- define constants
+stn.no <- 105
+ar.cat <- 958362.50 # confirmed March `16
 catch.type <- "Wattle Catchment"
 wlr.path <- "~/OngoingProjects/CWC/Data/Nilgiris/wlr/csv/"
-wlr.flnm <- c("wlr_103_1 min.csv", "wlr_103a_1 min.csv")
+wlr.flnm <- c("wlr_105_1 min.csv", "wlr_105a_1 min.csv")
 wlr.flnm.full <- paste(wlr.path, wlr.flnm, sep="")
 
 ## call the nls.fit function to get confidence bands around the fit
@@ -20,13 +15,6 @@ wlr.flnm.full <- paste(wlr.path, wlr.flnm, sep="")
 ##--- call function to get rating curve and calculate discharge
 wlr.dat.all <- calc.disch.areastage(wlr.flnm,wlr.flnm.full)
 wlr.dat.all$Timestamp <- as.POSIXct(wlr.dat.all$Timestamp, tz="Asia/Kolkata")
-
-##-- run routine to get data from flume or other stations
-## note the data structure should be same as wlr.dat.all
-
-source("stn_113.R", echo=TRUE)
-
-wlr.dat.all <- rbind(wlr.dat.all, wlr113.dat)
 
 ##--- calculate depth of discharge ----##
 wlr.dat.all$DepthDischarge <- (wlr.dat.all$Discharge/ar.cat)*1e+9
