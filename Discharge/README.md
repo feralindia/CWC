@@ -26,3 +26,23 @@ Generate discharge for one minute intervals input: wlr no, start time, end time 
 * Calls function dis.plot to do the plotting.
 * Gives warnings if there are duplicated timestamps - applicable where there is more than one logger. Uses function "mk.nullfile" to remove duplicates.
 
+## dis.functs.R
+
+Functions used by the control script reside here.
+
+### calc.disch.areastage
+
+Calculates discharge from a set of points describing a rating curve by using a non-linear least square fit. Original code by Jagdish Krishnaswamy. Steps involved:
+
+* Read the stage-discharge point file.
+* Run the NLS calculation:
+
+        nls(Discharge~p1*(Stage)^p3,data=sd.fl, start=list(p1=3,p3=5))
+
+	Get p1 and p3 from above and calculate discharge as follows:
+
+		y$Discharge <- coef.p1 * (y$Stage)^coef.p3
+
+### calc.disch.flume
+
+Calculates discharges for a Montana flume based on the flume equation as below:
