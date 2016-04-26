@@ -104,9 +104,9 @@ Steps the script:
   * Low stage - when water is flowing within the V portion of the weir
   * High stage - when it flows above the V
 * Calculate discharge as:
-  * For low stage
+  * For low stage:
   > Discharge <- 1.09*(1.393799*((Low Stage-0.2065)^2.5))
-  * for high stage
+  * for high stage:
   > Discharge <- 1.09*((1.394*(((High Stage-0.2065)^2.5) - ((High Stage-0.603)^2.5))) + (0.719*(High Stage-0.603)^1.5))
 * Bind the values together and sort by time stamp
 * Round of discharge values to five digits
