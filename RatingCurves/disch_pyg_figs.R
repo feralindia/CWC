@@ -17,15 +17,8 @@ for (i in 1:length(pyg.dir)){
     cx.fldirlst <- gsub(pattern="/pyg/", replacement="/cx_pyg/", x=pyg.fldirlst)
     flst <- list.files(path=pyg.dir[i], pattern=".csv$", ignore.case=TRUE) # same for pyg, cx and cx_fix
 
-    cat(paste("Processing files for pygmy velocity meter:", pyg.locnum[i], sep=" "), sep="\n")
-    ## pyg.flst <- list.files(path=pyg.dir[i], pattern=".csv$", ignore.case=TRUE) # nonsensical    
-    ## cx.flst <- gsub(pattern="/pyg/", replacement="/cx_pyg/", x=pyg.flst) # nonsensical
-    ## cx.fixlst <- gsub(pattern="/pyg/", replacement="/cx_pyg/", x=pyg.flst) # nonsensical Dec '14
+    cat(paste("Processing files for pygmy velocity meter:", pyg.loc[i], sep=" "), sep="\n")
     
-    ## the lines below were changed to the ones above to ensure
-    ## the names of files in the pyg and cx_pyg match
-    ## cx.flst <- list.files(path=cx.drlst[i], pattern=".csv$", ignore.case=TRUE)
-    ## cx.fldirlst  <- list.files(path=cx.drlst[i], full.names=TRUE, pattern=".csv$", ignore.case=TRUE)
     ## @knitr chunk2
     
     ## loop for profiles and velocities
@@ -41,23 +34,23 @@ for (i in 1:length(pyg.dir)){
         cxt <- read.csv(cx.fldirlst[j], header=FALSE)
         tmp$dt  <- cxt[2,2, drop=TRUE]
         tmp$tm  <- cxt[3,2, drop=TRUE]
+        tmp$tm <- fix.time(tmp$tm) ## fix the 24hrs AM/PM glitch
         tmp$dt <- as.Date(tmp$dt, format="%d/%m/%y")
         tmp <- transform(tmp, dt.tm = paste(dt, tm, sep=' '))
-        tmp$dt.tm <- as.POSIXct(tmp$dt.tm, format="%Y-%m-%d %I:%M:%S %p") ## format converts from pm 
+        tmp$dt.tm <- as.POSIXct(tmp$dt.tm, format="%Y-%m-%d %I:%M:%S %p")
         stn.obj <- paste(stn.id[i], ".stage", sep="") 
         stg <- get(stn.obj)
-        ## stg$dt.tm <- as.POSIXct(stg$dt.tm) ## not needed
         tmp.mrg <- merge(tmp, stg, by="dt.tm", all=FALSE)
         tmp.mrg <- tmp.mrg[1,] ## uncomment if you want only one row
         if (nrow(tmp.mrg) > 0){
             stage <- tmp.mrg$cal ##[[1]]
         }  else {stage <- NA}
+         
+    ## @knitr chunk 3
         
-        mn <- paste("Site: ", pyg.loc[i], "|| File: ",flst[j], sep=" ") # create title was cx.flst dec14
-
-        cx.fig <- paste(str_sub(flst[j], end =-5L), ".png", sep="") # names for cross section output was cx.flst dec14
-       
-        cx.figout <- paste(cx.pyg.man[i], cx.fig, sep="/")
+        mn <- paste("Site: ", pyg.loc[i], "|| File: ",flst[j], sep=" ") # create title
+        cx.fig <- paste(str_sub(flst[j], end =-5L), ".png", sep="") # fig file name
+        cx.figout <- paste(cx.pyg.man[i], cx.fig, sep="/") # fig file name and folder
         cx.csvout <- paste(cx.pyg.man[i], "/cx_results.csv", sep="")
         ## postscript(figout, horizontal=TRUE, onefile=TRUE) # eps output parameters
         CairoPNG(filename=cx.figout, width=1800, height=800, units="px", pointsize=12, onefile = TRUE) # png output parameters

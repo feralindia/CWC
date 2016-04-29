@@ -34,15 +34,18 @@ for (j in 1: length(type)){
 ## ts.cxall <- ts.cxall[complete.cases(ts.cxall),]
 ts.cxall$stn <- tolower(ts.cxall$stn) ## change to lower
 ts.cxall$dt <- as.Date(ts.cxall$dt, format="%d/%m/%y")
+## fixing the time errs from 24hr plus AM/PM notation
+ts.cxall$tm <- fix.time(ts.cxall$tm)
+
 ts.cxall<-transform(ts.cxall, dt.tm = paste(dt, tm, sep=' '))
-ts.cxall$dt.tm<-as.POSIXct(ts.cxall$dt.tm, format="%Y-%m-%d %I:%M:%S %p")
+ts.cxall$dt.tm<-as.POSIXct(ts.cxall$dt.tm, format="%Y-%m-%d %I:%M:%S %p", tz = "Asia/Kolkata")
 
     for (m in 1: length(stn.dir)){
         ts.cx$stn <- tolower(ts.cx$stn) ## changed case 
         ts.cx.stn <- subset(ts.cxall, stn==stn.id[m])
         stn.file <- paste(wlr.dir, oneminfile[m], sep="")
         stn.csv <- read.csv(stn.file)
-        stn.csv$date_time<-as.POSIXct(stn.csv$date_time)
+        stn.csv$date_time<-as.POSIXct(stn.csv$date_time, tz="Asia/Kolkata")
         stn.csv <- subset(stn.csv, select=c("raw", "cal", "date_time"))
         names(stn.csv) <- c("raw", "cal", "dt.tm")
         cat(paste("Merging station file:", oneminfile[m], "with stage.", sep=" "), sep="\n")

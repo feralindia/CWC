@@ -13,7 +13,7 @@ cx.dr <- paste(disch.dr, "cx_pyg", sep="") # profile data folder for pygmy curre
 cx_flt.dr <- paste(disch.dr, "cx_flt", sep="") # profile data folder for float method (to be discarded)
 cxfix.dr <- paste(disch.dr, "cx_sec", sep="") # profile data folder fixed manually
 shape.dr <- paste(disch.dr, "cx_shape", sep="") # profile data folder shape files for checking
-wlr.dir <- paste(data.dir, site, "/wlr/csv/", sep="") # wlr data output
+wlr.dir <- paste(data.dir, site, "/wlr/csv/", sep="") # wlr data 
 
 pyg.loc <- list.dirs(path=pyg.dr, recursive=FALSE, full.names=FALSE)
 ## pyg.locnum <- unlist(regmatches(pyg.loc,gregexpr('\\w\\w\\w\\w[[:digit:]]+', pyg.loc))) ## remove the characters after wlr no.
@@ -54,12 +54,8 @@ stn.id <- c(pyg.id, flt.id )
 
 disch.stn.name <- tolower(paste(stn.name, "_stage.txt",sep="")) ## made lower case
 oneminfile <- tolower(paste(substr(stn.name, start=5, stop=9), "_onemin.merged.csv",sep="")) 
-delfiles <- function(x){
-    delfile <- paste(disch.dr, x,"/*", sep="")
-    unlink(delfile, recursive = FALSE, force = FALSE)
-}
 
-## list folder names to be deleted
+## ## list folder names to be deleted
 del.cxres <- dir(path=paste(disch.dr, "cx_pyg_res", sep=""), full.names=TRUE, no..=TRUE)
 del.cxres <- substrRight(del.cxres, 17)
 todel <- c("csv", "fig", "stage", "cx_pyg_res", del.cxres)

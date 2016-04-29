@@ -3,14 +3,6 @@
 
 ## @knitr chunk1
 
-## export to shapefiles to help with cross checking results
-## Note: sections with multiple polygons get messed up
-writeshape <- function(coords, cx.shapeout){
-    ddTable <- data.frame(Id=ids,Name="poly")
-    ddShapefile <- convert.to.shapefile(coords, ddTable, "Id", 5)
-    write.shapefile(ddShapefile, cx.shapeout, arcgis=TRUE)
-}
-
 for (i in 1:length(pyg.dir)){
     cat(paste("Processing", pyg.id[i], sep=" "), sep="\n")
     res <- as.data.frame(matrix(ncol = 7)) # 5 col matrix to hold final results
@@ -46,12 +38,15 @@ pyg.flst <- list.files(path=pyg.dir[i], pattern=".csv$", full.names=TRUE, ignore
         cxt <- read.csv(cx.fldirlst[j], header=FALSE)
         tmp$dt  <- cxt[2,2, drop=TRUE]
         tmp$tm  <- cxt[3,2, drop=TRUE]
+        ## some entries have time in 24 hrs but with PM or AM next to it
+        tmp$tm <- fix.time(tmp$tm)
         tmp$dt <- as.Date(tmp$dt, format="%d/%m/%y")
         tmp <- transform(tmp, dt.tm = paste(dt, tm, sep=' '))
-        tmp$dt.tm <- as.POSIXct(tmp$dt.tm, format="%Y-%m-%d %I:%M:%S %p") ## format converts from pm 
+        tmp$dt.tm <- as.POSIXct(tmp$dt.tm, format="%Y-%m-%d %I:%M:%S %p", tz="Asia/Kolkata") ## format converts from pm
+        ## HERE: CONVERSION TO DATE/TIME REFUSING TO WORK!!!!!
         stn.obj <- paste(stn.id[i], ".stage", sep="") 
         stg <- get(stn.obj)
-        ## stg$dt.tm <- as.POSIXct(stg$dt.tm) ## not needed
+        stg$dt.tm <- as.POSIXct(stg$dt.tm, format="%Y-%m-%d %I:%M:%S %p", tz="Asia/Kolkata") ## not needed
         tmp.mrg <- merge(tmp, stg, by="dt.tm", all=FALSE)
         tmp.mrg <- tmp.mrg[1,] ## uncomment if you want only one row
         if (nrow(tmp.mrg) > 0){
@@ -211,7 +206,7 @@ pyg.flst <- list.files(path=pyg.dir[i], pattern=".csv$", full.names=TRUE, ignore
     
     write.table(prf.res, file=cx.csvout, quote=FALSE, sep = ", ", row.names=FALSE, append=TRUE) # write it
 ##     write.table(res, file=resfile, quote=FALSE, sep = "\t", row.names=FALSE, col.names=FALSE, append=TRUE) # write it
-  res$timestamp <- as.POSIXct(res$timestamp, , origin="1970-01-01", tz="Asia/Kolkata")
+  res$timestamp <- as.POSIXct(res$timestamp, origin="1970-01-01", tz="Asia/Kolkata")
     res <- na.omit(res)
     
     write.table(res, file=resSDfile, quote=FALSE, sep = ",", row.names=FALSE, col.names=FALSE, append=TRUE) # write it    
@@ -219,4 +214,5 @@ pyg.flst <- list.files(path=pyg.dir[i], pattern=".csv$", full.names=TRUE, ignore
     figfile <- paste(fig.dr,"/", pyg.locnum[i], ".png", sep="")
     ## rm(res, resSD)
 }
- rm(tmp.res,tmp, tmp.mrg, tmp.pyg, crd, rw.crd, gpc.crd, mn, figout, max.xy, min.xy, max.x, min.y, step.x, step.y, cx.csv, cx.fig)
+
+##  rm(tmp.res,tmp, tmp.mrg, tmp.pyg, crd, rw.crd, gpc.crd, mn, figout, max.xy, min.xy, max.x, min.y, step.x, step.y, cx.csv, cx.fig)

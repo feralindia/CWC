@@ -9,8 +9,8 @@
 ## Sort raw files by date, read in header information for this and assign data to the header
 library(ggplot2)
 library(scales)
-site <- "Nilgiris" ## OR site <- "Aghnashini"
-## site <- "Aghnashini"
+## site <- "Nilgiris" ## OR site <- "Aghnashini"
+site <- "Aghnashini"
 raw.dir <- paste("/home/udumbu/rsb/OngoingProjects/CWC/Data/", site, "/wlr/raw/", sep="")
 dirlist <- list.dirs(path=raw.dir, recursive=FALSE, full.names=FALSE)
 dirpath <-  list.dirs(path=raw.dir, recursive=FALSE)
@@ -64,7 +64,7 @@ for(i in 1:length(dirlist)){
     dat$Timestamp<-as.POSIXct(dat$Timestamp, tz="Asia/Kolkata")
     dat <- dat[!duplicated(dat$Timestamp),]
     dat <- dat[order(dat$Timestamp),]
-    head(dat)
+    ## head(dat)
     
     ## subset according to filename
     file.names <- unique(dat$FileName)
@@ -82,12 +82,12 @@ for(i in 1:length(dirlist)){
         start.ts <- min(dat$Timestamp[dat$FileName==start.filename])
         end.ts <- max(dat$Timestamp[dat$FileName==end.filename])
         data <- subset(dat, Timestamp>=start.ts & Timestamp<=end.ts)
-        plot.png <- paste(fig.dir, "from_", start.ts, "_to_", end.ts, ".png", sep="")
+        plot.png <- paste(fig.dir, "from_", as.Date(start.ts), "_to_", as.Date(end.ts), ".png", sep="")
         
         ## Plot data
         ggplot(data=data, aes(x=Timestamp, y=Raw, color=factor(FileName))) +
             geom_line() +
-                scale_x_datetime(breaks = "1 week", minor_breaks = "1 day", labels = date_format("%d-%b-%Y")) +
+                scale_x_datetime(date_breaks = "1 week", date_minor_breaks = "1 day", labels = date_format("%d-%b-%Y")) +
                     theme(legend.position="bottom", legend.text = element_text(size=10), axis.text.x=element_text(angle=90, vjust=0.5, size=8)) +
                         scale_colour_discrete(name  ="File Name:")
         ggsave(plot.png, width=297, height=210, units="mm")

@@ -5,7 +5,7 @@ setwd(wk.dr) # set the working directory
 site <- "Nilgiris"
 
 ## call the routines
-source("../useful.functs.R", echo=TRUE)
+source("useful.functs.R", echo=TRUE)
 source("disch_managefiles.R", echo=TRUE)
 source("disch_libs.R", echo=TRUE) # load required libraries
 source("disch_ExtractStage.R", echo=TRUE) # get stage values from wlr
