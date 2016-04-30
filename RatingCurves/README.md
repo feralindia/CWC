@@ -133,10 +133,59 @@ For each station folder (i.e. wlr_XXX):
 
 For each file contained in the station folder:
 
-* Create lists of files from different types of folders. Note: the contents of file names in the velocity reading folder `pyg` must match those in the stream profile or cross section survey `cx_pyg`
+* Create lists of files from different types of folders. Note: the contents of file names in the velocity reading folder `pyg` must match those in the stream profile or cross section survey `cx_pyg`.
+* Read in stream cross section coordinates from `cx_pyg`, plot them to a polygon object. Note this object does NOT contain the sections for velocity readings, just the overall profile.
+* Read in processed WLR stage data from relevant csv file.
+* Merge stage with velocity readings and save to a temporary file.
+
+### Chunk 3
+
+Initialise file names for dumping results in csv and image formats.
+
+### Chunk 4
+
+Calculate the average velocities of the cross sectional profiles. Warning: the script assumes that the number of profiles and velocity measure are the same, else an error is thrown. Also note: naming of columns is alpha numerical such as a6, b6, a2, a8, b2, b8 where 6 is 60% height, 2 is 20% and 8, 80% of height.
+
+* Extract velocity measurements from the data file, dump into relevant column, e.g. vel6 for 60% height. 
+* Write each velocity reading (should have 3 repeats each) per section to a temporary file, multiply by correction factor depending on the type of reading:
+  * If at 0.6 height, average the three repeat readings.
+  * If at 0.02 and 0.08 height, first average the two readings then average the repeats.
+* Read in cross section data from the manually adjusted cross section `cx_sec` file and process data as such:
+  * Calculate cross sectional area for each section of the stream.
+  * Dump to a figure as well as a GIS shapefile.
+* Merge velocity readings (averaged) with cross section dataset to get area/velocity readings for the different sections.
+* Add the multiple velocity readings to get full area/velocity value.
+
+### Chunk 5
+
+Dump all results to figures and a csv files and optionally, remove all objects created by script.
 
 ### TODO
 
 - [ ] @susan, Give details of model make.
 - [ ] @saravanan. Provide data sheet and note on data organisation.
 - [ ] @kumaran. Create EpiCollect based forms.
+
+## [appendSDG.R](disch_appendSDG.R)
+
+ The script merely take values for salt dilution gauging and bungs them onto the file containing stage-discharge values calculated from the pygmy meter results. Script to take in SDG data and process it is called Slug.R and resides in the Discharge folder.
+
+## [fig.R](disch_fig.R)
+
+Script calls ggplot2 to plot figures and dump CSV data as the final output of the rating curve. 
+
+
+##[ AreaStgRln.R](AreaStgRln.R)
+
+This is work in progress. The suggestion for the script came from Nick and Jagdish and it is to comprise of a number of tests to identify sources of errors in velocity area measurements:
+
+1. Stage vs total profile area - cross-sectional area against stage in a particular interval where an interval is defined as between two successive downloads
+2. Time versus Stage added to profile using a baseline profile and adding it to the base of the actual profile. The total area should be the same or very similar
+3. Discharge versus area - unit area runoff. Should result in series of points sitting on top of one another.
+4. Overlay profile polygons so that they are centered and overlayed.
+
+At present the script plots successive files (three in a row) so that the timestamp on the data and the stage reading are plotted continuously. Each data file is plotted in a different colour to identify errors due to setting of the capacitance probes.
+
+## [PlotCleanRatingCurves.R](PlotCleanRatingCurves.R)
+
+This script plots the manually cleaned rating curves after visual assessment and cross checking the points against field notes. Most of the discarded points are due to poor velocity readings at very low streamflow. The input dataset includes justifications for rejecting points. The output of this script is both as a figure and as a CSV file, the data of is to be used for calculating the discharges.
