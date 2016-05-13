@@ -8,6 +8,7 @@ for (x in 1:length(csv.flst)){
     tmp <- read.csv(csv.file, header=FALSE, sep=",")
     tmp <- tmp[complete.cases(tmp[, c(5,6)]),] ## remove rows with missing data in stage or discharge column
     names(tmp) <- c("Sl.No.", "site", "obs.file", "method", "stage", "avg.disch", "timestamp")
+    tmp$timestamp <- as.POSIXct(tmp$timestamp,  tz="Asia/Kolkata")
     wlr.no <- csv.flno[x]
     ## wlr.no <- unlist(regmatches(csv.file, gregexpr('\\(?[0-9]+a?', csv.file)))
     figfile <- paste(fig.dr, "/WLR_", wlr.no, ".png", sep="")

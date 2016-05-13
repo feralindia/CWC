@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>README.html</title>
+
+</head>
+
+<body>
+
+<h2>Water Level Recorder (WLR) Scripts</h2>
+
+<p>This document summarises the scripts used to process the logs from capacitance based water level recorders from <a href="http://odysseydatarecording.com/index.php?route=product/product&amp;product_id=50">Odyssey</a>. The logs are slapped together, calibrated and then agregated to stages from 1 minute to one month. Outputs are in the form of CSV files and a figure for each logger showing the different aggregations in panels.</p>
+
+<p><img src="Docs/wlr_panel.png" alt="output figure sample" title="" /></p>
+
+<p>Sub-routines are organised as follows:</p>
+
+<pre><code>[site].R --&gt; calib.R --&gt; import.R --&gt; null.R --&gt; mergenull.R --&gt; aggreg.R
+</code></pre>
+
+<h2><a href="wlr_agn.R">site.r</a></h2>
+
+<p>Here [site] is to be replaced by "agn" for Aghnashini and "nlg" for Nilgiris - the two scripts are essentially the same and perform the following:</p>
+
+<ul>
+<li>Load the required libraries namely:
+<ul>
+<li>stringr) # to manipulate strings</li>
+<li>timeSeries) # for aggregation</li>
+<li>ggplot2) # for plotting</li>
+<li>scales) ## for manipulating dates on ggplot2</li>
+</ul></li>
+<li>Set the file and folder paths</li>
+<li>List the ID's of the loggers to be processed - giving the user some control over the routine.</li>
+<li>Set the financial centre and time zone - a persistent hassle as some functions tend to set back the zone to GMT causing an offset of -5:30 hrs.</li>
+<li>Call the other sub-routines.</li>
+</ul>
+
+<h2><a href="wlr_calib.R">calib.R</a></h2>
+
+<p>This script calibrates the capacitance probes using a csv file of the capacitance readings at different depths and a linear regression.</p>
+
+<p>A sample of the calibration file is as below. The file essentially comprises of a header containing logger identification numbers followed by length of the cable under water in metres and the capacitance reading (in farad?) for that length.</p>
+
+<p>Site Name |WLR001
+----------|------
+Site Number |1
+Logger |Capacitive Water Level
+Logger Serial Number |43682
+|
+Length|Capacitance
+0|2108.5
+.20|2468
+1.00|3917
+2.00|5710.5</p>
+
+<p>Once the calibration data is read for each unit, a linear regression is performed and the coefficient are dumped to a file while the plot of the data along with a regression line for intercept and slope is plotted in a panel for all the units.</p>
+
+<p><img src="Docs/calib_panel.png" alt="calibration results" title="" /></p>
+
+<h2><a href="wlr_import.R">import.R</a></h2>
+
+</body>
+</html>

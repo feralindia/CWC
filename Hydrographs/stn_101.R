@@ -1,12 +1,12 @@
 ## Process data for station 101 - Wattle
 ar.cat <- 293562.5 ## Original is 293562.5 ## By other calculations 275462.5 OR 232480.336 OR 242941.951 depending on parameters selected in GRASS
 catch.type <- "Wattle Catchment"
-wlr.flnm <- "wlr_101_1 hour.csv"
-wlr.flnm.full <- paste(wlr.dir, wlr.flnm, sep="")
+## wlr.flnm <- "wlr_101_15 min.csv" ## changed to 15 min
+## wlr.flnm.full <- paste(wlr.dir, wlr.flnm, sep="/")
 
-for(i in 1:length(wlr.flnm))(assign(wlr.flnm[i], read.csv(wlr.flnm.full[i], row.names=1))) 
-wlr.dat.all <- get(wlr.flnm[1])
-if(length(wlr.flnm)>1)for(i in 2:length(wlr.flnm))(wlr.dat.all <- rbind(wlr.dat.all, get(wlr.flnm[i])))
+for(i in 1:length(wlr.filename))(assign(wlr.filename[i], read.csv(wlr.filename.full[i], row.names=1))) 
+wlr.dat.all <- get(wlr.filename[1]) ## check this
+if(length(wlr.filename)>1)for(i in 2:length(wlr.filename))(wlr.dat.all <- rbind(wlr.dat.all, get(wlr.filename[i])))
 wlr.dat.all <- wlr.dat.all[,-4]
 wlr.dat.all <- wlr.dat.all[!is.na(wlr.dat.all$cal),]
 names(wlr.dat.all) <- c("Capacitance", "Stage", "Timestamp")
