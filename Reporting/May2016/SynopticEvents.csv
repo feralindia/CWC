@@ -1,0 +1,25 @@
+Description,Typology,Site,st.year,st.day,st.month,st.time,end.year,end.day,end.month,end.time
+Storm,TCZ,Nilgiris,2013,2,June,00:00:00,2013,4,June,23:59:59
+Storm,TCZ,Nilgiris,2013,10,June,00:00:00,2013,15,June,23:59:59
+Storm,OSC,Nilgiris,2013,18,June,00:00:00,2013,29,June,23:59:59
+Storm,OSC,Nilgiris,2013,2,July,00:00:00,2013,5,July,23:59:59
+Storm,TCZ - OSC,Nilgiris,2013,15,July,00:00:00,2013,8,August,23:59:59
+Storm,TCZ,Nilgiris,2013,5,September,00:00:00,2013,10,September,23:59:59
+Storm,TCZ,Aghnashini,2013,1,June,00:00:00,2013,3,June,23:59:59
+Storm,TCZ,Aghnashini,2013,7,,00:00:00,2013,19,,23:59:59
+Storm,OST,Aghnashini,2013,28,,00:00:00,2013,8,July,23:59:59
+Storm,TCZ-OST,Aghnashini,2013,18,July,00:00:00,2013,8,August,23:59:59
+Storm,TCZ,Aghnashini,2013,16,August,00:00:00,2013,18,August,23:59:59
+Storm,TCZ,Aghnashini,2013,15,September,00:00:00,2013,21,September,23:59:59
+Storm,OSC,Nilgiris,2014,16,June,22:00:00,2014,22,June,06:00:00
+Storm (very weak not extreme),TCZ,Nilgiris,2014,5,July,09:00:00,2014,6,July,02:00:00
+Storm with low pressure,OSC,Nilgiris,2014,9,July,03:00:00,2014,26,July,19:00:00
+Storm,OSC,Nilgiris,2014,28,July,21:00:00,2014,9,August,02:00:00
+Storm  (very weak not extreme),TCZ,Nilgiris,2014,11,August,10:00:00,2014,12,August,01:00:00
+Storm,TCZ,Nilgiris,2014,28,August,13:00:00,2014,2,September,05:00:00
+Storm,,Nilgiris,2014,27,September,22:00:00,2014,28,September,15:00:00
+Storm (with low pressure),OSC,Aghnashini,2014,16,June,17:00:00,2014,23,June,11:00:00
+Storm,OSC,Aghnashini,2014,11,July,16:00:00,2014,23,July,11:00:00
+Storm,Local Convection,Aghnashini,2014,24,July,09:00:00,2014,25,July,08:00:00
+Storm,OSC,Aghnashini,2014,26,July,21:00:00,2014,8,August,18:00:00
+Storm,TCZ - OSC,Aghnashini,2014,23,August,11:00:00,2014,1,September,11:00:00
