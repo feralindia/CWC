@@ -1,0 +1,3 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kp}{print}\PYG{p}{(}ann.rain\PYG{p}{)}
+\end{Verbatim}

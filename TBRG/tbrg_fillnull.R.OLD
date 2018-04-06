@@ -1,0 +1,59 @@
+
+##---- import and fill null for each minute ----##
+if(length(filelist_null)>0){  # don't run if no null files
+    print(paste("Processing NULL files for TBRG No.", num_tbrg[i], sep=" "))
+    tbrg.null <- data.frame(tips=numeric(0), mm=numeric(0),dt.tm=numeric(0))
+    for (k in 1:length(filelist_null)){
+        print(paste("Processing file", filelist_null[k], sep=" "))
+        nulls <- data.frame(tips=numeric(0), mm=numeric(0), dt.tm=numeric(0))  # null for merge
+        tmp.null <- read.csv(filelist_null.full[k], header=FALSE, sep=",", quote="", blank.lines.skip = TRUE)
+        names(tmp.null) <- c("dt", "tm", "tips")
+        tmp.null$dt <- as.Date(tmp.null$dt, format="%m/%d/%Y") ## NOTE THAT NULL VALUE SHOULD BE IN YYYY NOT YY
+        tmp.null<-transform(tmp.null, dt.tm = paste(dt, tm, sep=' '))
+        tmp.null$dt.tm<-as.POSIXct(tmp.null$dt.tm, tz="Asia/Kolkata") ## added timezone here
+        tmp.null$dt.tm<-round(x=tmp.null$dt.tm, units="mins")
+        start.hr <- min(tmp.null$dt.tm)
+        end.hr <- max(tmp.null$dt.tm)
+        tint1min <- seq.POSIXt(start.hr, end.hr,by="1 min",na.rm=T, tz="Asia/Kolkata") ## added timezone here
+        tmp.null.1min <-as.data.frame(tint1min)
+        colnames(tmp.null.1min)<-c("dt.tm")
+
+        tbrg.null.1min <- merge(tmp.null.1min, nulls, by="dt.tm", all=TRUE)
+        tbrg.null.1min <-  tbrg.null.1min[!duplicated(tbrg.null.1min$dt.tm), ]
+        tbrg.null.1min <- tbrg.null.1min[!(is.na(tbrg.null.1min$dt.tm)),]
+        ##    tbrg.null.1min <- subset(tbrg.null.1min, select=c("dt.tm", "tips"))
+        tbrg.null <- rbind(tbrg.null, tbrg.null.1min)
+    }
+
+    tbrg.null$dt.tm <- as.POSIXct(tbrg.null$dt.tm, tz="Asia/Kolkata")
+    ## tbrg.null$dt.tm <- tbrg.null$dt.tm + 19800 ## add five and half hours
+    tbrg.null <- tbrg.null[,c(2,3,1)]
+    ## assign(tbrgtab_null_all, tbrg.null)
+    ## rm(tmp.null)
+    ##----- merge the null values with the one minute sequence
+    ## 1) set all of nulls to -999
+    tbrg.null[is.na(tbrg.null)] <- -999
+    ## 2) do a merge using:
+    tmp.merge <- merge(tbrg.raw, tbrg.null, by="dt.tm", all=TRUE)
+    rm(tbrg.raw) # clear up memory
+    ## 3) set all NAs in the merge to 0
+    tmp.merge[is.na(tmp.merge)] <- 0
+    ## 4) create a pre-final data frame by:
+    tmp <- data.frame(tips=tmp.merge$tips.x+tmp.merge$tips.y, mm=tmp.merge$mm.x+tmp.merge$mm.y, dt.tm=tmp.merge$dt.tm)
+    ## 5) replace all negative values with NAs
+    tmp[tmp<0] <- NA
+    tbrg.merged <- tmp
+    tbrg.merged$dt.tm<-as.POSIXct(tbrg.merged$dt.tm, tz="Asia/Kolkata")
+    ## tbrg.merged$dt.tm <- tbrg.merged$dt.tm + 19800 ## add five and half hours
+    tbrg.merged <- tbrg.merged[with(tbrg.merged, order(dt.tm)),]
+    tbrg.merged <- tbrg.merged[!duplicated(tbrg.merged),]
+    ## remove all rows with only NA's
+    tbrg.merged <- tbrg.merged[!is.na(tbrg.merged$dt.tm),] ##testing
+    write.csv(file=csv.out, tbrg.merged)
+} else {
+    tbrg.merged <- tbrg.raw ## [with(tbrg.raw, order(dt.tm)),]
+    print(paste("TBRG No.", num_tbrg[i], "has no NULL files", sep=" "))
+    write.csv(file=csv.out, tbrg.merged)
+}
+print(paste("Finished processing NULL files for TBRG No.", num_tbrg[i], sep=" "))
+

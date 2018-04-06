@@ -1,0 +1,4 @@
+in.xsec.dir <- list.dirs(paste0(input.dir, "xsec"), recursive = FALSE)
+xsec.fls <- lapply(in.xsec.dir, list.files, full.names = TRUE)
+in.vel.dir <- list.dirs(paste0(input.dir, "vel"), recursive = FALSE)
+vel.fls <- lapply(in.vel.dir, list.files, full.names = TRUE)

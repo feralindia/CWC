@@ -1,0 +1,25 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+RepRain \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kr}{function}\PYG{p}{(}x\PYG{p}{)\PYGZob{}}
+    df \PYG{o}{\PYGZlt{}\PYGZhy{}} read.csv\PYG{p}{(}x\PYG{p}{)}
+    df\PYG{o}{\PYGZdl{}}dt.tm \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kp}{as.POSIXct}\PYG{p}{(}df\PYG{o}{\PYGZdl{}}dt.tm\PYG{p}{,} tz \PYG{o}{=} \PYG{l+s}{\PYGZdq{}Asia/Kolkata\PYGZdq{}}\PYG{p}{)}
+    y \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kp}{unique}\PYG{p}{(}\PYG{k+kp}{format}\PYG{p}{(}df\PYG{o}{\PYGZdl{}}dt.tm\PYG{p}{,} \PYG{l+s}{\PYGZdq{}\PYGZpc{}Y\PYGZdq{}}\PYG{p}{))}
+    df\PYG{o}{\PYGZdl{}}Year \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kp}{format}\PYG{p}{(}df\PYG{o}{\PYGZdl{}}dt.tm\PYG{p}{,} \PYG{l+s}{\PYGZdq{}\PYGZpc{}Y\PYGZdq{}}\PYG{p}{)}
+    ann.rain \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kp}{do.call}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}rbind\PYGZdq{}}\PYG{p}{,} \PYG{k+kp}{lapply}\PYG{p}{(}y\PYG{p}{,} \PYG{k+kr}{function}\PYG{p}{(}z\PYG{p}{)\PYGZob{}}
+        rain \PYG{o}{\PYGZlt{}\PYGZhy{}} df\PYG{o}{\PYGZdl{}}mm\PYG{p}{[}\PYG{k+kp}{format}\PYG{p}{(}df\PYG{o}{\PYGZdl{}}dt.tm\PYG{p}{,} \PYG{l+s}{\PYGZdq{}\PYGZpc{}Y\PYGZdq{}}\PYG{p}{)}\PYG{o}{==}z\PYG{p}{]}
+        sum.rain \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kp}{sum}\PYG{p}{(}rain\PYG{p}{,} na.rm \PYG{o}{=} \PYG{k+kc}{TRUE}\PYG{p}{)}
+        out.df \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kt}{data.frame}\PYG{p}{(}z\PYG{p}{,} sum.rain\PYG{p}{)}
+        \PYG{k+kp}{names}\PYG{p}{(}out.df\PYG{p}{)} \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kt}{c}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}Year\PYGZdq{}}\PYG{p}{,} \PYG{l+s}{\PYGZdq{}Rain (mm)\PYGZdq{}}\PYG{p}{)}
+        \PYG{k+kr}{return}\PYG{p}{(}out.df\PYG{p}{)}
+    \PYG{p}{\PYGZcb{}))}
+    df\PYG{o}{\PYGZdl{}}Date \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kp}{as.Date}\PYG{p}{(}\PYG{k+kp}{paste0}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}2000\PYGZhy{}\PYGZdq{}}\PYG{p}{,}\PYG{k+kp}{format}\PYG{p}{(}df\PYG{o}{\PYGZdl{}}dt.tm\PYG{p}{,} \PYG{l+s}{\PYGZdq{}\PYGZpc{}j\PYGZdq{}}\PYG{p}{)),} \PYG{l+s}{\PYGZdq{}\PYGZpc{}Y\PYGZhy{}\PYGZpc{}j\PYGZdq{}}\PYG{p}{)}
+    ggp \PYG{o}{\PYGZlt{}\PYGZhy{}} ggplot\PYG{p}{(}data \PYG{o}{=} df\PYG{p}{,}
+           mapping \PYG{o}{=} aes\PYG{p}{(}x \PYG{o}{=} Date\PYG{p}{,} y \PYG{o}{=} mm\PYG{p}{))} \PYG{o}{+} \PYG{c+c1}{\PYGZsh{}, shape = Year, colour = Year)) +}
+        geom\PYGZus{}point\PYG{p}{()} \PYG{o}{+}
+        geom\PYGZus{}line\PYG{p}{()} \PYG{o}{+}
+        facet\PYGZus{}grid\PYG{p}{(}facets \PYG{o}{=} Year \PYG{o}{\PYGZti{}} \PYG{l+m}{.}\PYG{p}{)} \PYG{o}{+}
+        scale\PYGZus{}x\PYGZus{}date\PYG{p}{(}labels \PYG{o}{=} \PYG{k+kr}{function}\PYG{p}{(}x\PYG{p}{)} \PYG{k+kp}{format}\PYG{p}{(}x\PYG{p}{,} \PYG{l+s}{\PYGZdq{}\PYGZpc{}d\PYGZhy{}\PYGZpc{}b\PYGZdq{}}\PYG{p}{))} \PYG{o}{+}
+        theme\PYGZus{}light\PYG{p}{()}
+    \PYG{k+kp}{print}\PYG{p}{(}ggp\PYG{p}{)}
+    \PYG{k+kr}{return}\PYG{p}{(}ann.rain\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

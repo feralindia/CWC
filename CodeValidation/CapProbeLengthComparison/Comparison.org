@@ -1,0 +1,78 @@
+#+OPTIONS:    H:3 num:nil toc:2 \n:nil @:t ::t |:t ^:{} -:t f:t *:t TeX:t LaTeX:t skip:t d:(HIDE) tags:not-in-toc
+#+STARTUP:    align fold nodlcheck hidestars oddeven lognotestate hideblocks
+#+SEQ_TODO:   TODO(t) INPROGRESS(i) WAITING(w@) | DONE(d) CANCELED(c@)
+#+TAGS:       Write(w) Update(u) Fix(f) Check(c) noexport(n)
+#+LaTeX_CLASS_OPTIONS: [a4paper]
+#+PROPERTY: header-args :tangle yes :exports both :results output :cache no
+#+PROPERTY: header-args:R  :session *R*
+#+BIBLIOGRAPHY: FireIndices plain
+
+#+TITLE:    Comparing water level recorders of different lengths
+#+AUTHOR:   R.S. Bhalla and Saravanan S
+#+EMAIL:    bhalla@feralindia.org; saravanan@feralindia.org
+#+LANGUAGE:   en
+#+STYLE:      <style type="text/css">#outline-container-introduction{ clear:both; }</style>
+
+# to tangle: C-c C-v t
+# to remove results: org-babel-remove-result-one-or-many
+# to remove specific result block: c-u
+
+* Objectives
+
+  To unravel the possible causes of divergent readings when discharge is measured using flumes, weirs and the velocity area method. Code for each of the above, including salt dilution gauging using the slug and slow discharge method has been screened and manually verified.
+
+** Hypothesis
+
+   This is a consistent measurement error due to either:
+    - varying stage readings from loggers of different lengths.
+    - and/or errors due to the bottom part of the capacitance probe which is encased in brass and is up to 7cm long and does not show an increase in capacitance with length. 
+
+* Methods
+
+  1. Four capacitance probes of different lengths were installed together in the same stream. Three of these were put in the same stilling well, one was in a separate stilling well about 2m upstream. The units were (to be confirmed by Saravanan):
+     | Unit Name | Length (m) |
+     |-----------+--------|
+     | WLR104A   |   1.5  |
+     | WLR118    |   1.0  |
+     | WLR119    |   0.5  |
+     |-----------+--------|
+  2. Data from about two weeks was logged, processed.
+  3. Each unit was freshly calibrated.
+  4. Stage and discharge measurements were plotted.
+
+* Observations
+
+  One of the units (two metres) gave erroneous readings and was removed from the experiment.
+
+  1. Dirunal variations observed in the 1.5 meter unit were substantially higher than the other two.
+
+    #+CAPTION: Calibrated stage values 
+    #+NAME:   fig:Stage.png
+    [[./Stage.png]]
+
+    #+CAPTION: Discharge plot
+    #+NAME: fig:Discharge.png
+    [[./Discharge.png]]
+
+
+  2. Stages for the units were in the order WLR104>WLR118>WLR119.
+
+    | Logger | Mean Discharge (m) |
+    |---------+----------------|
+    | WLR104A |      0.1794732 |
+    | WLR118  |      0.1471044 |
+    | WLR119  |      0.1216435 |
+    |---------+----------------|
+
+  3. Discharges for the units were in the order WLR104>WLR118>WLR119.
+
+    | Logger  | Mean Discharge (m3/s) |
+    |---------+-----------------------|
+    | WLR104A |           0.009532581 |
+    | WLR118  |           0.004433257 |
+    | WLR119  |           0.002146250 |
+    |---------+-----------------------|
+
+* Conclusions
+
+  There does appear to be a systematic error in the logging of discharges from streams. 

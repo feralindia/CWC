@@ -1,0 +1,123 @@
+% Created 2018-03-13 Tue 10:14
+% Intended LaTeX compiler: pdflatex
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{grffile}
+\usepackage{longtable}
+\usepackage{wrapfig}
+\usepackage{rotating}
+\usepackage[normalem]{ulem}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{capt-of}
+\usepackage{hyperref}
+\usepackage{minted}
+\usepackage{listingsutf8}
+\author{R.S. Bhalla}
+\date{\today}
+\title{Adjust the stage of stilling wells to manual benchmarks}
+\hypersetup{
+ pdfauthor={R.S. Bhalla},
+ pdftitle={Adjust the stage of stilling wells to manual benchmarks},
+ pdfkeywords={},
+ pdfsubject={},
+ pdfcreator={Emacs 25.3.50.2 (Org mode 9.1.4)}, 
+ pdflang={English}}
+\begin{document}
+
+\maketitle
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+
+\section*{Abstract}
+\label{sec:org40fef1b}
+
+The placement of the capacitance probe in the stilling well doesn't necessarily match the stage of the stream because the probes are regularly removed for data download, cleaning and re-calibration and then replaced. There is scope of error in the replacement of the probe which needs to be corrected against a fixed benchmark - a manual scale placed in the stream.
+
+To do this the stage needs to be adjusted each time the manual reading is taken, using the timestamp. 
+
+\section*{Functions}
+\label{sec:org7a13a3a}
+
+\subsection*{Calculate differences in logger versus manual stage readings}
+\label{sec:org883bcb0}
+
+Merge the wlr data (processed) and the manual readings using the timestamp and measure the difference between the manual (stg.man) and logger (stg.log) data.
+
+\begin{description}
+\item[{Input}] x - logger unit. For e.g. wlr\_107  or wlr\_112a. Files processed
+\begin{itemize}
+\item benchmark files, e.g.
+\begin{center}
+\begin{tabular}{llr}
+unit & timestamp & stg.man\\
+wlr\_107 & 20/03/16 12:13:00 & NA\\
+wlr\_107 & 24/03/16 12:40:00 & NA\\
+wlr\_107 & 01/05/16 12:40:00 & 0.1\\
+wlr\_107 & 30/05/16 13:10:00 & 0.085\\
+wlr\_107 & 02/07/16 10:25:00 & 0.45\\
+wlr\_107 & 08/08/16 15:10:00 & 0.25\\
+wlr\_107 & 25/08/16 13:22:00 & 0.13\\
+wlr\_107 & 09/09/16 13:22:00 & 0.12\\
+wlr\_107 & 29/07/17 12:55:00 & 0.21\\
+wlr\_107 & 01/09/17 12:50:00 & 0.48\\
+wlr\_107 & 30/09/17 12:50:00 & 0.24\\
+wlr\_107 & 20/10/17 11:28:00 & NA\\
+wlr\_107 & 27/10/17 11:30:00 & 0.13\\
+\end{tabular}
+\end{center}
+\item wlr data from processed files. We're using 15 minute interval files here
+\end{itemize}
+\end{description}
+
+\begin{minted}[]{r}
+adjust.stage.velarea <- function(x){
+    bm.fn <- list.files("~/Res/CWC/Anl/CodeValidation/CapProbeLengthComparison/data/benchmarks/velarea", pattern = x, full.names = TRUE)
+    bm.df <- read.csv(file = bm.fn)
+    bm.df$timestamp <- as.POSIXct(bm.df$timestamp, format = "%d/%m/%y %H:%M:%S", tz = "Asia/Kolkata")
+    bm.df$timestamp <- as.POSIXct(round(as.numeric(bm.df$timestamp)/(15*60))*(15*60), origin = "1970-01-01")
+    stg.fn <- paste0("~/Res/CWC/Data/Nilgiris/wlr/csv/", x, "_15 min.csv")
+    stg.df <- read.csv(file = stg.fn)
+    stg.df <- stg.df[,c("raw", "cal", "date_time")]
+    names(stg.df) <- c("cap", "stg.log", "timestamp")
+    stg.df$timestamp <- as.POSIXct(stg.df$timestamp, tz = "Asia/Kolkata")
+    stg.df$timestamp <- as.POSIXct(round(as.numeric(stg.df$timestamp)/(15*60))*(15*60), origin = "1970-01-01")
+    ts.matched <- stg.df[stg.df$timestamp %in% bm.df$timestamp,]
+    bm.stg.mtch <- merge(ts.matched, bm.df, by="timestamp")
+    bm.stg.mtch$stg.diff <- bm.stg.mtch$stg.man - bm.stg.mtch$stg.log
+   return(bm.stg.mtch)
+}
+\end{minted}
+
+\section*{Run the calculations}
+\label{sec:orga197e88}
+
+\subsection*{Difference in manual and logged stages}
+\label{sec:orgeb89b53}
+
+\begin{minted}[]{r}
+x <- "wlr_107"
+adjust.stage.velarea(x)
+\end{minted}
+
+\begin{center}
+\begin{tabular}{lrllrl}
+timestamp & cap & stg.log & unit & stg.man & stg.diff\\
+\hline
+2016-03-20 12:15:00 & 2010.66666666667 & nil & wlr\_107 & nil & nil\\
+2016-03-24 12:45:00 & 2008 & nil & wlr\_107 & nil & nil\\
+2016-05-01 12:45:00 & 2013.33333333333 & nil & wlr\_107 & 0.1 & nil\\
+2016-05-30 13:15:00 & 2022.66666666667 & nil & wlr\_107 & 0.085 & nil\\
+2016-07-02 10:30:00 & 2232 & 0.468495318882575 & wlr\_107 & 0.45 & -0.018495318882575\\
+2016-08-08 15:15:00 & 2107.33333333333 & 0.292368885748443 & wlr\_107 & 0.25 & -0.042368885748443\\
+2016-08-25 13:15:00 & 2034.66666666667 & 0.1897069541355 & wlr\_107 & 0.13 & -0.0597069541355\\
+2016-09-09 13:15:00 & 2027 & 0.178875649424042 & wlr\_107 & 0.12 & -0.058875649424042\\
+\end{tabular}
+\end{center}
+
+----
+\end{document}

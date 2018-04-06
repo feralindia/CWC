@@ -1,0 +1,15 @@
+digraph{
+	"Physical Measuremnets" -> "Sample date: 2014-08-12 14:00:00
+	Stage:0.32497900000436
+	Average Velocity: 0.39222
+	Cross section1: 0.11675703125
+	Cross section2: 0.14094296875
+	Cross section3: 0.1746
+	Discharge in cross section no1: 0.0354162994791667 
+	Discharge in cross section no2: 0.0582564270833333
+	Discharge in cross section no3: 0.080316
+	Discharge summing the above: 0.1739887265625
+	Discharge from formula: 0.1748";
+	"Formulae" -> "Estimates";
+	
+	}

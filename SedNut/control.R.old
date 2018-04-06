@@ -1,0 +1,166 @@
+##--load libraries
+## library(zoo) # may not be needed
+## library(data.table)
+## library(ggplot2)
+library(parallel)
+library(ggplot2)
+library(reshape2)
+library(grid)
+library(gtable)
+library(gridExtra)
+library(timeSeries)
+library(dplyr) ## may not be needed
+
+##-- load functions
+setwd("~/CurrProj/CWC/Anl/SedNut/")
+source("functions.R", echo = TRUE)
+
+##--define constants
+## site.name <- c("Nilgiris", "Aghnashini")
+site.name <- "Nilgiris" # Aghnashini to be processed
+## lapply(site.name, set.path)
+set.path(site.name)
+
+##-- read sediment and nutrient data
+
+## all.sed.data <- mapply(read.csv.files, int.samp.flnm, int.samp.full.flnm, SIMPLIFY=FALSE)
+## change this, it takes too much memory
+## work to process pairs of files instead of entire dataset
+
+#### all.int.data <- read.csv.files(int.samp.full.flnm)
+#### names(all.int.data)
+
+## create a dataframe containing pairs of water samples and discharge datasets
+int.dis.pairs <- merge(x = int.samp.data.df, y = dis.data.df, by.x = "int.samp.stn", by.y = "dis.stn")
+## Decide what stations you want to process
+stn <- c(101:109,114,115)
+
+## all.dis.data <- mapply(read.csv.files, dis.flnm, dis.full.flnm, SIMPLIFY=FALSE)
+#### all.dis.data <- read.csv.files(dis.full.flnm) ##[c(16:30)]) ##  (read.csv.files, in.x, in.y, SIMPLIFY=FALSE)
+## names(all.dis.data) 
+
+##-- Get data for integrated samplers
+use.cores <- detectCores() - 1 # use all but one cores
+merged.int.data <- mclapply(FUN=merge.dat.int, X=stn, df.stn=int.dis.pairs)
+names(merged.int.data) <- paste0("Stn.", stn)
+mapply(write.list.to.csv, x = merged.int.data, nm.x=paste0("Stn_", stn))
+
+## Plot the data
+
+mapply(FUN = plot.param, x = merged.int.data, nm.x = names(merged.int.data))
+
+
+## merged.int.data <- mapply(merge.dat.int, x=all.int.data, y=all.dis.data, SIMPLIFY = FALSE, USE.NAMES = TRUE)
+## rm(all.int.data) # clear memory
+## rm(all.dis.data)
+
+
+
+##---ENDED PROCESSING FOR GRAB/INTEGRATED SAMPLER --##
+
+##-- Get data for stage samplers
+
+all.stg.data <- read.csv.files(stg.samp.full.flnm)
+## add columns for height of bottles
+## as the dataset isn't large I'm keeping it in RAM
+## use function write.list.to.csv to write to disk if needed
+rep.tab <- "/home/udumbu/rsb/CurrProj/CWC/Anl/SedNut/stagesampler_hights.csv"
+all.stg.data <- lapply(X = all.stg.data, FUN = add.bottle.heights, y = rep.tab)
+
+## create a dataframe containing pairs of water samples and discharge datasets
+stg.dis.pairs <- merge(x = stg.samp.data.df, y = dis.data.df, by.x = "stg.samp.stn", by.y = "dis.stn")
+## Decide what stations you want to process
+stn <- c(102, 106, 107, 108, 115)
+
+
+## subset the discharge dataset to two weeks from each sampler installation
+## need to test with lapply
+dis.stn <- mclapply(X = stn, FUN = subset.dis.data, df.stn = stg.dis.pairs, wqdat = all.stg.data)
+names(dis.stn) <- paste0("stn_", stn)
+stg.dis.res <- lapply(X = names(dis.stn), FUN = get.stg, wq_data = all.stg.data, dis_data = dis.stn)
+names(stg.dis.res) <- paste0("stn_", stn)
+dev.new()
+mapply(FUN = plot.stg.dis, x = stg.dis.res, nm.x = names(stg.dis.res))
+
+## write results to CSV
+
+mapply(write.stg.dis.to.csv, x = stg.dis.res, nm.x = names(stg.dis.res))
+
+
+## Average rainfall for rainguagues in a catchment
+## supply filename containing type of unit and station number
+tbrg.dat <- AvgRain("~/CurrProj/CWC/Anl/sitewise_unintsname.csv")
+
+## Plot timeseries on hydrograph
+
+stn <- as.list(names(tbrg.dat))
+## x <- stn[[2]]
+## y <- tbrg.dat[[2]]
+mapply(FUN = plot.nutconc, x=stn, y=tbrg.dat, SIMPLIFY = FALSE)
+
+## ## prepare pairs of wlr and tbrg
+## stn.pairs <- read.csv(file = "~/CurrProj/CWC/Anl/sitewise_unintsname.csv")
+## stn.pairs <- stn.pairs[stn.pairs$log.type=="tbrg",]
+## w.q.logs <- c(names(merged.int.data), names(stg.dis.res))
+## w.q.logs <- gsub("[^0-9]", "", w.q.logs)
+## stn.pairs <- do.call(rbind, lapply(w.q.logs,
+##                                    FUN = (function(x) stn.pairs[stn.pairs$stn == x,])))
+## stn.pairs <- stn.pairs[, c(1,3)]
+## names(stn.pairs) <- c("wlr", "tbrg")
+## stn.pairs.wlr <- as.list(as.character(stn.pairs$wlr))
+## stn.pairs.tbrg <- as.list(as.character(stn.pairs$tbrg))
+
+
+
+## mapply(FUN = plot.nutconc, stn=stn.pairs.wlr, tbrg.no=stn.pairs.tbrg, SIMPLIFY = FALSE)
+
+
+##---ENDED PROCESSING FOR STAGE/SIPHON SAMPLER --##
+
+
+
+
+## SCRATCH
+
+plot.stg.dis(x = stg.dis.res$stn_102, nm.x = "stn_102")
+
+stn.106 <- get.stg("stn_106", all.stg.data, dis.stn)
+
+x <- "stn_106"
+wq_data <- all.stg.data
+dis_data <- dis.stn
+
+i <- i[[1]]
+i <- i[11:20]
+j <- wqdat
+k <- disdat
+
+
+stn.102 <- get.stg("stn_102", all.stg.data, dis.stn)
+plot.stg.dis(x = stn.102, nm.x = "stn_102")
+write.csv(stn.102, paste0(csv.out.dir, "/stage/stn_102.csv"))
+stn.106 <- get.stg("stn_106", all.stg.data, dis.stn)
+plot.stg.dis(x = stn.106, nm.x = "stn_106")
+write.csv(stn.106, paste0(csv.out.dir, "/stage/stn_106.csv"))
+stn.107 <- get.stg("stn_107", all.stg.data, dis.stn)
+plot.stg.dis(x = stn.107, nm.x = "stn_107")
+write.stg.dis.to.csv(x = stn.107, nm.x = "stn_107")
+stn.108 <- get.stg("stn_108", all.stg.data, dis.stn)
+plot.stg.dis(x = stn.108, nm.x = "stn_108")
+write.stg.dis.to.csv(x = stn.108, nm.x = "stn_108")
+stn.115 <- get.stg("stn_115", all.stg.data, dis.stn)
+plot.stg.dis(x = stn.115, nm.x = "stn_115")
+write.stg.dis.to.csv(x = stn.115, nm.x = "stn_115")
+## n <- i[1:6]
+
+testfunc <- function(x,y){
+   print(paste("wlr is", x))
+   print(paste("tbrg is", y))
+}
+
+
+mapply(testfunc, x=stn.pairs.wlr, y=stn.pairs.tbrg, SIMPLIFY = FALSE, USE.NAMES = FALSE)
+
+
+lapply(X=stn.pairs, FUN = testfunc)
+class(stn.pairs$wlr)

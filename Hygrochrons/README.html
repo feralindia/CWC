@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>README.html</title>
+
+</head>
+
+<body>
+
+<h1>Processing Hygrochron Data</h1>
+
+<h2>Code Documentation</h2>
+
+<p>This R code is for processing temperature and humidity data collected using the <a href="https://www.maximintegrated.com/en/products/digital/data-loggers/DS1923.html">i-button hygrochron</a>.</p>
+
+<p>There are two files associated with this code: <em>control.R</em> which calls the functions stored in the <em>functions.R</em> script. The file <em>hyg_imp.R</em> is the earlier version of the script and has been kept here for archival purposes only.
+This code does not use any loops :-).</p>
+
+<p>Sections in the second level headings correspond to comments in the R code which appear as:  <code>##----section title----##</code></p>
+
+<h1><a href="control.R">control.R</a></h1>
+
+<h2>Call libraries</h2>
+
+<p>The code uses functions from the libraries <code>timeSeries</code>, <code>scales</code>, <code>ggplot2</code> and <code>reshape2</code>.</p>
+
+<h2>Call functions and set file names</h2>
+
+<p>Call the <code>functions.R</code> script and define the location and file names of the folders holding the hygrocrhon data and the destination folder for results.</p>
+
+<h2>Process data by calling functions</h2>
+
+<p>The final section of the control script calls the various functions defined in the <code>functions.R</code> script described below.</p>
+
+<h1><a href="functions.R">functions.R</a></h1>
+
+<p>Functions generated to do the following - listed in sequence they are called by the <code>control.R</code> script. </p>
+
+<p>Note: some of the functions depend on other functions separately defined or defined internally.</p>
+
+<ol>
+<li><p><code>import.hygch</code> imports hygrochron dat which is called using <code>mapply</code> and requires the inputs:</p>
+
+<ul>
+<li>temp.dir or humi.dir - directory holding temperature or humidity data.</li>
+<li>temp.flnm or humi.flnm - file name for each raw (logger generated) file.</li>
+</ul></li>
+<li><p><code>aggregate.by</code> aggregates the imported data and aggregates it into min, max, mean and median and allows the user to specify period of  aggregation. It is called using <code>lapply</code> and takes the inputs:</p>
+
+<ul>
+<li>temp.res or humi.res which is the output of the function call above and</li>
+<li>prd which is the period for which the aggregation is required.</li>
+</ul></li>
+<li><p><code>merge.bs.tabs</code> takes the two button sensor tables (temp.res and humi.res) and merges them into a single data frame which can be exported to csv if required. It is called using the <code>mapply</code> function and requires the inputs temp.res and humi.res - the results from the <code>import.hygch</code> script.</p></li>
+<li><p><code>merge.bs.agg</code> merges the aggregated hygrochron data and is called using the <code>mapply</code> function. It requires the inputs daily.temp and daily.humi - the aggregated dataset for humidity and temperature. Note that the file names could change depending on the user and so could the aggregation period as per the inputs for the <code>aggregate.by</code> script above.</p></li>
+<li><p><code>plot.save</code> - this is the last script which generates a plot with separate panels for each year showing the different aggregations. It also dumps the data as a CSV file. The function needs to be called separately for temperature or humidity calcuations as putting them on the same graph is quite messy (completely different scales). The script is called from the <code>mapply</code> function and requires the inputs:</p>
+
+<ul>
+<li>daily.temp or daily.humi - data generated from the <code>aggregate.by</code> script is used as an input. Any aggregation can be used as mentioned earlier.</li>
+<li>hyg.no - number of the hygrochron, used to generate the title and file name for the plot.</li>
+<li>parm - the name of the parameter being reported on. Could be "temperature" or "humidity". Again used for the titles and file names. </li>
+</ul>
+
+<p>----##----</p></li>
+</ol>
+
+</body>
+</html>

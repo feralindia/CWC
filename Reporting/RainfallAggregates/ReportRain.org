@@ -1,0 +1,1609 @@
+#+OPTIONS:    H:3 num:nil toc:2 \n:nil @:t ::t |:t ^:{} -:t f:t *:t TeX:t LaTeX:t skip:t d:(HIDE) tags:not-in-toc
+#+STARTUP:    align fold nodlcheck hidestars oddeven lognotestate hideblocks
+#+SEQ_TODO:   TODO(t) INPROGRESS(i) WAITING(w@) | DONE(d) CANCELED(c@)
+#+TAGS:       Write(w) Update(u) Fix(f) Check(c) noexport(n)
+#+LaTeX_CLASS_OPTIONS: [a4paper]
+#+PROPERTY: header-args:R  :session *R* :tangle yes :eval yes :cache no
+#+PROPERTY: header-args:R+ :exports results :results output :width 640 :height 640 :colnames yes :hlines yes
+
+#+REVEAL_TRANS: linear
+#+REVEAL_THEME: black
+#+REVEAL_ROOT: file:///home/udumbu/rsb/local/reveal.js-3.3.0
+#+REVEAL_EXTRA_CSS: ./modifications.css
+
+# to tangle: C-c C-v t
+# to remove results: org-babel-remove-result-one-or-many
+# to remove specific result block: c-u
+
+#+TITLE:    Rainfall Aggregates for Nilgiris Sites
+#+AUTHOR:   R.S. Bhalla and Saravanan S
+#+EMAIL:    bhalla@feralindia.org; saravanan@feralindia.org
+#+LANGUAGE:   en
+#+STYLE:      <style type="text/css">#outline-container-introduction{ clear:both; }</style>
+
+#+BEGIN_SRC R :exports none
+library(ggplot2)
+library(reshape2)
+library(sf)
+library(mapview)
+#+END_SRC
+
+#+RESULTS:
+: Linking to GEOS 3.5.1, GDAL 2.2.2, proj.4 4.9.2
+
+#+BEGIN_SRC R :exports none
+RepRainAll <- function(x){
+    df <- read.csv(x)
+    unit.nm <- substr(basename(x), 0, 9)
+    unit.nm <- gsub("_", " ", unit.nm)
+    unit.nm <- trimws(unit.nm, "right")
+    df$dt.tm <- as.POSIXct(df$dt.tm, tz = "Asia/Kolkata")
+    y <- unique(format(df$dt.tm, "%Y"))
+    df$Year <- format(df$dt.tm, "%Y")
+    ann.rain <- do.call("rbind", lapply(y, function(z){
+        rain <- df$mm[format(df$dt.tm, "%Y")==z]
+        sum.rain <- sum(rain, na.rm = TRUE)
+        out.df <- data.frame(unit.nm, z, sum.rain)
+        names(out.df) <- c("Unit", "Year", "Rain (mm)")
+        return(out.df)
+    }))
+    return(ann.rain)
+}
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC R :exports none
+PlotRainAll <- function(x){
+    x$UnitYear <- paste(x$Unit, x$Year)
+    names(x)[3] <- "Rain"
+    ggp <- ggplot(data = x, aes(x = Unit, y = Rain)) + 
+        geom_bar(stat = "identity") +
+        facet_grid(facets = Year ~ .) +
+        labs(y = "Rain in mm") +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1))
+    print(ggp)
+}
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC R :exports none
+RepRain <- function(x){
+    df <- read.csv(x)
+    unit.nm <- substr(basename(x), 0, 9)
+    unit.nm <- gsub("_", " ", unit.nm)
+    unit.nm <- trimws(unit.nm, "right")
+    df$dt.tm <- as.POSIXct(df$dt.tm, tz = "Asia/Kolkata")
+    y <- unique(format(df$dt.tm, "%Y"))
+    df$Year <- format(df$dt.tm, "%Y")
+    ann.rain <- do.call("rbind", lapply(y, function(z){
+        rain <- df$mm[format(df$dt.tm, "%Y")==z]
+        sum.rain <- sum(rain, na.rm = TRUE)
+        out.df <- data.frame(z, sum.rain)
+        names(out.df) <- c("Year", "Rain (mm)")
+        return(out.df)
+    }))
+    return(ann.rain)
+}
+#+END_SRC R 
+
+#+RESULTS:
+
+#+BEGIN_SRC R :exports none
+PlotRain <- function(x){
+    df <- read.csv(x)
+    unit.nm <- substr(basename(x), 0, 8)
+    df$dt.tm <- as.POSIXct(df$dt.tm, tz = "Asia/Kolkata")
+    df$Year <- format(df$dt.tm, "%Y")
+    df$Date <- as.Date(paste0("2000-",format(df$dt.tm, "%j")), "%Y-%j")
+    ggp <- ggplot(data = df,
+           mapping = aes(x = Date, y = mm)) + #, shape = Year, colour = Year)) +
+        geom_point() +
+        geom_line() +
+        facet_grid(facets = Year ~ .) +
+        scale_x_date(labels = function(x) format(x, "%d-%b")) +
+        theme_light()
+    fl.nm <- paste0(unit.nm, ".png")
+    ggsave(fl.nm, ggp)
+    print(ggp)
+    return(fl.nm)
+    }
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC R :exports none
+RepLogger <- function(x){
+    df <- crd.df[gsub("TBRG_", "", crd.df$unit_id)==x, ]
+    df <- df[, c(2, 3, 6, 7)]
+    tdf <- as.data.frame(t(df), col.names = TRUE)
+    tdf$Parameter <- row.names(tdf)
+    names(tdf)[1] <- "Value"
+    return(print(tdf[,c(2,1)]))
+}
+#+END_SRC
+
+#+RESULTS:
+
+* Rainfall Aggregates
+
+  Monthly rainfall aggregates for specified rain gauges installed in the sites are provided below.
+
+  #+BEGIN_SRC R :exports results :results graphics :file AllRainfall.png :bg "transparent"
+  x <- list.files("~/Res/CWC/Data/Nilgiris/tbrg/csv/", pattern = "1 day.csv", full.names = TRUE)
+  all.rain <- do.call("rbind", lapply(x, RepRainAll))
+  PlotRainAll(all.rain)
+  #+END_SRC
+
+  #+RESULTS:
+  [[file:AllRainfall.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+#+BEGIN_SRC R :exports none 
+crd.df <- read.csv("./tbrgMetadataRev.csv", stringsAsFactors=FALSE, na.strings=c("","NA"))
+crd.df$Start <- as.POSIXct(crd.df$Start, tz = "Asia/Kolkata")
+crd.df$End <- as.POSIXct(crd.df$End, tz = "Asia/Kolkata")
+crd.df.nlg <- crd.df[-40,]
+crd.df.nlg$unit.no <- gsub("TBRG_", "", crd.df.nlg$unit_id)
+zoom <- calc_zoom(long, lat, crd.df.nlg)
+bbx <- make_bbox(long, lat, crd.df.nlg, f = 0.05)
+ooty_basemap <- get_stamenmap(bbox = bbx, zoom = zoom, maptype = "watercolor")
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC R :exports results :results graphics :file map.png :bg "transparent"
+ggmap(ooty_basemap) +
+geom_point(data = crd.df.nlg, aes(x=long, y = lat), alpha = .5) +
+geom_text(data = crd.df.nlg, aes(x = long, y = lat, label = unit.no), size = 3, vjust = 0, hjust = 0)
+print(ggp)
+#+END_SRC
+
+#+RESULTS:
+[[file:map.png]]
+
+* Rainfall Aggregates by Unit
+
+  Details of rainfall for each of the units along with their respective location and date of installation are provided below.     
+
+#+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 101
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("101")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                 Value |
+   |-----------+-----------------------|
+   | lat       |              11.29184 |
+   | long      |              76.55643 |
+   | Elevation |                  2628 |
+   | location  | Kolaripetta top tower |
+
+     #+BEGIN_SRC R :exports results :results value 
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_101_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |      3642 |
+     | 2014 |    3508.8 |
+     | 2015 |   3075.12 |
+     | 2016 |   1398.48 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_101.png :bg "transparent" 
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_101_1 day.csv")
+     #+END_SRC
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+
+** Tipping Bucket Rain Gauge 102
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("102")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                               Value |
+   |-----------+-------------------------------------|
+   | lat       |                            11.28465 |
+   | long      |                            76.56707 |
+   | Elevation |                                2351 |
+   | location  | Lakkidi -Near V notch at First site |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_102_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_102.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_102_1 day.csv")
+     #+END_SRC
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 103
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("103")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |    Value |
+   |-----------+----------|
+   | lat       | 11.27527 |
+   | long      | 76.56266 |
+   | Elevation |     2332 |
+   | location  |   Bunker |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_103_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_103.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_103_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 104
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("104")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                        Value |
+   |-----------+------------------------------|
+   | lat       |                     11.29962 |
+   | long      |                     76.59183 |
+   | Elevation |                         2164 |
+   | location  | Avalanchi forest guest house |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_104_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |   2860.26 |
+     | 2014 |   2613.78 |
+     | 2015 |   2056.86 |
+     | 2016 |    971.88 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_104.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_104_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_104.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 105
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("105")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                           Value |
+   |-----------+---------------------------------|
+   | lat       |                        11.25881 |
+   | long      |                        76.57212 |
+   | Elevation |                            2320 |
+   | location  | Devar Betta - Upperbhavani road |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_105_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_105.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_105_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 105a
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("105a")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                           Value |
+   |-----------+---------------------------------|
+   | lat       |                        11.25881 |
+   | long      |                        76.57212 |
+   | Elevation |                            2320 |
+   | location  | Devar Betta - Upperbhavani road |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_105a_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_105a.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_105a_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_105a.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 106
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("106")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                          Value |
+   |-----------+--------------------------------|
+   | lat       |                       11.27226 |
+   | long      |                       76.57786 |
+   | Elevation |                           2325 |
+   | location  | Devar Betta -Upperbhavani road |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_106_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_106.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_106_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 107
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("107")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |         Value |
+   |-----------+---------------|
+   | lat       |      11.28562 |
+   | long      |      76.57411 |
+   | Elevation |          2266 |
+   | location  | Nariadu Betta |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_107_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_107.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_107_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 108
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("108")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                         Value |
+   |-----------+-------------------------------|
+   | lat       |                      11.27183 |
+   | long      |                      76.57043 |
+   | Elevation |                          2362 |
+   | location  | Overlooking Lakdihalla temple |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_108_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |   2798.12 |
+     | 2014 |   2881.06 |
+     | 2015 |   2180.88 |
+     | 2016 |    745.42 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_108.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_108_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 109
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("109")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                                                            Value |
+   |-----------+------------------------------------------------------------------|
+   | lat       |                                                         11.28146 |
+   | long      |                                                         76.56077 |
+   | Elevation |                                                             2402 |
+   | location  | Off road branching off Kollari Betta road. 300m from branch off. |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_109_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_109.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_109_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 110
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("110")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                          Value |
+   |-----------+--------------------------------|
+   | lat       |                        11.2703 |
+   | long      |                       76.56022 |
+   | Elevation |                           2400 |
+   | location  | Upperbhavani Turiest sport top |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_110_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_110.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_110_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 110a
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("110a")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                          Value |
+   |-----------+--------------------------------|
+   | lat       |                        11.2703 |
+   | long      |                       76.56022 |
+   | Elevation |                           2400 |
+   | location  | Upperbhavani Turiest sport top |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_110a_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_110a.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_110a_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_110a.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 111
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("111")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                                     Value |
+   |-----------+-------------------------------------------|
+   | lat       |                                  11.28934 |
+   | long      |                                  76.56178 |
+   | Elevation |                                      2458 |
+   | location  | Below Kollari Betta, smack below the road |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_111_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_111.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_111_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 112
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("112")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                                  Value |
+   |-----------+----------------------------------------|
+   | lat       |                               11.29836 |
+   | long      |                               76.57176 |
+   | Elevation |                                   2327 |
+   | location  | Above the Avalanche generation station |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_112_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_112.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_112_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 113
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("113")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                           Value |
+   |-----------+---------------------------------|
+   | lat       |                         11.2715 |
+   | long      |                        76.55173 |
+   | Elevation |                            2347 |
+   | location  | Border of Mukurthi beyond medow |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_113_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_113.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_113_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 114
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("114")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                                             Value |
+   |-----------+---------------------------------------------------|
+   | lat       |                                          11.30523 |
+   | long      |                                          76.57675 |
+   | Elevation |                                              2000 |
+   | location  | Next to rain gauge in Avalache generation station |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_114_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_114.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_114_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 115
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("115")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                    Value |
+   |-----------+--------------------------|
+   | lat       |                 11.27919 |
+   | long      |                 76.56896 |
+   | Elevation |                     2321 |
+   | location  | near bavani amman temple |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_115_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_115.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_115_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 116
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("116")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                        Value |
+   |-----------+------------------------------|
+   | lat       |                     11.26235 |
+   | long      |                     76.55132 |
+   | Elevation |                         2338 |
+   | location  | Grass land Upperbhavani View |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_116_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_116.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_116_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 117
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("117")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                       Value |
+   |-----------+-----------------------------|
+   | lat       |                    11.29837 |
+   | long      |                    76.59846 |
+   | Elevation |                        2158 |
+   | location  | Near Califlower shola falls |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_117_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_117.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_117_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 118
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("118")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                           Value |
+   |-----------+---------------------------------|
+   | lat       |                        11.27961 |
+   | long      |                        76.57993 |
+   | Elevation |                            2364 |
+   | location  | Devar Betta - Upperbhavani road |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_118_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_118.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_118_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 119
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("119")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                          Value |
+   |-----------+--------------------------------|
+   | lat       |                       11.29202 |
+   | long      |                       76.56935 |
+   | Elevation |                           2580 |
+   | location  | kolaripetta tracking shed east |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_119_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_119.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_119_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 120
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("120")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                               Value |
+   |-----------+-------------------------------------|
+   | lat       |                            11.27244 |
+   | long      |                            76.54473 |
+   | Elevation |                                2322 |
+   | location  | Grass land last point - Upparbavani |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_120_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_120.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_120_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 121
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("121")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                  Value |
+   |-----------+------------------------|
+   | lat       |                11.2255 |
+   | long      |               76.52548 |
+   | Elevation |                   2290 |
+   | location  | Near Upper bhavani Dam |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_121_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_121.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_121_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 122
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("122")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                Value |
+   |-----------+----------------------|
+   | lat       |             11.34078 |
+   | long      |             76.59647 |
+   | Elevation |                 2097 |
+   | location  | Red hills gest house |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_122_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_122.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_122_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+** Tipping Bucket Rain Gauge 123
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("123")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                  Value |
+   |-----------+------------------------|
+   | lat       |               11.25527 |
+   | long      |               76.62456 |
+   | Elevation |                   1850 |
+   | location  | Doddacombu Tea factory |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_123_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_123.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_123_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 124
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("124")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                  Value |
+   |-----------+------------------------|
+   | lat       |               11.23453 |
+   | long      |               76.57868 |
+   | Elevation |                   2240 |
+   | location  | Korakundha Tea factory |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_124_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_124.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_124_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 125
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("125")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                     Value |
+   |-----------+---------------------------|
+   | lat       |                  11.29813 |
+   | long      |                  76.55673 |
+   | Elevation |                      2575 |
+   | location  | North side of Kolaripetta |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_125_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_125.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_125_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 125a
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("125a")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                     Value |
+   |-----------+---------------------------|
+   | lat       |                  11.29813 |
+   | long      |                  76.55673 |
+   | Elevation |                      2575 |
+   | location  | North side of Kolaripetta |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_125a_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_125a.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_125a_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 126
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("126")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |                  Value |
+   |-----------+------------------------|
+   | lat       |               11.31198 |
+   | long      |               76.56031 |
+   | Elevation |                   2250 |
+   | location  | Top to Avalanchi shola |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_126_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_126.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_126_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 127
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("127")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |        Value |
+   |-----------+--------------|
+   | lat       |     11.39937 |
+   | long      |     76.59895 |
+   | Elevation |         2262 |
+   | location  | Parsonsvelly |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_127_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_127.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_127_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 128
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("128")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |     Value |
+   |-----------+-----------|
+   | lat       |  11.26117 |
+   | long      |  76.67502 |
+   | Elevation |      1614 |
+   | location  | Penstorck |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_128_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_128.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_128_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 129
+
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("129")
+   #+END_SRC
+
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_129_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_129.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_129_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 130
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("130")
+   #+END_SRC
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_130_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_130.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_130_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+
+** Tipping Bucket Rain Gauge 131
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("131")
+   #+END_SRC
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_131_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_131.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_131_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 132
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("132")
+   #+END_SRC
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_132_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_132.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_132_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 133
+
+  #+BEGIN_SRC R :exports results :results value
+   RepLogger("133")
+   #+END_SRC
+
+   #+RESULTS:
+   | Parameter |      Value |
+   |-----------+------------|
+   | lat       |   11.26726 |
+   | long      |   76.57699 |
+   | Elevation |       2302 |
+   | location  | Deverbetta |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_133_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_133.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_133_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 134
+   
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("134")
+   #+END_SRC
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_134_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_134.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_134_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_102.png]]
+
+     #+REVEAL: split
+
+     #+LATEX: \newpage
+
+** Tipping Bucket Rain Gauge 135
+
+   #+BEGIN_SRC R :exports results :results value
+   RepLogger("135")
+   #+END_SRC
+
+   #+RESULTS:
+   | x               |
+   |-----------------|
+   | org_babel_R_eoe |
+
+     #+BEGIN_SRC R :exports results :results value
+     RepRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_135_1 day.csv")
+     #+END_SRC
+     
+     #+RESULTS:
+     | Year | Rain (mm) |
+     |------+-----------|
+     | 2013 |    4073.3 |
+     | 2014 |   4036.27 |
+     | 2015 |      2944 |
+     | 2016 |    1603.1 |
+
+     #+REVEAL: split
+
+     #+BEGIN_SRC R :exports results :results graphics :file tbrg_135.png :bg "transparent"
+     PlotRain("~/Res/CWC/Data/Nilgiris/tbrg/csv/tbrg_135_1 day.csv")
+     #+END_SRC
+
+     #+RESULTS:
+     [[file:tbrg_135.png]]

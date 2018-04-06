@@ -46,5 +46,18 @@ Once the calibration data is read for each unit, a linear regression is performe
 
 ## [import.R](wlr_import.R)
 
+<<<<<<< Updated upstream
+=======
+1. Import dataset from the 'raw' folder and bind it.
+2. Calibrate the capacitance to stage using the results of the [calib.R](wlr_calib.R) script.
+3. Align loggers, particularly flumes or replacements at each station so that stage readings are consistent, i.e. jumps due to incorrect logger installation are removed.
+
+Added support for multicores to improve speed. Multicore code from <http://stackoverflow.com/questions/1395309/how-to-make-r-use-all-processors>. However, need to spend time on changing the routines into functions and then use mclapply instead of loops.
+
+# TODO
+
+1. Scripts are painfully slow, loops need to be converted to functions. Code can be taken from the newer scripts such as those for processing the hygrochron data.
+
+>>>>>>> Stashed changes
 
 

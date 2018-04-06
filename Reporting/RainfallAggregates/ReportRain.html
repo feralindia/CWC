@@ -1,0 +1,2245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Rainfall Aggregates for Nilgiris Sites</title>
+<meta name="author" content="(R.S. Bhalla and Saravanan S)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="file:///home/udumbu/rsb/local/reveal.js-3.3.0/css/reveal.css"/>
+
+<link rel="stylesheet" href="file:///home/udumbu/rsb/local/reveal.js-3.3.0/css/theme/black.css" id="theme"/>
+
+<link rel="stylesheet" href="./modifications.css"/>
+
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'file:///home/udumbu/rsb/local/reveal.js-3.3.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1 class="title">Rainfall Aggregates for Nilgiris Sites</h1><h2 class="author">R.S. Bhalla and Saravanan S</h2><p class="date">Created: 2018-02-24 Sat 18:41</p>
+</section>
+<section id="table-of-contents">
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#/slide-orgbc1ef94">Rainfall Aggregates</a></li>
+<li><a href="#/slide-orgdc4f03f">Rainfall Aggregates by Unit</a>
+<ul>
+<li><a href="#/slide-org599d24b">Tipping Bucket Rain Gauge 101</a></li>
+<li><a href="#/slide-orgbd874ed">Tipping Bucket Rain Gauge 102</a></li>
+<li><a href="#/slide-org52b9fb7">Tipping Bucket Rain Gauge 103</a></li>
+<li><a href="#/slide-org6250397">Tipping Bucket Rain Gauge 104</a></li>
+<li><a href="#/slide-org8fac703">Tipping Bucket Rain Gauge 105</a></li>
+<li><a href="#/slide-orge5101db">Tipping Bucket Rain Gauge 105a</a></li>
+<li><a href="#/slide-org5c134e8">Tipping Bucket Rain Gauge 106</a></li>
+<li><a href="#/slide-orge9c5f8a">Tipping Bucket Rain Gauge 107</a></li>
+<li><a href="#/slide-org63281ac">Tipping Bucket Rain Gauge 108</a></li>
+<li><a href="#/slide-org8325b02">Tipping Bucket Rain Gauge 109</a></li>
+<li><a href="#/slide-org44cb1af">Tipping Bucket Rain Gauge 110</a></li>
+<li><a href="#/slide-orgdcec9be">Tipping Bucket Rain Gauge 110a</a></li>
+<li><a href="#/slide-orgb5cf09f">Tipping Bucket Rain Gauge 111</a></li>
+<li><a href="#/slide-org4912a1f">Tipping Bucket Rain Gauge 112</a></li>
+<li><a href="#/slide-org318787b">Tipping Bucket Rain Gauge 113</a></li>
+<li><a href="#/slide-org630ba47">Tipping Bucket Rain Gauge 114</a></li>
+<li><a href="#/slide-orgda926df">Tipping Bucket Rain Gauge 115</a></li>
+<li><a href="#/slide-org851a60f">Tipping Bucket Rain Gauge 116</a></li>
+<li><a href="#/slide-org008ef0d">Tipping Bucket Rain Gauge 117</a></li>
+<li><a href="#/slide-orgf691a9a">Tipping Bucket Rain Gauge 118</a></li>
+<li><a href="#/slide-org6bcf65e">Tipping Bucket Rain Gauge 119</a></li>
+<li><a href="#/slide-orgce2accc">Tipping Bucket Rain Gauge 120</a></li>
+<li><a href="#/slide-org4f278d9">Tipping Bucket Rain Gauge 121</a></li>
+<li><a href="#/slide-orgc3e47b5">Tipping Bucket Rain Gauge 122</a></li>
+<li><a href="#/slide-orgc752cc6">Tipping Bucket Rain Gauge 123</a></li>
+<li><a href="#/slide-org6916ebb">Tipping Bucket Rain Gauge 124</a></li>
+<li><a href="#/slide-orgf3f8f2e">Tipping Bucket Rain Gauge 125</a></li>
+<li><a href="#/slide-orga311c69">Tipping Bucket Rain Gauge 125a</a></li>
+<li><a href="#/slide-orge895f6c">Tipping Bucket Rain Gauge 126</a></li>
+<li><a href="#/slide-org9b65c6c">Tipping Bucket Rain Gauge 127</a></li>
+<li><a href="#/slide-org87e67c3">Tipping Bucket Rain Gauge 128</a></li>
+<li><a href="#/slide-orgd201bdb">Tipping Bucket Rain Gauge 129</a></li>
+<li><a href="#/slide-orga3d7508">Tipping Bucket Rain Gauge 130</a></li>
+<li><a href="#/slide-orgda8b590">Tipping Bucket Rain Gauge 131</a></li>
+<li><a href="#/slide-org5a7cbda">Tipping Bucket Rain Gauge 132</a></li>
+<li><a href="#/slide-org29b3c2d">Tipping Bucket Rain Gauge 133</a></li>
+<li><a href="#/slide-orge8d6631">Tipping Bucket Rain Gauge 134</a></li>
+<li><a href="#/slide-org6184902">Tipping Bucket Rain Gauge 135</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section>
+<section id="slide-orgbc1ef94">
+<h2 id="orgbc1ef94">Rainfall Aggregates</h2>
+<p>
+Monthly rainfall aggregates for specified rain gauges installed in the sites are provided below.
+Code adapted from <a href="https://stackoverflow.com/questions/29974535/dates-with-month-and-day-in-time-series-plot-in-ggplot2-with-facet-for-years/29975153">StackOverflow</a>.
+</p>
+
+
+<div class="figure">
+<p><img src="AllRainfall.png" alt="AllRainfall.png" />
+</p>
+</div>
+
+</section>
+</section>
+<section>
+<section id="slide-orgdc4f03f">
+<h2 id="orgdc4f03f">Rainfall Aggregates by Unit</h2>
+<p>
+Details of rainfall for each of the units along with their respective location and date of installation are provided below.
+</p>
+
+</section>
+<section id="slide-org599d24b">
+<h3 id="org599d24b">Tipping Bucket Rain Gauge 101</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">3642</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">3508.8</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">3075.12</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">1398.48</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_101.png" alt="tbrg_101.png" />
+</p>
+</div>
+
+
+<div class="figure">
+<p><img src="tbrg_101.png" alt="tbrg_101.png" />
+</p>
+</div></li>
+
+</ul>
+
+</section>
+<section id="slide-orgbd874ed">
+<h3 id="orgbd874ed">Tipping Bucket Rain Gauge 102</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">4073.3</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">4036.27</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2944</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">1603.1</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_102.png" alt="tbrg_102.png" />
+</p>
+</div>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_102.png" alt="tbrg_102.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org52b9fb7">
+<h3 id="org52b9fb7">Tipping Bucket Rain Gauge 103</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">3460.6</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">3250.26</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2470.78</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">1229.28</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_103.png" alt="tbrg_103.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org6250397">
+<h3 id="org6250397">Tipping Bucket Rain Gauge 104</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">2860.26</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">2613.78</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2056.86</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">971.88</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_104.png" alt="tbrg_104.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org8fac703">
+<h3 id="org8fac703">Tipping Bucket Rain Gauge 105</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">2422.32</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">2419.44</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">1958.88</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">0</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_105.png" alt="tbrg_105.png" />
+</p>
+</div></li>
+
+</ul>
+
+</section>
+<section id="slide-orge5101db">
+<h3 id="orge5101db">Tipping Bucket Rain Gauge 105a</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">807.18</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_105a.png" alt="tbrg_105a.png" />
+</p>
+</div></li>
+
+</ul>
+
+</section>
+<section id="slide-org5c134e8">
+<h3 id="org5c134e8">Tipping Bucket Rain Gauge 106</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">2576.34</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">2739.62</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2430.22</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">958.36</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_106.png" alt="tbrg_106.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-orge9c5f8a">
+<h3 id="orge9c5f8a">Tipping Bucket Rain Gauge 107</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">3861</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">3197.48</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2877.42</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">1331.46</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_107.png" alt="tbrg_107.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org63281ac">
+<h3 id="org63281ac">Tipping Bucket Rain Gauge 108</h3>
+<ul>
+<li>Location: Lakadi Hall</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">2798.12</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">2881.06</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2180.88</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">745.42</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_108.png" alt="tbrg_108.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org8325b02">
+<h3 id="org8325b02">Tipping Bucket Rain Gauge 109</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">4033.5</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">3830.5</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2989.25</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">1572.75</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_109.png" alt="tbrg_109.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org44cb1af">
+<h3 id="org44cb1af">Tipping Bucket Rain Gauge 110</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">3023.46</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">2876.85</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">1681.56</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_110.png" alt="tbrg_110.png" />
+</p>
+</div></li>
+
+</ul>
+
+</section>
+<section id="slide-orgdcec9be">
+<h3 id="orgdcec9be">Tipping Bucket Rain Gauge 110a</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">465.75</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">1148.5</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_110a.png" alt="tbrg_110a.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-orgb5cf09f">
+<h3 id="orgb5cf09f">Tipping Bucket Rain Gauge 111</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">3138.75</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">2237</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2804</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">1458.75</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_111.png" alt="tbrg_111.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org4912a1f">
+<h3 id="org4912a1f">Tipping Bucket Rain Gauge 112</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">2179.06</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">2232.36</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">1797.9</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">4494.62</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_112.png" alt="tbrg_112.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org318787b">
+<h3 id="org318787b">Tipping Bucket Rain Gauge 113</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">4544.8</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">3261.44</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2350.92</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">1167.14</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_113.png" alt="tbrg_113.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org630ba47">
+<h3 id="org630ba47">Tipping Bucket Rain Gauge 114</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">3665</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">3687.25</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2777</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">1481.25</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_114.png" alt="tbrg_114.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-orgda926df">
+<h3 id="orgda926df">Tipping Bucket Rain Gauge 115</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">3172.26</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">3596.58</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2880.54</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">1388.14</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_115.png" alt="tbrg_115.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org851a60f">
+<h3 id="org851a60f">Tipping Bucket Rain Gauge 116</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">2806</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">2103</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2561.5</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">1384</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_116.png" alt="tbrg_116.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org008ef0d">
+<h3 id="org008ef0d">Tipping Bucket Rain Gauge 117</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">1570.25</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">2483</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2067.75</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">844</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_117.png" alt="tbrg_117.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-orgf691a9a">
+<h3 id="orgf691a9a">Tipping Bucket Rain Gauge 118</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">2059.98</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">2851.94</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2214.68</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">1022.32</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_118.png" alt="tbrg_118.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org6bcf65e">
+<h3 id="org6bcf65e">Tipping Bucket Rain Gauge 119</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">825.5</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">1431.3</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">1134.64</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">506.74</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_119.png" alt="tbrg_119.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-orgce2accc">
+<h3 id="orgce2accc">Tipping Bucket Rain Gauge 120</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">2422.32</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">3918.72</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2597.28</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">1452.48</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_120.png" alt="tbrg_120.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org4f278d9">
+<h3 id="org4f278d9">Tipping Bucket Rain Gauge 121</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">1109.75</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">3043.75</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2182</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">919.25</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_121.png" alt="tbrg_121.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-orgc3e47b5">
+<h3 id="orgc3e47b5">Tipping Bucket Rain Gauge 122</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">505.68</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">2333.04</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2300.16</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">1164.48</td>
+</tr>
+</tbody>
+</table></li>
+
+</ul>
+
+
+
+<div class="figure">
+<p><img src="tbrg_122.png" alt="tbrg_122.png" />
+</p>
+</div>
+
+
+</section>
+<section id="slide-orgc752cc6">
+<h3 id="orgc752cc6">Tipping Bucket Rain Gauge 123</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">444.5</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">1601.5</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">1477.75</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">358.25</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_123.png" alt="tbrg_123.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org6916ebb">
+<h3 id="org6916ebb">Tipping Bucket Rain Gauge 124</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">489.5</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">2121.75</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">1959</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">573</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_124.png" alt="tbrg_124.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-orgf3f8f2e">
+<h3 id="orgf3f8f2e">Tipping Bucket Rain Gauge 125</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">700.35</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">5220.77</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">3481.51</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_125.png" alt="tbrg_125.png" />
+</p>
+</div></li>
+
+</ul>
+
+</section>
+<section id="slide-orga311c69">
+<h3 id="orga311c69">Tipping Bucket Rain Gauge 125a</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">2297.82</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_125a.png" alt="tbrg_125a.png" />
+</p>
+</div></li>
+
+</ul>
+
+</section>
+<section id="slide-orge895f6c">
+<h3 id="orge895f6c">Tipping Bucket Rain Gauge 126</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2013</td>
+<td class="org-right">754.08</td>
+</tr>
+
+<tr>
+<td class="org-right">2014</td>
+<td class="org-right">5840.4</td>
+</tr>
+
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">3680.4</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">2440.56</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_126.png" alt="tbrg_126.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org9b65c6c">
+<h3 id="org9b65c6c">Tipping Bucket Rain Gauge 127</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">1972.32</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">815.28</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_127.png" alt="tbrg_127.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org87e67c3">
+<h3 id="org87e67c3">Tipping Bucket Rain Gauge 128</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">467.28</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_128.png" alt="tbrg_128.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-orgd201bdb">
+<h3 id="orgd201bdb">Tipping Bucket Rain Gauge 129</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">2485.25</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">1155</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_129.png" alt="tbrg_129.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-orga3d7508">
+<h3 id="orga3d7508">Tipping Bucket Rain Gauge 130</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">4147.5</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">2674.25</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_130.png" alt="tbrg_130.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-orgda8b590">
+<h3 id="orgda8b590">Tipping Bucket Rain Gauge 131</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">1636.36</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">669.9</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_131.png" alt="tbrg_131.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org5a7cbda">
+<h3 id="org5a7cbda">Tipping Bucket Rain Gauge 132</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">3594.36</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">2371.16</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_132.png" alt="tbrg_132.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org29b3c2d">
+<h3 id="org29b3c2d">Tipping Bucket Rain Gauge 133</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">1011.36</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">802.8</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_133.png" alt="tbrg_133.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-orge8d6631">
+<h3 id="orge8d6631">Tipping Bucket Rain Gauge 134</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">1158.97</td>
+</tr>
+
+<tr>
+<td class="org-right">2016</td>
+<td class="org-right">939.32</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_134.png" alt="tbrg_134.png" />
+</p>
+</div></li>
+
+</ul>
+
+
+</section>
+<section id="slide-org6184902">
+<h3 id="org6184902">Tipping Bucket Rain Gauge 135</h3>
+<ul>
+<li>Location: Lakadi Halla</li>
+<li>Installed: June 2013</li>
+<li><p>
+Coordinates: 
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-right">Year</th>
+<th scope="col" class="org-right">Rain (mm)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-right">2015</td>
+<td class="org-right">0</td>
+</tr>
+</tbody>
+</table>
+
+</section>
+<section >
+
+
+<div class="figure">
+<p><img src="tbrg_135.png" alt="tbrg_135.png" />
+</p>
+</div></li>
+
+</ul>
+</section>
+</section>
+</div>
+</div>
+<script src="file:///home/udumbu/rsb/local/reveal.js-3.3.0/lib/js/head.min.js"></script>
+<script src="file:///home/udumbu/rsb/local/reveal.js-3.3.0/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'linear', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'file:///home/udumbu/rsb/local/reveal.js-3.3.0/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+ { src: 'file:///home/udumbu/rsb/local/reveal.js-3.3.0/plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'file:///home/udumbu/rsb/local/reveal.js-3.3.0/plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+ { src: 'file:///home/udumbu/rsb/local/reveal.js-3.3.0/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+ { src: 'file:///home/udumbu/rsb/local/reveal.js-3.3.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>

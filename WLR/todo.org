@@ -1,0 +1,8 @@
+#+TITLE: ToDo for sorting out differences in discharge estimates
+
+1. See whether there is a significant difference in the calibration readings if we use the same linear model with and then without the "brass" portion of the capacitance probe.
+2. Fix the discharge function for flumes so it is as per values provided in the internet, i.e. ignore values provided by Srinivas Badiger.
+3. See if there is a change in the s/d curve over time for the same stage.
+4. Take low stages and see if the s/d shifts.
+5. Take predicted values of the s/d and compare with actual measurements.
+

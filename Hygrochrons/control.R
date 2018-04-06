@@ -13,8 +13,13 @@ library("reshape2")
 
 source("functions.R", echo=FALSE)
 
+<<<<<<< Updated upstream
 hyg.raw.path <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/hygch/raw"
 hyg.res.path <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/hygch/csv"
+=======
+hyg.raw.path <- "/home/udumbu/rsb/CurrProj/CWC/Data/Nilgiris/hygch/raw"
+hyg.res.path <- "/home/udumbu/rsb/CurrProj/CWC/Data/Nilgiris/hygch/csv"
+>>>>>>> Stashed changes
 hyg.raw.dirs <- dir(path=hyg.raw.path, full.names=TRUE)
 flnm <- dir(path=hyg.raw.path, full.names=FALSE)
 temp.flnm <- paste(flnm, "_temp", sep = "")
@@ -23,7 +28,11 @@ temp.dir <- paste(hyg.raw.dirs, "/temp", sep="")
 humi.dir <- paste(hyg.raw.dirs, "/humi", sep="")
 
 
+<<<<<<< Updated upstream
 hyg.csv.dir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/hygch/csv/"
+=======
+hyg.csv.dir <- "/home/udumbu/rsb/CurrProj/CWC/Data/Nilgiris/hygch/csv/"
+>>>>>>> Stashed changes
 hyg.raw.fl.nme <- dir(path=hyg.raw.path, full.names=FALSE)
 hyg.csv.fl.nme <- gsub("raw", "csv", hyg.raw.fl.nme)
 hyg.csv.nme <- gsub(pattern=".csv", replacement="", x=hyg.csv.fl.nme)

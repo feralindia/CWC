@@ -1,0 +1,11 @@
+﻿Site Name ,WLR110
+Site Number ,110
+Logger ,Capacitive Water Level
+Logger Serial Number ,40023
+
+
+Scan No ,Date and Time,       Capacitive Water Level,        ,
+        ,        ,RAW VALUE ,CALIBRATED VALUE,
+
+1,10/01/2015 , 12:40:00,909,16.52
+2,10/01/2015 , 12:45:00,909,16.71

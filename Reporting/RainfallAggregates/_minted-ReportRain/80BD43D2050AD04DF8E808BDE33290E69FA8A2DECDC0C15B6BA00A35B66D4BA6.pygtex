@@ -1,0 +1,9 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+crd.df \PYG{o}{\PYGZlt{}\PYGZhy{}} read.csv\PYG{p}{(}\PYG{l+s}{\PYGZdq{}./tbrgMetadata.csv\PYGZdq{}}\PYG{p}{,} stringsAsFactors\PYG{o}{=}\PYG{k+kc}{FALSE}\PYG{p}{,} na.strings\PYG{o}{=}\PYG{k+kt}{c}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}\PYGZdq{}}\PYG{p}{,}\PYG{l+s}{\PYGZdq{}NA\PYGZdq{}}\PYG{p}{))}
+crd.df\PYG{o}{\PYGZdl{}}Start \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kp}{as.POSIXct}\PYG{p}{(}crd.df\PYG{o}{\PYGZdl{}}Start\PYG{p}{,} tz \PYG{o}{=} \PYG{l+s}{\PYGZdq{}Asia/Kolkata\PYGZdq{}}\PYG{p}{)}
+crd.df\PYG{o}{\PYGZdl{}}End \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kp}{as.POSIXct}\PYG{p}{(}crd.df\PYG{o}{\PYGZdl{}}End\PYG{p}{,} tz \PYG{o}{=} \PYG{l+s}{\PYGZdq{}Asia/Kolkata\PYGZdq{}}\PYG{p}{)}
+crd.st \PYG{o}{\PYGZlt{}\PYGZhy{}} st\PYGZus{}as\PYGZus{}sf\PYG{p}{(}crd.df\PYG{p}{,} coords \PYG{o}{=} \PYG{k+kt}{c}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}long\PYGZdq{}}\PYG{p}{,} \PYG{l+s}{\PYGZdq{}lat\PYGZdq{}}\PYG{p}{),}
+		   crs \PYG{o}{=} \PYG{l+s}{\PYGZdq{}+proj=longlat +ellps=WGS84 +datum=WGS84 +no\PYGZus{}defs\PYGZdq{}}\PYG{p}{)}
+crd.mv \PYG{o}{\PYGZlt{}\PYGZhy{}} mapview\PYG{p}{(}crd.st\PYG{p}{[}\PYG{l+s}{\PYGZdq{}unit\PYGZus{}id\PYGZdq{}}\PYG{p}{],} col.regions \PYG{o}{=} sf.colors\PYG{p}{(}\PYG{l+m}{10}\PYG{p}{))}
+mapshot\PYG{p}{(}crd.mv\PYG{p}{,} file \PYG{o}{=} \PYG{l+s}{\PYGZdq{}MapView.png\PYGZdq{}}\PYG{p}{)}
+\end{Verbatim}

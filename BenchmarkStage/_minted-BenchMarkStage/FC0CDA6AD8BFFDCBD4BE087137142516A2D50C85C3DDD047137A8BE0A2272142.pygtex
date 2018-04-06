@@ -1,0 +1,18 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+adjust.stage.velarea \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kr}{function}\PYG{p}{(}x\PYG{p}{)\PYGZob{}}
+    bm.fn \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kp}{list.files}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}\PYGZti{}/Res/CWC/Anl/CodeValidation/CapProbeLengthComparison/data/benchmarks/velarea\PYGZdq{}}\PYG{p}{,} pattern \PYG{o}{=} x\PYG{p}{,} full.names \PYG{o}{=} \PYG{k+kc}{TRUE}\PYG{p}{)}
+    bm.df \PYG{o}{\PYGZlt{}\PYGZhy{}} read.csv\PYG{p}{(}file \PYG{o}{=} bm.fn\PYG{p}{)}
+    bm.df\PYG{o}{\PYGZdl{}}timestamp \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kp}{as.POSIXct}\PYG{p}{(}bm.df\PYG{o}{\PYGZdl{}}timestamp\PYG{p}{,} format \PYG{o}{=} \PYG{l+s}{\PYGZdq{}\PYGZpc{}d/\PYGZpc{}m/\PYGZpc{}y \PYGZpc{}H:\PYGZpc{}M:\PYGZpc{}S\PYGZdq{}}\PYG{p}{,} tz \PYG{o}{=} \PYG{l+s}{\PYGZdq{}Asia/Kolkata\PYGZdq{}}\PYG{p}{)}
+    bm.df\PYG{o}{\PYGZdl{}}timestamp \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kp}{as.POSIXct}\PYG{p}{(}\PYG{k+kp}{round}\PYG{p}{(}\PYG{k+kp}{as.numeric}\PYG{p}{(}bm.df\PYG{o}{\PYGZdl{}}timestamp\PYG{p}{)}\PYG{o}{/}\PYG{p}{(}\PYG{l+m}{15}\PYG{o}{*}\PYG{l+m}{60}\PYG{p}{))}\PYG{o}{*}\PYG{p}{(}\PYG{l+m}{15}\PYG{o}{*}\PYG{l+m}{60}\PYG{p}{),} origin \PYG{o}{=} \PYG{l+s}{\PYGZdq{}1970\PYGZhy{}01\PYGZhy{}01\PYGZdq{}}\PYG{p}{)}
+    stg.fn \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kp}{paste0}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}\PYGZti{}/Res/CWC/Data/Nilgiris/wlr/csv/\PYGZdq{}}\PYG{p}{,} x\PYG{p}{,} \PYG{l+s}{\PYGZdq{}\PYGZus{}15 min.csv\PYGZdq{}}\PYG{p}{)}
+    stg.df \PYG{o}{\PYGZlt{}\PYGZhy{}} read.csv\PYG{p}{(}file \PYG{o}{=} stg.fn\PYG{p}{)}
+    stg.df \PYG{o}{\PYGZlt{}\PYGZhy{}} stg.df\PYG{p}{[,}\PYG{k+kt}{c}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}raw\PYGZdq{}}\PYG{p}{,} \PYG{l+s}{\PYGZdq{}cal\PYGZdq{}}\PYG{p}{,} \PYG{l+s}{\PYGZdq{}date\PYGZus{}time\PYGZdq{}}\PYG{p}{)]}
+    \PYG{k+kp}{names}\PYG{p}{(}stg.df\PYG{p}{)} \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kt}{c}\PYG{p}{(}\PYG{l+s}{\PYGZdq{}cap\PYGZdq{}}\PYG{p}{,} \PYG{l+s}{\PYGZdq{}stg.log\PYGZdq{}}\PYG{p}{,} \PYG{l+s}{\PYGZdq{}timestamp\PYGZdq{}}\PYG{p}{)}
+    stg.df\PYG{o}{\PYGZdl{}}timestamp \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kp}{as.POSIXct}\PYG{p}{(}stg.df\PYG{o}{\PYGZdl{}}timestamp\PYG{p}{,} tz \PYG{o}{=} \PYG{l+s}{\PYGZdq{}Asia/Kolkata\PYGZdq{}}\PYG{p}{)}
+    stg.df\PYG{o}{\PYGZdl{}}timestamp \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kp}{as.POSIXct}\PYG{p}{(}\PYG{k+kp}{round}\PYG{p}{(}\PYG{k+kp}{as.numeric}\PYG{p}{(}stg.df\PYG{o}{\PYGZdl{}}timestamp\PYG{p}{)}\PYG{o}{/}\PYG{p}{(}\PYG{l+m}{15}\PYG{o}{*}\PYG{l+m}{60}\PYG{p}{))}\PYG{o}{*}\PYG{p}{(}\PYG{l+m}{15}\PYG{o}{*}\PYG{l+m}{60}\PYG{p}{),} origin \PYG{o}{=} \PYG{l+s}{\PYGZdq{}1970\PYGZhy{}01\PYGZhy{}01\PYGZdq{}}\PYG{p}{)}
+    ts.matched \PYG{o}{\PYGZlt{}\PYGZhy{}} stg.df\PYG{p}{[}stg.df\PYG{o}{\PYGZdl{}}timestamp \PYG{o}{\PYGZpc{}in\PYGZpc{}} bm.df\PYG{o}{\PYGZdl{}}timestamp\PYG{p}{,]}
+    bm.stg.mtch \PYG{o}{\PYGZlt{}\PYGZhy{}} \PYG{k+kp}{merge}\PYG{p}{(}ts.matched\PYG{p}{,} bm.df\PYG{p}{,} by\PYG{o}{=}\PYG{l+s}{\PYGZdq{}timestamp\PYGZdq{}}\PYG{p}{)}
+    bm.stg.mtch\PYG{o}{\PYGZdl{}}stg.diff \PYG{o}{\PYGZlt{}\PYGZhy{}} bm.stg.mtch\PYG{o}{\PYGZdl{}}stg.man \PYG{o}{\PYGZhy{}} bm.stg.mtch\PYG{o}{\PYGZdl{}}stg.log
+   \PYG{k+kr}{return}\PYG{p}{(}bm.stg.mtch\PYG{p}{)}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

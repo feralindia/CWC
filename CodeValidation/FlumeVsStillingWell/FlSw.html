@@ -1,0 +1,1009 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2018-02-13 Tue 15:28 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Flume and Velocity Area Comparison</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="R.S. Bhalla" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2017 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Flume and Velocity Area Comparison</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgc91c850">Summary</a></li>
+<li><a href="#org8904bb8">Libraries</a></li>
+<li><a href="#orge4a2617">Functions</a>
+<ul>
+<li><a href="#org97fdd9f">Import Data</a></li>
+<li><a href="#org5f4abcc">Calibration of capacitance probe</a></li>
+<li><a href="#org7fadc75">Calculation of discharge for water level recorders placed in stream beds using velocity area method.</a></li>
+<li><a href="#orgd803145">Calculation of discharge for flume</a></li>
+<li><a href="#org3886e2e">Compare data between flume and velocity area method</a></li>
+</ul>
+</li>
+<li><a href="#org471b72e">Testing with sample data</a>
+<ul>
+<li><a href="#org542b1c6">Datasets</a></li>
+<li><a href="#orge72c7da">Calculate the stage using linear models</a></li>
+<li><a href="#orgfd0c9d4">Calculate the discharges</a></li>
+<li><a href="#org94b08cd">Compare the discharge between flume and velocity area method.</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-orgc91c850" class="outline-2">
+<h2 id="orgc91c850">Summary</h2>
+<div class="outline-text-2" id="text-orgc91c850">
+<p>
+This documents the code written to test the difference between stream discharges measured using the velocity area method and from flumes.
+Most of the code is borrowed from the CWC project, with the exception of the code for velocity-area measurements which has been rewritten using the simple feature (sf) library and is now based on functions. 
+</p>
+</div>
+</div>
+
+<div id="outline-container-org8904bb8" class="outline-2">
+<h2 id="org8904bb8">Libraries</h2>
+<div class="outline-text-2" id="text-org8904bb8">
+<p>
+The following modules are used:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #008b8b;">library</span>(sf)
+<span style="color: #008b8b;">library</span>(reshape2)
+<span style="color: #008b8b;">library</span>(ggplot2)
+</pre>
+</div>
+
+<pre class="example">
+Linking to GEOS 3.5.1, GDAL 2.2.2, proj.4 4.9.2, lwgeom 2.3.3 r15473
+
+</pre>
+</div>
+</div>
+
+<div id="outline-container-orge4a2617" class="outline-2">
+<h2 id="orge4a2617">Functions</h2>
+<div class="outline-text-2" id="text-orge4a2617">
+</div>
+<div id="outline-container-org97fdd9f" class="outline-3">
+<h3 id="org97fdd9f">Import Data</h3>
+<div class="outline-text-3" id="text-org97fdd9f">
+<p>
+Import wlr data from raw files (multiple files downloaded from loggers) by merging the files together and formatting the time zone and rename the columns.
+</p>
+
+<dl class="org-dl">
+<dt>Input</dt><dd>Full file names, can also be a list of file names generated by list.files()</dd>
+<dt>Output</dt><dd>Merged dataset</dd>
+</dl>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #00ede1; font-weight: bold;">importdata</span> <span style="color: #008b8b;">&lt;-</span> <span style="color: #ffad29; font-weight: bold;">function</span>(flnm){
+  x <span style="color: #008b8b;">&lt;-</span> do.call(<span style="color: #e67128;">"rbind"</span>, lapply(flnm, read.csv, skip=8, header=<span style="color: #34cae2;">FALSE</span>, strip.white = <span style="color: #34cae2;">TRUE</span>, blank.lines.skip = <span style="color: #34cae2;">TRUE</span>, stringsAsFactors = <span style="color: #34cae2;">FALSE</span>))
+  names(x)<span style="color: #008b8b;">&lt;-</span> c(<span style="color: #e67128;">"scan"</span>, <span style="color: #e67128;">"date"</span>, <span style="color: #e67128;">"time"</span>, <span style="color: #e67128;">"capacitance"</span>, <span style="color: #e67128;">"stage"</span>)
+  x <span style="color: #008b8b;">&lt;-</span> x[!is.na(x$date),]
+  x$date <span style="color: #008b8b;">&lt;-</span> as.Date(x$date, format = <span style="color: #e67128;">"%d/%m/%Y"</span>) 
+  x <span style="color: #008b8b;">&lt;-</span> transform(x, timestamp = paste(date, time, sep=<span style="color: #e67128;">' '</span>))
+  x <span style="color: #008b8b;">&lt;-</span> x[!is.na(x$date),]
+  x$timestamp <span style="color: #008b8b;">&lt;-</span> as.POSIXct(x$timestamp, tz = <span style="color: #e67128;">"Asia/Kolkata"</span>)
+  <span style="color: #ffad29; font-weight: bold;">return</span>(x)
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org5f4abcc" class="outline-3">
+<h3 id="org5f4abcc">Calibration of capacitance probe</h3>
+<div class="outline-text-3" id="text-org5f4abcc">
+<p>
+The probe comprises of two parts: a brass weight which is about 5 cm long and  <b>shows no capacitance increase</b> along its length, and a teflon coated wire which shows a linear increase in capacitance as it is submerged. We tested whether it made any difference in the calculation of the stage if we changed the type of model fit to the length of the wire. 
+</p>
+</div>
+
+<div id="outline-container-org2b2d5c0" class="outline-4">
+<h4 id="org2b2d5c0">getlm</h4>
+<div class="outline-text-4" id="text-org2b2d5c0">
+<p>
+This uses a linear model to calibrate the capacitance probe. The function does a quick check to see if measurements are entered in cm or metres and ensures the reading are in metres.
+</p>
+
+<dl class="org-dl">
+<dt>Input</dt><dd>Name of file holding the calibration reading.</dd>
+<dt>Output</dt><dd>Summary of model</dd>
+</dl>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #00ede1; font-weight: bold;">getlm</span> <span style="color: #008b8b;">&lt;-</span> <span style="color: #ffad29; font-weight: bold;">function</span>(x){
+  calibdat <span style="color: #008b8b;">&lt;-</span> read.csv(x, header=<span style="color: #34cae2;">FALSE</span>, sep=<span style="color: #e67128;">","</span>, col.names=c(<span style="color: #e67128;">"stage"</span>, <span style="color: #e67128;">"capacitance"</span>), skip=6)
+  <span style="color: #ffad29; font-weight: bold;">if</span>(max(calibdat$stage, na.rm = <span style="color: #34cae2;">TRUE</span>) &gt; 5) calibdat$stage <span style="color: #008b8b;">&lt;-</span> calibdat$stage/100 <span style="color: #74af68;"># </span><span style="color: #74af68;">convert to meters when calibration is done in cm</span>
+  fitlm <span style="color: #008b8b;">&lt;-</span> lm(stage ~ capacitance, data = calibdat)
+  print(tail(calibdat))
+  print(summary(fitlm))
+  <span style="color: #ffad29; font-weight: bold;">return</span>(fitlm) 
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org65ed8d9" class="outline-4">
+<h4 id="org65ed8d9">getlm.brass</h4>
+<div class="outline-text-4" id="text-org65ed8d9">
+<p>
+This uses a interaction linear model to calibrate the capacitance probe where the interaction term is the material (brass or teflon).
+</p>
+
+<dl class="org-dl">
+<dt>Input</dt><dd>Name of file holding the calibration reading.</dd>
+<dt>Output</dt><dd>Summary of model</dd>
+</dl>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #00ede1; font-weight: bold;">getlm.brass</span> <span style="color: #008b8b;">&lt;-</span> <span style="color: #ffad29; font-weight: bold;">function</span>(x){
+  calibdat <span style="color: #008b8b;">&lt;-</span> read.csv(x, header=<span style="color: #34cae2;">FALSE</span>, sep=<span style="color: #e67128;">","</span>, col.names=c(<span style="color: #e67128;">"stage"</span>, <span style="color: #e67128;">"capacitance"</span>), skip=6)
+  <span style="color: #ffad29; font-weight: bold;">if</span>(max(calibdat$stage, na.rm = <span style="color: #34cae2;">TRUE</span>) &gt; 5) calibdat$stage <span style="color: #008b8b;">&lt;-</span> calibdat$stage/100 <span style="color: #74af68;"># </span><span style="color: #74af68;">convert to meters when calibration is done in cm</span>
+  calibdat$material[calibdat$stage&gt;0.055] <span style="color: #008b8b;">&lt;-</span> <span style="color: #e67128;">"Teflon"</span>
+  calibdat$material[calibdat$stage&lt;=0.055] <span style="color: #008b8b;">&lt;-</span> <span style="color: #e67128;">"Brass"</span>
+  fitlm <span style="color: #008b8b;">&lt;-</span> lm(stage ~ capacitance*material, data = calibdat)
+  cutoff<span style="color: #008b8b;">&lt;&lt;-</span>min(calibdat$capacitance[calibdat$material==<span style="color: #e67128;">"Teflon"</span>])
+  print(tail(calibdat))
+  print(summary(fitlm))
+  <span style="color: #ffad29; font-weight: bold;">return</span>(fitlm)
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org07c2be0" class="outline-4">
+<h4 id="org07c2be0">do.wlr.cal</h4>
+<div class="outline-text-4" id="text-org07c2be0">
+<p>
+Calibrate the wlr capacitance to stage using the calibration done.
+</p>
+
+<dl class="org-dl">
+<dt>Input</dt><dd>The results of the <code>getlm</code> function above and the wlr data imported using the <code>importdata</code> function.</dd>
+<dt>Output</dt><dd>A stagecalc column with calibrated stage values is added to the wlr data.</dd>
+<dt>TBD</dt><dd><p>
+The calibration needs to be done based on dates so that values are updated over the years to account for changes or degradation of the capacitance probes.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #00ede1; font-weight: bold;">do.wlr.cal</span> <span style="color: #008b8b;">&lt;-</span> <span style="color: #ffad29; font-weight: bold;">function</span>(x, y){
+  y$stagecalc <span style="color: #008b8b;">&lt;-</span> predict(x, y)
+  <span style="color: #ffad29; font-weight: bold;">return</span>(y)
+}
+</pre>
+</div></dd>
+</dl>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org7fadc75" class="outline-3">
+<h3 id="org7fadc75">Calculation of discharge for water level recorders placed in stream beds using velocity area method.</h3>
+<div class="outline-text-3" id="text-org7fadc75">
+</div>
+<div id="outline-container-org932f04a" class="outline-4">
+<h4 id="org932f04a">Intersect and write shapefiles of the cross section</h4>
+<div class="outline-text-4" id="text-org932f04a">
+<p>
+Intersect the stream cross section (xsec) with rectangles corresponding to the number of sections the stream was divided into for velocity readings (rec) to get the surface area of each of these sections of the stream cross section. Rewrites the matrix of coordinates into a well-known-text file so it can be exported to a shapefile. This function is called by the <code>vel.area</code> function which follows.
+</p>
+
+<dl class="org-dl">
+<dt>Input</dt><dd>Matrix of coordinates of the rectangle as <code>x</code> and the number of rectangles the cross section of the stream is split into as <code>y</code>.</dd>
+<dt>Output</dt><dd>ESRI shapefile</dd>
+</dl>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #00ede1; font-weight: bold;">intersect.xsec</span> <span style="color: #008b8b;">&lt;-</span> <span style="color: #ffad29; font-weight: bold;">function</span>(x,y){ 
+  rec <span style="color: #008b8b;">&lt;-</span> list(x)
+  rec <span style="color: #008b8b;">&lt;-</span> st_polygon(rec)
+  int <span style="color: #008b8b;">&lt;-</span> st_intersection(xsec, rec)
+  int.st <span style="color: #008b8b;">&lt;-</span> st_as_sfc(st_as_text(int))
+  st_write(int.st, paste0(y, <span style="color: #e67128;">".shp"</span>), driver = <span style="color: #e67128;">"ESRI Shapefile"</span>, delete_dsn= <span style="color: #34cae2;">TRUE</span>)
+  <span style="color: #ffad29; font-weight: bold;">return</span>(st_area(int))
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org73f3232" class="outline-4">
+<h4 id="org73f3232">Do the velocity area calculations to generate a rating curve</h4>
+<div class="outline-text-4" id="text-org73f3232">
+<p>
+Calculate the surface area and multiply it by the velocity measurements taken in different sections of the stream. The function reads in the coordinates of the cross section, splits them into sections based on the number of velocity readings taken, calculates their area and multiplies the surface area of each section with the velocity measured to arrive at the <code>discharge</code> part of the calculation. 
+</p>
+
+<dl class="org-dl">
+<dt>Input</dt><dd><code>x</code> is the list of cross section files and <code>y</code> is the list of velocity measurements. Note: both <code>x</code> and <code>y</code> MUST have the same filename.</dd>
+<dt>Output</dt><dd>Shapefiles with names corresponding to the input file names corresponding to the cross section and the three divisions (rectangles) where the velocity was measured.</dd>
+<dt>TBD</dt><dd>This needs to be changed so that only the intersection is plotted.</dd>
+</dl>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #00ede1; font-weight: bold;">vel.area</span> <span style="color: #008b8b;">&lt;-</span> <span style="color: #ffad29; font-weight: bold;">function</span>(x, y){    
+  <span style="color: #ffad29; font-weight: bold;">if</span>(basename(x)==basename(y)){
+    crd <span style="color: #008b8b;">&lt;-</span> read.csv(x, header = <span style="color: #34cae2;">TRUE</span>, skip = 5)[,-1]
+    vel <span style="color: #008b8b;">&lt;-</span> read.csv(y, header = <span style="color: #34cae2;">TRUE</span>, skip = 5)
+    obs.file <span style="color: #008b8b;">&lt;-</span> gsub(<span style="color: #e67128;">".csv| "</span>, <span style="color: #e67128;">""</span>, basename(x))
+    site <span style="color: #008b8b;">&lt;-</span> strsplit(x, split=<span style="color: #e67128;">"/"</span>)[[1]][5]
+    print(paste0(site, <span style="color: #e67128;">": "</span>, obs.file))
+    out.dir.name <span style="color: #008b8b;">&lt;-</span> paste0(output.dir, <span style="color: #e67128;">"cx_shapefiles/"</span>, site)
+    <span style="color: #ffad29; font-weight: bold;">if</span>(!dir.exists(out.dir.name))dir.create(out.dir.name)
+    out.nm <span style="color: #008b8b;">&lt;-</span> paste0(out.dir.name, <span style="color: #e67128;">"/"</span>, obs.file)
+    crd <span style="color: #008b8b;">&lt;-</span> crd/100 <span style="color: #74af68;"># </span><span style="color: #74af68;">convert to metres</span>
+    <span style="color: #ffad29; font-weight: bold;">if</span>(crd[1,1] != 0 | crd[1,2] != 0) crd <span style="color: #008b8b;">&lt;-</span> rbind(c(0,0),crd) <span style="color: #74af68;">## </span><span style="color: #74af68;">add row of 0,0 if missing</span>
+    crd <span style="color: #008b8b;">&lt;-</span> rbind(crd, c(0,0))
+    <span style="color: #74af68;">## </span><span style="color: #74af68;">crd &lt;- rbind(crd, crd[1,])</span>
+    crd[ , 2] <span style="color: #008b8b;">&lt;-</span> crd[ , 2]*-1 <span style="color: #74af68;"># </span><span style="color: #74af68;">covert y values to negative (depth)</span>
+    crd.mat <span style="color: #008b8b;">&lt;-</span> as.matrix(crd)
+    xsec <span style="color: #008b8b;">&lt;&lt;-</span> st_polygon(list(crd.mat))
+    xsec.st <span style="color: #008b8b;">&lt;-</span> st_as_sfc(st_as_text(xsec)) <span style="color: #74af68;"># </span><span style="color: #74af68;">convert to wkt then sfc</span>
+    st_write(xsec.st, paste0(out.nm, <span style="color: #e67128;">"crossec.shp"</span>), driver = <span style="color: #e67128;">"ESRI Shapefile"</span>, delete_dsn= <span style="color: #34cae2;">TRUE</span>) <span style="color: #74af68;"># </span><span style="color: #74af68;">write to shapefile        </span>
+    <span style="color: #74af68;">## </span><span style="color: #74af68;">st_area(xsec)</span>
+    plot(xsec)
+    divs <span style="color: #008b8b;">&lt;-</span> length(unique(gsub(<span style="color: #e67128;">"[[:digit:]]"</span>, <span style="color: #e67128;">""</span>, vel$Sl.No.))) <span style="color: #74af68;"># </span><span style="color: #74af68;">number of divisions of xsec</span>
+    seg.ln <span style="color: #008b8b;">&lt;-</span> max(crd$Length, na.rm = T)
+    seg.ht <span style="color: #008b8b;">&lt;-</span> min(crd$Depth, na.rm = T)
+    bbx <span style="color: #008b8b;">&lt;-</span> paste(seq(0, seg.ln, length.out = divs+1), seg.ht, sep = <span style="color: #e67128;">","</span>)
+    cl1 <span style="color: #008b8b;">&lt;-</span> seq(0, seg.ln, length.out = divs+1)
+    cl2 <span style="color: #008b8b;">&lt;-</span> rep(seg.ht,divs+1)
+    bbx <span style="color: #008b8b;">&lt;-</span> matrix(c(cl1,cl2), nrow=length(cl1))
+    st <span style="color: #008b8b;">&lt;-</span> seq(1, nrow(bbx)-1, by=1)
+    rec <span style="color: #008b8b;">&lt;-</span> lapply(st, <span style="color: #ffad29; font-weight: bold;">function</span>(x){
+        y <span style="color: #008b8b;">&lt;-</span> x+1
+        r1 <span style="color: #008b8b;">&lt;-</span> bbx[x,]
+        r2 <span style="color: #008b8b;">&lt;-</span> bbx[y,]
+        r3 <span style="color: #008b8b;">&lt;-</span> cbind(bbx[y,1], 0)
+        r4 <span style="color: #008b8b;">&lt;-</span> cbind(bbx[x,1], 0)
+        r5 <span style="color: #008b8b;">&lt;-</span> bbx[x,]
+    <span style="color: #ffad29; font-weight: bold;">return</span>(rbind(r1,r2,r3, r4, r5))
+    })
+    rec.ln <span style="color: #008b8b;">&lt;-</span> paste0(out.nm, <span style="color: #e67128;">"RecNo_"</span>,1:length(rec)) <span style="color: #74af68;"># </span><span style="color: #74af68;">suffix of shapefile</span>
+    sx.area <span style="color: #008b8b;">&lt;-</span> mapply(intersect.xsec, rec, rec.ln) <span style="color: #74af68;"># </span><span style="color: #74af68;">export to shapefile   </span>
+    vel$secno <span style="color: #008b8b;">&lt;-</span> gsub(<span style="color: #e67128;">"[[:digit:]]"</span>, <span style="color: #e67128;">""</span>, vel$Sl.No.)
+    vel <span style="color: #008b8b;">&lt;-</span> aggregate(cbind(velR1, velR2, velR3) ~ secno, data=vel, FUN=mean)
+    avg.vel <span style="color: #008b8b;">&lt;-</span> as.list(apply(vel,1, <span style="color: #ffad29; font-weight: bold;">function</span>(x) mean(as.numeric(x[2:4]))))
+    avg.disch <span style="color: #008b8b;">&lt;-</span> sum(mapply(prod, sx.area, avg.vel)) <span style="color: #74af68;"># </span><span style="color: #74af68;">multiply each velocity with each xsec and add</span>
+    xsec.depth.m <span style="color: #008b8b;">&lt;-</span> seg.ht*-1
+    vel.dt <span style="color: #008b8b;">&lt;-</span> as.Date(read.csv(y, skip=1,nrows=1, header=F)[,c(2)], format = <span style="color: #e67128;">"%d/%m/%y"</span>)
+    vel.tm <span style="color: #008b8b;">&lt;-</span> read.csv(y, skip=2,nrows=1, header=F)[,c(2)]
+    vel.dt.tm <span style="color: #008b8b;">&lt;-</span> paste(vel.dt, vel.tm, sep=<span style="color: #e67128;">' '</span>)
+    timestamp <span style="color: #008b8b;">&lt;-</span> as.POSIXct(vel.dt.tm, format=<span style="color: #e67128;">"%Y-%m-%d %I:%M:%S %p"</span>, tz=<span style="color: #e67128;">"Asia/Kolkata"</span>) 
+    res.df <span style="color: #008b8b;">&lt;-</span> data.frame(site, obs.file, timestamp, avg.disch, xsec.depth.m)
+    <span style="color: #ffad29; font-weight: bold;">return</span>(res.df)
+    } <span style="color: #ffad29; font-weight: bold;">else</span> {
+    print(<span style="color: #e67128;">"ERROR: File names differ."</span>)
+    }
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org8e30aaf" class="outline-4">
+<h4 id="org8e30aaf">Get the stage of the stream recorder based on time stamp of velocity measurements</h4>
+<div class="outline-text-4" id="text-org8e30aaf">
+<p>
+The stage of the water level recorder is then taken from the timestamp on the velocity measurement and used as the <code>stage</code> part of the calculation. 
+</p>
+
+<dl class="org-dl">
+<dt>Input</dt><dd><code>x</code> is the output of the <code>vel.area</code> function; <code>y</code> is the calibrated wlr readings at 15 minute intervals. This can be changed to a five minute interval (or any other) if needed.</dd>
+<dt>Output</dt><dd>Stage appended to the stage discharge file which can now be used to calculate the rating curve.</dd>
+</dl>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #00ede1; font-weight: bold;">get.stage</span> <span style="color: #008b8b;">&lt;-</span> <span style="color: #ffad29; font-weight: bold;">function</span>(x, y){
+  pat <span style="color: #008b8b;">&lt;-</span> paste0(y, <span style="color: #e67128;">"_15 min.csv"</span>)
+  fn <span style="color: #008b8b;">&lt;-</span> list.files(path =<span style="color: #e67128;">"~/Res/CWC/Data/Nilgiris/wlr/csv/"</span>, pattern = pat, full.names = <span style="color: #34cae2;">TRUE</span> )
+  wlr <span style="color: #008b8b;">&lt;-</span> read.csv(fn)
+  x$timestamp <span style="color: #008b8b;">&lt;-</span> as.POSIXct(x$timestamp, tz = <span style="color: #e67128;">"Asia/Kolkata"</span>)
+  wlr$date_time <span style="color: #008b8b;">&lt;-</span> as.POSIXct(wlr$date_time, tz = <span style="color: #e67128;">"Asia/Kolkata"</span>)
+  x$dt.round <span style="color: #008b8b;">&lt;-</span> as.POSIXct(round(as.double(x$timestamp)/(15*60))*(15*60),origin=(as.POSIXct(<span style="color: #e67128;">'1970-01-01'</span>)))
+  wlr$dt.round <span style="color: #008b8b;">&lt;-</span> as.POSIXct(round(as.double(wlr$date_time)/(15*60))*(15*60),origin=(as.POSIXct(<span style="color: #e67128;">'1970-01-01'</span>)))
+  merged.df <span style="color: #008b8b;">&lt;-</span> merge(x, wlr, by = <span style="color: #e67128;">"dt.round"</span>)
+  merged.df <span style="color: #008b8b;">&lt;-</span> merged.df[complete.cases(merged.df),]
+  merged.df <span style="color: #008b8b;">&lt;-</span> merged.df[,c(<span style="color: #e67128;">"site"</span>, <span style="color: #e67128;">"obs.file"</span>, <span style="color: #e67128;">"timestamp"</span>, <span style="color: #e67128;">"avg.disch"</span>, <span style="color: #e67128;">"xsec.depth.m"</span>, <span style="color: #e67128;">"raw"</span>, <span style="color: #e67128;">"cal"</span>, <span style="color: #e67128;">"date_time"</span>)]
+  names(merged.df) <span style="color: #008b8b;">&lt;-</span> c(<span style="color: #e67128;">"site"</span>, <span style="color: #e67128;">"obs.file"</span>, <span style="color: #e67128;">"vel.timestamp"</span>, <span style="color: #e67128;">"avg.disch"</span>, <span style="color: #e67128;">"xsec.depth"</span>, <span style="color: #e67128;">"scan"</span>, <span style="color: #e67128;">"stage"</span>, <span style="color: #e67128;">"wlr.timestamp"</span>) 
+  <span style="color: #ffad29; font-weight: bold;">return</span>(merged.df)
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2bcc575" class="outline-4">
+<h4 id="org2bcc575">Calculate discharges using velocity area method</h4>
+<div class="outline-text-4" id="text-org2bcc575">
+<p>
+Calculates discharge based on the nonlinear (weighted) least-squares estimates of the rating data.
+</p>
+
+<dl class="org-dl">
+<dt>Input</dt><dd>Stilling well data processed using the "importdata" function as x and rating curve data calculated using the vel.area function as y.</dd>
+<dt>Output</dt><dd><p>
+Discharge values for the wlr data. 
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #00ede1; font-weight: bold;">calc.disch.areastage</span> <span style="color: #008b8b;">&lt;-</span> <span style="color: #ffad29; font-weight: bold;">function</span>(x, y){
+  sd <span style="color: #008b8b;">&lt;-</span> y[,c(<span style="color: #e67128;">"stage"</span>, <span style="color: #e67128;">"avg.disch"</span>)]
+  names(sd) <span style="color: #008b8b;">&lt;-</span> c(<span style="color: #e67128;">"Stage"</span>, <span style="color: #e67128;">"Discharge"</span>)
+  nls.res <span style="color: #008b8b;">&lt;-</span> nls(Discharge~p1*Stage^p3, data=sd, start=list(p1=3,p3=5), control = list(maxiter = 500)) <span style="color: #74af68;"># </span><span style="color: #74af68;">(p1=3,p3=5)</span>
+  coef.p1 <span style="color: #008b8b;">&lt;-</span> as.numeric(coef(nls.res)[1])
+  coef.p3 <span style="color: #008b8b;">&lt;-</span> as.numeric(coef(nls.res)[2])
+  x <span style="color: #008b8b;">&lt;-</span> x[, c(<span style="color: #e67128;">"capacitance"</span>, <span style="color: #e67128;">"stagecalc"</span>, <span style="color: #e67128;">"timestamp"</span>)]
+  names(x) <span style="color: #008b8b;">&lt;-</span> c(<span style="color: #e67128;">"Capacitance"</span>, <span style="color: #e67128;">"Stage"</span>, <span style="color: #e67128;">"Timestamp"</span>)
+  x$Discharge <span style="color: #008b8b;">&lt;-</span> coef.p1*x$Stage^coef.p3
+  <span style="color: #ffad29; font-weight: bold;">return</span>(x)
+}
+</pre>
+</div></dd>
+</dl>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd803145" class="outline-3">
+<h3 id="orgd803145">Calculation of discharge for flume</h3>
+<div class="outline-text-3" id="text-orgd803145">
+</div>
+<div id="outline-container-orgb107f2a" class="outline-4">
+<h4 id="orgb107f2a">Fix stage of flume</h4>
+<div class="outline-text-4" id="text-orgb107f2a">
+<p>
+The stilling well of the flume is lower than the scale (surface of the flume) by about 6 to 7 cm. This function uses the manual scale readings and compares them to the wlr records following which it adjusts all wlr readings by adding the difference. Note that these values change each time the unit is re-installed and hence this code needs to be re-run each year using the appropriate set of readings.
+</p>
+
+<dl class="org-dl">
+<dt>input</dt><dd>File with manual readings from the stilling well and the flume data with stage calculated.</dd>
+<dt>Output</dt><dd>Adjusted stage in the flume file.</dd>
+</dl>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #00ede1; font-weight: bold;">fix.flume.stage</span> <span style="color: #008b8b;">&lt;-</span> <span style="color: #ffad29; font-weight: bold;">function</span>(x, y){
+  x$dt.round <span style="color: #008b8b;">&lt;-</span> as.POSIXct(round(as.double(x$timestamp)/(15*60))*(15*60),origin=(as.POSIXct(<span style="color: #e67128;">'1970-01-01'</span>)))
+  dat <span style="color: #008b8b;">&lt;-</span> read.csv(y)
+  dat$Height <span style="color: #008b8b;">&lt;-</span> dat$Height/100 <span style="color: #74af68;"># </span><span style="color: #74af68;">convert to metres</span>
+  dat$Timestamp <span style="color: #008b8b;">&lt;-</span> as.POSIXct(dat$Timestamp, tz = <span style="color: #e67128;">"Asia/Kolkata"</span>, format = <span style="color: #e67128;">"%d/%m/%y %H:%M"</span>)
+  dat$dt.round <span style="color: #008b8b;">&lt;-</span> as.POSIXct(round(as.double(dat$Timestamp)/(15*60))*(15*60),origin=(as.POSIXct(<span style="color: #e67128;">'1970-01-01'</span>)))
+  merged <span style="color: #008b8b;">&lt;-</span> merge(dat, x, by = <span style="color: #e67128;">"dt.round"</span>)
+  merged$stgfix <span style="color: #008b8b;">&lt;-</span> merged$stagecalc-merged$Height
+  avg.fix <span style="color: #008b8b;">&lt;-</span> mean(merged$stgfix, na.rm = <span style="color: #34cae2;">TRUE</span>)
+  x$stagecalc <span style="color: #008b8b;">&lt;-</span> x$stagecalc-avg.fix
+  <span style="color: #ffad29; font-weight: bold;">return</span>(x[,-8])
+}    
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org6b6418a" class="outline-4">
+<h4 id="org6b6418a">Calculate discharge for the flume</h4>
+<div class="outline-text-4" id="text-org6b6418a">
+<p>
+Uses the equation here <a href="https://www.openchannelflow.com/flumes/montana-flumes/discharge-tables">here</a> to calculate the discharge from the flume based on the stage readings. Note that all flumes require that the stage is adjusted before this calculation is done using the function <code>fix.flume.stage</code>.
+</p>
+
+<dl class="org-dl">
+<dt>Input</dt><dd>Wlr data for flume generated using the <code>importdata</code> and applying the linear model using the <code>predict</code> function or read in from a file.</dd>
+<dt>Output</dt><dd>Discharge values slapped onto the flume data as an additional column.</dd>
+</dl>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #00ede1; font-weight: bold;">calc.disch.flume</span> <span style="color: #008b8b;">&lt;-</span> <span style="color: #ffad29; font-weight: bold;">function</span>(x){
+  x <span style="color: #008b8b;">&lt;-</span> x[,c(<span style="color: #e67128;">"capacitance"</span>, <span style="color: #e67128;">"stagecalc"</span>, <span style="color: #e67128;">"timestamp"</span>)]
+  names(x) <span style="color: #008b8b;">&lt;-</span> c(<span style="color: #e67128;">"Capacitance"</span>, <span style="color: #e67128;">"Stage"</span>, <span style="color: #e67128;">"Timestamp"</span>)
+  p1 <span style="color: #008b8b;">&lt;-</span> 176.5
+  p3 <span style="color: #008b8b;">&lt;-</span> 1.55
+  x$Discharge <span style="color: #008b8b;">&lt;-</span> p1*(x$Stage)^p3*0.001 <span style="color: #74af68;"># </span><span style="color: #74af68;">in m cube per sec</span>
+  <span style="color: #ffad29; font-weight: bold;">return</span>(x)
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org3886e2e" class="outline-3">
+<h3 id="org3886e2e">Compare data between flume and velocity area method</h3>
+<div class="outline-text-3" id="text-org3886e2e">
+<p>
+Merges the discharge data of the flume and velocity area method using a rounded (fifteen minutes, can be changed) timestamp, plots and generates a data frame for subsequent calculations.
+</p>
+
+<dl class="org-dl">
+<dt>Input</dt><dd>velocity-area based discharge estimates (15 minutes), flume based discharge measurements and names of the output figures.</dd>
+<dt>Output</dt><dd><p>
+merged dataframe and ggplot2 based figure in panels corresponding to periods when both data sources have been recording.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #00ede1; font-weight: bold;">plot.discharges</span> <span style="color: #008b8b;">&lt;-</span> <span style="color: #ffad29; font-weight: bold;">function</span>(x, y, nms){
+  x$Timestamp <span style="color: #008b8b;">&lt;-</span> as.POSIXct(round(as.double(x$Timestamp)/(15*60))*(15*60),origin=(as.POSIXct(<span style="color: #e67128;">'1970-01-01'</span>)))
+  y$Timestamp <span style="color: #008b8b;">&lt;-</span> as.POSIXct(round(as.double(y$Timestamp)/(15*60))*(15*60),origin=(as.POSIXct(<span style="color: #e67128;">'1970-01-01'</span>)))
+  merged <span style="color: #008b8b;">&lt;-</span> merge(x, y, by = <span style="color: #e67128;">"Timestamp"</span>)
+  merged$group <span style="color: #008b8b;">&lt;-</span> c(0, cumsum(diff(as.Date(merged$Timestamp)) &gt; 1))
+  names(merged) <span style="color: #008b8b;">&lt;-</span> c(<span style="color: #e67128;">"Timestamp"</span>, <span style="color: #e67128;">"Capacitance.sw"</span>, <span style="color: #e67128;">"Stage.sw"</span>, <span style="color: #e67128;">"Discharge.sw"</span>, <span style="color: #e67128;">"Capacitance.fl"</span>, <span style="color: #e67128;">"Stage.fl"</span>, <span style="color: #e67128;">"Discharge.fl"</span>, <span style="color: #e67128;">"Group"</span>)
+  ggdat <span style="color: #008b8b;">&lt;-</span> melt(merged, value.name = <span style="color: #e67128;">"Discharge"</span>, measure.vars = c(<span style="color: #e67128;">"Discharge.sw"</span>, <span style="color: #e67128;">"Discharge.fl"</span>), id.vars = c(<span style="color: #e67128;">"Timestamp"</span>, <span style="color: #e67128;">"Group"</span>))
+  ggp <span style="color: #008b8b;">&lt;-</span> ggplot(data = ggdat, aes(x = Timestamp, y = Discharge, colour = variable))+
+    facet_wrap(~ Group, scales = <span style="color: #e67128;">"free"</span>) +
+    geom_line()
+  print(ggp)
+  ggsave(filename = paste0(output.dir, <span style="color: #e67128;">"discharge/figures/"</span>, nms, <span style="color: #e67128;">".png"</span>), plot = ggp)
+  <span style="color: #ffad29; font-weight: bold;">return</span>(merged)
+ }
+</pre>
+</div></dd>
+</dl>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org471b72e" class="outline-2">
+<h2 id="org471b72e">Testing with sample data</h2>
+<div class="outline-text-2" id="text-org471b72e">
+<p>
+All the relevant data is provided as a zip file. It would be very helpful if manual calculations are used to confirm the script works correctly. I have already done this but may have mucked up the formulae/procedure. Stations 107 (grassland velocity-area) and 110 (grassland flume) are being used.
+</p>
+</div>
+
+<div id="outline-container-org542b1c6" class="outline-3">
+<h3 id="org542b1c6">Datasets</h3>
+<div class="outline-text-3" id="text-org542b1c6">
+<ol class="org-ol">
+<li><p>
+Check to see if datasets exist, else unzip the data file and create the datasets. Note that for sake of file size, only a sample of the dataset has been provided.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">setwd(<span style="color: #e67128;">"./"</span>)
+<span style="color: #ffad29; font-weight: bold;">if</span>(!dir.exists(<span style="color: #e67128;">"./Data"</span>))unzip(<span style="color: #e67128;">"DataSets.zip"</span>)
+</pre>
+</div></li>
+
+<li><p>
+Define file locations
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">input.dir <span style="color: #008b8b;">&lt;-</span> <span style="color: #e67128;">"./Data/input/"</span>
+output.dir <span style="color: #008b8b;">&lt;-</span> <span style="color: #e67128;">"./Data/output/"</span>
+</pre>
+</div></li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-orge72c7da" class="outline-3">
+<h3 id="orge72c7da">Calculate the stage using linear models</h3>
+<div class="outline-text-3" id="text-orge72c7da">
+<ol class="org-ol">
+<li><p>
+Import the data collected by the water level recorders in a list.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">in.wlr.dir <span style="color: #008b8b;">&lt;-</span> list.dirs(paste0(input.dir, <span style="color: #e67128;">"wlr"</span>), recursive = <span style="color: #34cae2;">FALSE</span>)
+in.wlr.files <span style="color: #008b8b;">&lt;-</span> lapply(in.wlr.dir, list.files, full.names = <span style="color: #34cae2;">TRUE</span>)
+names(in.wlr.files) <span style="color: #008b8b;">&lt;-</span> basename(in.wlr.dir)
+stillwell <span style="color: #008b8b;">&lt;-</span> lapply(in.wlr.files, importdata)
+head(stillwell[[1]])
+</pre>
+</div>
+
+<pre class="example">
+  scan       date     time capacitance stage           timestamp
+1    1 2013-08-25 15:44:08        2170  2170 2013-08-25 15:44:08
+2    2 2013-08-25 15:59:08        2114  2114 2013-08-25 15:59:08
+3    3 2013-08-25 16:14:08        2109  2109 2013-08-25 16:14:08
+4    4 2013-08-25 16:29:08        2104  2104 2013-08-25 16:29:08
+5    5 2013-08-25 16:44:08        2093  2093 2013-08-25 16:44:08
+6    6 2013-08-25 16:59:08        2091  2091 2013-08-25 16:59:08
+
+</pre></li>
+
+<li><p>
+Calibrate the relevant capacitance probes and calculate the stages of the wlr readings.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">in.cal.files <span style="color: #008b8b;">&lt;-</span> list.files(paste0(input.dir, <span style="color: #e67128;">"calib"</span>), full.names = <span style="color: #34cae2;">TRUE</span>)
+lm.stillwell <span style="color: #008b8b;">&lt;-</span> lapply(in.cal.files, getlm)
+names(lm.stillwell) <span style="color: #008b8b;">&lt;-</span> basename(in.wlr.dir)
+stillwell <span style="color: #008b8b;">&lt;-</span> mapply(do.wlr.cal, lm.stillwell, stillwell, SIMPLIFY = <span style="color: #34cae2;">FALSE</span>)
+head(stillwell[[2]])
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+
+<col  class="org-left" />
+
+<col  class="org-right" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-right">1</td>
+<td class="org-right">2014-01-09</td>
+<td class="org-right">12:10:16</td>
+<td class="org-right">879</td>
+<td class="org-right">0.14</td>
+<td class="org-left">2014-01-09 12:10:16</td>
+<td class="org-right">0.222576528211233</td>
+</tr>
+
+<tr>
+<td class="org-right">2</td>
+<td class="org-right">2014-01-09</td>
+<td class="org-right">12:25:16</td>
+<td class="org-right">879</td>
+<td class="org-right">0.14</td>
+<td class="org-left">2014-01-09 12:25:16</td>
+<td class="org-right">0.222576528211233</td>
+</tr>
+
+<tr>
+<td class="org-right">3</td>
+<td class="org-right">2014-01-09</td>
+<td class="org-right">12:40:16</td>
+<td class="org-right">879</td>
+<td class="org-right">0.14</td>
+<td class="org-left">2014-01-09 12:40:16</td>
+<td class="org-right">0.222576528211233</td>
+</tr>
+
+<tr>
+<td class="org-right">4</td>
+<td class="org-right">2014-01-09</td>
+<td class="org-right">12:55:16</td>
+<td class="org-right">878</td>
+<td class="org-right">0.14</td>
+<td class="org-left">2014-01-09 12:55:16</td>
+<td class="org-right">0.221913271309456</td>
+</tr>
+
+<tr>
+<td class="org-right">5</td>
+<td class="org-right">2014-01-09</td>
+<td class="org-right">13:10:16</td>
+<td class="org-right">877</td>
+<td class="org-right">0.14</td>
+<td class="org-left">2014-01-09 13:10:16</td>
+<td class="org-right">0.221250014407679</td>
+</tr>
+
+<tr>
+<td class="org-right">6</td>
+<td class="org-right">2014-01-09</td>
+<td class="org-right">13:25:16</td>
+<td class="org-right">876</td>
+<td class="org-right">0.14</td>
+<td class="org-left">2014-01-09 13:25:16</td>
+<td class="org-right">0.220586757505902</td>
+</tr>
+</tbody>
+</table></li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-orgfd0c9d4" class="outline-3">
+<h3 id="orgfd0c9d4">Calculate the discharges</h3>
+<div class="outline-text-3" id="text-orgfd0c9d4">
+</div>
+<div id="outline-container-org924c53a" class="outline-4">
+<h4 id="org924c53a">For area stage</h4>
+<div class="outline-text-4" id="text-org924c53a">
+<ol class="org-ol">
+<li><p>
+Define the input data sources. Note that the names of the files in the cross section (xsec) and velocity (vel) folder should be exactly the same. As per convention, these are the dates on which the velocity reading was taken.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R"> in.xsec.dir <span style="color: #008b8b;">&lt;-</span> list.dirs(paste0(input.dir, <span style="color: #e67128;">"xsec"</span>), recursive = <span style="color: #34cae2;">FALSE</span>)
+ xsec.fls <span style="color: #008b8b;">&lt;-</span> lapply(in.xsec.dir, list.files, full.names = <span style="color: #34cae2;">TRUE</span>)
+ in.vel.dir <span style="color: #008b8b;">&lt;-</span> list.dirs(paste0(input.dir, <span style="color: #e67128;">"vel"</span>), recursive = <span style="color: #34cae2;">FALSE</span>)
+ vel.fls <span style="color: #008b8b;">&lt;-</span> lapply(in.vel.dir, list.files, full.names = <span style="color: #34cae2;">TRUE</span>)
+ xsec.vel.dirs <span style="color: #008b8b;">&lt;-</span> data.frame(in.xsec.dir, in.vel.dir , stringsAsFactors = <span style="color: #34cae2;">FALSE</span>)
+ s.d.pts <span style="color: #008b8b;">&lt;-</span> apply(xsec.vel.dirs, 1,  <span style="color: #ffad29; font-weight: bold;">function</span>(x){
+   xsec <span style="color: #008b8b;">&lt;-</span> lapply(as.character(x[<span style="color: #e67128;">"in.xsec.dir"</span>]), list.files, full.names = <span style="color: #34cae2;">TRUE</span>)
+   xsec <span style="color: #008b8b;">&lt;-</span> unlist(xsec)
+   vel <span style="color: #008b8b;">&lt;-</span> lapply(as.character(x[<span style="color: #e67128;">"in.vel.dir"</span>]), list.files, full.names = <span style="color: #34cae2;">TRUE</span>)
+   vel <span style="color: #008b8b;">&lt;-</span> unlist(vel)
+   s.d.pts <span style="color: #008b8b;">&lt;-</span> do.call(<span style="color: #e67128;">"rbind"</span>, mapply(vel.area, xsec, vel, SIMPLIFY = <span style="color: #34cae2;">FALSE</span>, USE.NAMES = <span style="color: #34cae2;">FALSE</span>))
+ <span style="color: #ffad29; font-weight: bold;">return</span>(s.d.pts)
+ })
+ mapply(<span style="color: #ffad29; font-weight: bold;">function</span>(x, y) write.csv(x, file = paste0(output.dir, <span style="color: #e67128;">"rating/"</span>, y, <span style="color: #e67128;">".csv"</span>), row.names = <span style="color: #34cae2;">FALSE</span>),
+   x = s.d.pts,
+   y = basename(in.xsec.dir))
+head(s.d.pts[[1]])       
+</pre>
+</div>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-right" />
+
+<col  class="org-right" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">wlr_107</td>
+<td class="org-left">01jun2015</td>
+<td class="org-left">2015-06-01 11:14:00</td>
+<td class="org-right">0.00712111851851852</td>
+<td class="org-right">0.07</td>
+</tr>
+
+<tr>
+<td class="org-left">wlr_107</td>
+<td class="org-left">01sept2014</td>
+<td class="org-left">2014-09-01 11:05:00</td>
+<td class="org-right">0.37579109375</td>
+<td class="org-right">0.885</td>
+</tr>
+
+<tr>
+<td class="org-left">wlr_107</td>
+<td class="org-left">02aug2014</td>
+<td class="org-left">2014-08-02 11:08:00</td>
+<td class="org-right">0.479804</td>
+<td class="org-right">0.9</td>
+</tr>
+
+<tr>
+<td class="org-left">wlr_107</td>
+<td class="org-left">03dec2014</td>
+<td class="org-left">2014-12-03 10:35:00</td>
+<td class="org-right">0.0179140666666667</td>
+<td class="org-right">0.19</td>
+</tr>
+
+<tr>
+<td class="org-left">wlr_107</td>
+<td class="org-left">03Sep2013</td>
+<td class="org-left">2013-09-03 01:54:00</td>
+<td class="org-right">0.128821555555556</td>
+<td class="org-right">0.273</td>
+</tr>
+
+<tr>
+<td class="org-left">wlr_107</td>
+<td class="org-left">05sep2015</td>
+<td class="org-left">2015-09-05 11:21:00</td>
+<td class="org-right">0.0303214755555556</td>
+<td class="org-right">0.18</td>
+</tr>
+</tbody>
+</table></li>
+
+<li><p>
+Get the stage from the water level recorder based on the timestamp on the stage-discharge calculation above. Calculate the discharge using the area-stage relationship and a non-linear least square fit.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R"><span style="color: #ffad29; font-weight: bold;">if</span>(!exists(<span style="color: #e67128;">"s.d.pts"</span>)) s.d.pts <span style="color: #008b8b;">&lt;-</span> lapply(list.files(paste0(output.dir, <span style="color: #e67128;">"rating/"</span>), full.names = <span style="color: #34cae2;">TRUE</span>), read.csv)
+names(s.d.pts) <span style="color: #008b8b;">&lt;-</span> basename(in.xsec.dir)
+s.d.pts <span style="color: #008b8b;">&lt;-</span> mapply(get.stage, s.d.pts, names(s.d.pts), SIMPLIFY = <span style="color: #34cae2;">FALSE</span>)
+mapply(<span style="color: #ffad29; font-weight: bold;">function</span>(x, y) write.csv(x, file = paste0(output.dir, <span style="color: #e67128;">"rating/"</span>, y, <span style="color: #e67128;">".csv"</span>), row.names = <span style="color: #34cae2;">FALSE</span>),
+  x = s.d.pts,
+  y = basename(in.xsec.dir))
+<span style="color: #ffad29; font-weight: bold;">if</span>(!exists(<span style="color: #e67128;">"s.d.pts"</span>)) s.d.pts <span style="color: #008b8b;">&lt;-</span> lapply(list.files(paste0(output.dir, <span style="color: #e67128;">"rating/"</span>), full.names = <span style="color: #34cae2;">TRUE</span>), read.csv)
+xsec.vel.data <span style="color: #008b8b;">&lt;-</span> mapply(calc.disch.areastage, x = stillwell[names(stillwell) <span style="color: #008b8b;">%in%</span> names(s.d.pts)], y = s.d.pts, SIMPLIFY = <span style="color: #34cae2;">FALSE</span>)
+</pre>
+</div>
+
+<pre class="example">
+$wlr_107
+NULL
+
+</pre></li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-orgec80224" class="outline-4">
+<h4 id="orgec80224">For flume</h4>
+<div class="outline-text-4" id="text-orgec80224">
+<p>
+Correct the stage calculation for the flume based on an averaged difference between the manual measurements and the logged data on the wlr then calculate the discharge using the equation. The form below allows sequential processing of all flume units using the <code>flume.names</code>.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">flume.names <span style="color: #008b8b;">&lt;-</span> c(<span style="color: #e67128;">"wlr_110"</span>, <span style="color: #e67128;">"wlr_111"</span>, <span style="color: #e67128;">"wlr_112"</span>, <span style="color: #e67128;">"wlr_113"</span>)
+flume.data <span style="color: #008b8b;">&lt;-</span> mapply(fix.flume.stage,
+  y = list.files(paste0(input.dir, <span style="color: #e67128;">"flume_stage_correction"</span>), full.names = <span style="color: #34cae2;">TRUE</span>),
+  x = stillwell[names(stillwell) <span style="color: #008b8b;">%in%</span> flume.names], SIMPLIFY = <span style="color: #34cae2;">FALSE</span>)
+flume.data <span style="color: #008b8b;">&lt;-</span> lapply(flume.data, calc.disch.flume)
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org94b08cd" class="outline-3">
+<h3 id="org94b08cd">Compare the discharge between flume and velocity area method.</h3>
+<div class="outline-text-3" id="text-org94b08cd">
+<p>
+Plot a panel of discharges between the velocity area method and flume for periods when both loggers were recording discharges simultaneously and export the data for further analysis.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-R">nms <span style="color: #008b8b;">&lt;-</span> mapply(paste, names(xsec.vel.data), sub(<span style="color: #e67128;">".csv"</span>, <span style="color: #e67128;">""</span>, basename(names(flume.data))), sep = <span style="color: #e67128;">"_"</span>)
+mapply(plot.discharges, xsec.vel.data, flume.data, nms)
+</pre>
+</div>
+
+
+<div class="figure">
+<p><img src="comparedischarges.png" alt="comparedischarges.png" />
+</p>
+</div>
+
+<hr />
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: R.S. Bhalla</p>
+<p class="date">Created: 2018-02-13 Tue 15:28</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

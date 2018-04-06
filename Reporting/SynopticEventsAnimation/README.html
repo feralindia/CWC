@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>README.html</title>
+
+</head>
+
+<body>
+
+<h1>Animations for hydrographs and rainfall</h1>
+
+<p>This code is <em>work in progress</em>. It attmpts to do the following:</p>
+
+<ul>
+<li>Takes results from the scripts in <a href="../Hydrographs/">the hydrograph script directory</a> and extracts the highest streamflow events for a given station for a stated period before and after the event and for a specific frequency of measurement. Note that the user may need to generate the hydrograph dataset using a <code>stage</code> instead of <code>discharge</code> depending on the quality of the rating curves. Also note that he user needs to picke the desired level of aggregation for the hydrograph, ranging from five minutes to daily.
+Note: the scripts to process hydrograph data are yet to be documented.</li>
+<li>For each of these high stremflow periods, the <a href="HydroResponse.R">HydroResponse.R script</a> collates the data from all the rain gauges at the site. Each timestamp in the hydrograph is paired with a interpolatd surface (IDW) of rainfall. These outputs are dumped into a folder and then can be easily converted to animated GIF images using packages such as ImageMagic.</li>
+<li>The <a href="RainResponse.R">RainResponse.R script</a> also generates a surface for "n" highest rainfall events for each rain logger. For example, if raingauge 001 has the higest event at 2013-12-06 03:40:00, an IDW interpolated surface of all rain gauges at that timestamp is drawn. This is repeated for all rain gauges.</li>
+<li>The <a href="SynopticEvents.R">SynopticEvents.R script</a> develops similar surfaces for all the rain gauges for significant synoptic events observed by the meteorology team at Lancaster.</li>
+</ul>
+
+<p>Data to use these scripts is available at the data sharing site to the project team. The sequence of <em>relevant</em> scripts is below. Other scripts will probably be removed from this repository later. </p>
+
+<pre><code>ControlScript.R -&gt; functions.R -&gt; {HydroResponse.R RainResponse.R SynopticEvents.R}
+</code></pre>
+
+<h2><a href="functions.R">functions.R</a></h2>
+
+<p>Functions for repetitive jobs. These are:</p>
+
+<h3>read.max.hydgr</h3>
+
+<p>This is used by the <a href="HydroResponse.R">HydroResponse.R</a> script. Full file names (with entire directory tree) and short file names (just the file name) are inputs to be provided. These files are outputs of the <a href="../Hydrograph/">Hydrograph</a> script set.  Note that the input data can be set to discharge, depth of discharge or stage.</p>
+
+<p>The script reads in the csv file, orders it by maximum events which are 36 units apart. This implies that if the input data set is for 1 hour, the script will extract the maximum discharge event and all discharge from that station 24 hours before the maximum and 12 hours after the maximum event. Then it picks up the next highest event and repeats this process until its selected the "n" highest events.</p>
+
+<p>The script uses a function called fun.12 to do the data frame extraction. This function has been written by and shared at this site <a href="http://www.r-bloggers.com/identifying-records-in-data-frame-a-that-are-not-contained-in-data-frame-b-%E2%80%93-a-comparison/">http://www.r-bloggers.com/identifying-records-in-data-frame-a-that-are-not-contained-in-data-frame-b-%E2%80%93-a-comparison/</a>.</p>
+
+<h3>read.max.rain</h3>
+
+<p>This function is called by the <a href="RainResponse.R">RainResponse.R</a> script. It reads in "n" maximum rainfall events from an input rainfall file supplied to it using the full file name and the short file name. The <a href="../TBRG/">TBRG</a> set of scripts is used to convert the raw datasets into rainfall aggregated at different time intervals.</p>
+
+<h3>read.othermax.rain</h3>
+
+<p>This is a modification of the read.max.rain script. It takes reads in data from a supplied file name (full and short file names) and extracts the rainfall for a given timestamp. The latter is provided via the <a href="RainResponse.R">RainResponse.R</a> script.</p>
+
+<h3>add.tpoinfo</h3>
+
+<p>Selects the spatial information from the relevant site and logger type and slaps it onto the input file. The input file must contain a unit ID which matches the spatial data set for the script to work.</p>
+
+<h3>remove.logger</h3>
+
+<p>A simple function to remove a specific logger from a vector of file names supplied as a vector. Inputs is the logger to be removed and the vector of file names.</p>
+
+<h2><a href="ControlScript.R">Control Script.R</a></h2>
+
+<p>Sets the environment and organises data to be used by the other routines. The main steps are:</p>
+
+<ul>
+<li>Load the relevant libraries (rgdal, maptools, sp and gstat).</li>
+<li>Run the functions.R script to load relevant functions.</li>
+<li>User input for relevant site ("Nilgiris" or "Aghnashini").</li>
+<li>User input for number of maximum events to be processed. For e.g. if only the top two maximum events, the user enters "2".</li>
+<li>Define data directory.</li>
+<li>User input for sampling period (15 minutes to 15 days).</li>
+<li>Read in spatial data (location of rain gauges and water leven loggers) for the two sites.</li>
+<li>Specify the data directories holding rain gauge hydrograph data.</li>
+<li>Generate list of file names containing input data by looping through relevant directories. Assign the file names to a vector named after the file.</li>
+<li>Call in the other sub-routines as per requirement. Note, the sub-routines can be run independent of each other.</li>
+</ul>
+
+<h3>Todo</h3>
+
+<ul>
+<li>[ ] At present the script needs to be fed in outputs from the hydrograph scripts manually, this is to be automated so it harvests all relevant data automatically. Alternatively the hydrographs should be generated by this script directly.</li>
+<li>[ ] Hydrographs for Aghnashini are yet to be generated.</li>
+</ul>
+
+<h2><a href="RainResponse.R">RainResponse.R</a></h2>
+
+<p>Subsets the "n" highest periods of rainfall for each rain gauges at a site and then uses timestamps to merge with the rainfall received by all other rain gauges at that time. Output is in terms of rainfall at all raingauges and a IDW interpolated surface.</p>
+
+<p>The script does the following:</p>
+
+<ul>
+<li>List all the "RainFiles" i.e. vectors created by the <a href="ControlScript.R">control script</a> based on the user defined filters, i.e. site name, number of top rainfall events to be processed and time period for rainfall aggregation.</li>
+<li>Give the user an option to remove any particular logger from the list of files to be processed. This is in case any of the datasets are incomplete or corrupt. This uses the <code>remove.logger()</code> function.</li>
+<li>Read in the maximum rainfall for the highest "n" rain events using the <code>read.max.rain()</code> function.</li>
+<li>Add spatial information to the maximum rainfall events from the imported spatial data using the <code>add.topoinfo()</code> function.</li>
+<li>For each of the maximum rainfall events, read in the rainfall received at all other rain-gauges at that specific time using the <code>read.othermax.rain()</code> function.</li>
+<li>Prepare the names of files for outputs - png and csv.</li>
+<li>Plot the IDW interpolated surface for the top "n" rainfall events for each rain gauge. This portion of the script uses code from <a href="http://personal.colby.edu/personal/m/mgimond/Spatial/Interpolation.html">http://personal.colby.edu/personal/m/mgimond/Spatial/Interpolation.html</a>.</li>
+</ul>
+
+<h3>To Do</h3>
+
+<ul>
+<li>[ ] Need to add analysis for comparison with ground level rain gauges and affects of wind speed/direction, elevation, slope and aspect on the rainfall received.</li>
+</ul>
+
+</body>
+</html>

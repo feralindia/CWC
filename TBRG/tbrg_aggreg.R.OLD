@@ -1,0 +1,44 @@
+## Aggregate tbrg output into various periods
+print(paste("Aggregating data for TBRG No.", num_tbrg[i], sep=" "))
+charvec <- tbrg.merged$dt.tm
+tbrg.merged <- subset(tbrg.merged, select=c("tips", "mm"))
+ts.tbrg <- timeSeries(data=tbrg.merged, charvec=charvec)
+start.ts.tbrg <- as.POSIXct("2012-08-15 00:00:00", tz = "Asia/Kolkata")
+agg <- c("1 min","15 min", "30 min", "1 hour", "6 hour", "12 hour", "1 day", "15 day", "1 month")
+gg.data <- data.frame(raw=numeric(0), cal=numeric(0), date_time=numeric(0), dt=numeric(), agg=character())
+## setRmetricsOptions(myFinCenter = "GMT") ## Need to do this or timeSequence will mess up
+for (j in 1: length(agg)){
+    csvout <- paste(csvdir, tbrgtab,"_", agg[j], ".csv", sep="")
+    by <- timeSequence(from=start.ts.tbrg, to=end(ts.tbrg), by=agg[j], FinCenter = "Asia/Calcutta")  ##, FinCenter = "Asia/Calcutta"
+    ## note, by changed from start(ts.tbrg) to fixed date/time for standardisation
+    dat <- aggregate(ts.tbrg, by, sum) #, init = TRUE
+    dat$dt.tm<-row.names(dat)
+    dat <- as.data.frame(dat)
+    row.names(dat) <- NULL
+    dat$dt.tm<-  as.POSIXct(dat$dt.tm, tz="Asia/Kolkata", origin="1970-01-01",usetz=TRUE) # add timestamp back to datframe
+    ## dat$dt.tm <- dat$dt.tm + 19800 ## add five and half hours to make it IST
+    write.csv(dat, file=csvout)
+    dat$dt <- as.Date(dat$dt.tm, "%Y-%m-%d")
+    dat$agg <- agg[j]
+    gg.data <- rbind(gg.data, dat)
+    rm(dat) # clear memory
+}
+gg.data$agg <- factor(gg.data$agg, levels = c("1 min", "15 min", "30 min", "1 hour", "6 hour", "12 hour", "1 day", "15 day", "1 month"))
+plot.new()
+tbrgplot <- ggplot( data = gg.data, aes( dt, mm )) + geom_line()  +
+    facet_wrap(~agg, scales = "free_y") + ggtitle(tbrgtab) +
+    labs(x="Date", y="Sum rainfall in mm") +
+    theme(axis.title=element_text(size=10,face="bold"),
+          axis.text=element_text(size=8))
+rm(gg.data) # clear memory
+pngfile <- paste(figdir, tbrgtab, ".png", sep="")
+epsfile <- paste(figdir, tbrgtab, ".eps", sep="")
+pdffile <- paste(figdir, tbrgtab, ".pdf", sep="")
+ggsave(tbrgplot, filename=pngfile, width=397, height=210, units="mm")
+ggsave(tbrgplot, filename=epsfile, width=297, height=210, units="mm")
+ggsave(tbrgplot, filename=pdffile, width=297, height=210, units="mm")
+tbrgplot
+print(paste("Finished aggregating data for TBRG No.", num_tbrg[i], sep=" "))
+
+
+rm(ts.tbrg) ## clear memory
