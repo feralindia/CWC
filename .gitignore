@@ -11,3 +11,43 @@
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
+
+# archives
+*.zip
+*.tar.gz
+*.tar.bz
+*.tar
+*.xz
+*.tar.xz
+*.7z
+*.bz
+
+# data
+*.dat
+*.tab
+*.csv
+*.xls
+*.xlsx
+*.dbf
+*.odc
+
+# spatial data
+*.shp
+*.shx
+*.prj
+*.qpj
+grassdata/*
+
+# images
+*.png
+*.eps
+*.tif
+*.tiff
+*.jpg
+*.jpgw
+
+# documents
+*.doc
+*.docx
+*.odt
+*.pdf
