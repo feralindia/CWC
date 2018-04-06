@@ -4,13 +4,37 @@
 
 ## feed it x (name of station) and y (name of rain gaugge) to globally assign
 ## names to files etc.
-stn.names <- function(x, y){
-    tbrg.flnm <<- paste("/tbrg_", y, "_1 hour.csv", sep="")
-    tbrg.full.flnm <<- paste(tbrg.dir,tbrg.flnm, sep="")
+## stn.names <- function(x, y){
+##     tbrg.flnm <<- paste("/tbrg_", y, "_1 hour.csv", sep="")
+##     tbrg.full.flnm <<- paste(tbrg.dir,tbrg.flnm, sep="")
+##     wlr.nm <<- paste("WLR ",x, sep="")
+##     tbrg.nm <<- paste("TBRG ",y, sep="")
+## }
+
+## feed it x (name of station) and y (name of rain gaugge) to globally assign
+## names to files etc.
+stn.names <- function(x,y){
+    hydrograph.pdf <<- paste(hydgrph.dir, "/fig/HydroGraph_stn", x, "_tbrg_", y, "_", discharge.type, "_", prd, ".pdf", sep="")
+    hydrograph.png <<- paste(hydgrph.dir, "/fig/HydroGraph_stn", x, "_tbrg_", y, "_", discharge.type,"_", prd, ".png", sep="")
+    hydrograph.csv <<- paste(hydgrph.dir, "/csv/HydroGraph_stn", x, "_tbrg_", y, "_", discharge.type, "_", prd, ".csv", sep="")
+    
+    tbrg.filename <<- paste("tbrg_", y, "_", samp.int, ".csv", sep="") 
+    tbrg.filename.full <<- paste(tbrg.dir, tbrg.filename, sep="/") 
+    wlr.filename <<- paste("wlr_", x, "_", samp.int, ".csv", sep="") 
+    wlr.filename.full <<- paste(wlr.dir, wlr.filename, sep="/") 
     wlr.nm <<- paste("WLR ",x, sep="")
     tbrg.nm <<- paste("TBRG ",y, sep="")
-}
+    
+    corr_plot.png <<- paste(hydgrph.dir, "/fig/CorrelationPlot_stn", x, "_tbrg_",
+                             y, "_", prd, ".png", sep="")
+    hydrograph.png <<- paste(hydgrph.dir, "/fig/Hydrograph_stn", x, "_tbrg_",
+                             y,  "_", prd,".png", sep="")
+    hydrograph.csv <<- paste(hydgrph.dir, "/csv/Hydrograph_stn", x, "_tbrg_",
+                             y,  "_", prd,".csv", sep="")
+    summ.hyd.csv <<- paste(hydgrph.dir, "/csv/Summary_Hydrograph_stn", x, "_tbrg_",
+                             y,  "_", prd,".csv", sep="")
 
+}
 ##-- Calculate dischcharge from a rating curve using a non linear least square fit
 
 calc.disch.areastage <- function(fn, fn.full){
@@ -88,15 +112,6 @@ read.tbrg.csv <- function(x){
             
 hydgraph.plot <- function(x, y, prd){
     ## file names
-    corr_plot.png <- paste(hydrograph.dir, "/fig/CorrelationPlot_stn", x, "_tbrg_",
-                             y, "_", prd, ".png", sep="")
-    hydrograph.png <- paste(hydrograph.dir, "/fig/Hydrograph_stn", x, "_tbrg_",
-                             y,  "_", prd,".png", sep="")
-    hydrograph.csv <- paste(hydrograph.dir, "/csv/Hydrograph_stn", x, "_tbrg_",
-                             y,  "_", prd,".csv", sep="")
-    summ.hyd.csv <- paste(hydrograph.dir, "/csv/Summary_Hydrograph_stn", x, "_tbrg_",
-                             y,  "_", prd,".csv", sep="")
-
     ## Hydrograph
     hydrograph.title <- paste("Station", x, "_tbrg_", y, prd, sep=" ")
     png(filename=hydrograph.png, width=1200, height=600, pointsize=10)

@@ -4,11 +4,11 @@
 ## THIS FILE DOES NOT CALCULATE THE SDG VALUES FOR THAT GO TO DISCHARGE/SLUG.R
 ## take values for salt dilution gauging and bung them into the SD file
 ## script to take in SDG data and process it is called Slug.R and resides in the Discharge folder
-## NEED TO TWEAK SO THAT NILGIRIS OR AGHNASHINI IS REPLACED BY SITE
-srcdir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/saltdilution/csv"
-stn.name <- list.dirs(path="/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/saltdilution/raw",
-                      full.names=FALSE, recursive=FALSE)
-ratingdir <- "/home/udumbu/rsb/OngoingProjects/CWC/Data/Nilgiris/rating/csv"
+
+srcdir <- paste("/home/udumbu/rsb/OngoingProjects/CWC/Data/", site, "/saltdilution/csv", sep="")
+rawdir <- paste("/home/udumbu/rsb/OngoingProjects/CWC/Data/", site, "/saltdilution/raw", sep="")
+stn.name <- list.dirs(path=rawdir, full.names=FALSE, recursive=FALSE)
+ratingdir <- paste("/home/udumbu/rsb/OngoingProjects/CWC/Data/", site, "/rating/csv", sep="")
 disch.list <- list.files(path=ratingdir, full.names=TRUE, recursive=FALSE, pattern="SD.csv$")
 
 src.files <- list.files(path=srcdir, full.names=TRUE, recursive=FALSE)

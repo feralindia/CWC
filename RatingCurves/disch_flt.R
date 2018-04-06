@@ -30,6 +30,7 @@ for (i in 1:length(flt.drlst)){
         cxt <- read.csv(cx_flt.fldirlst[j], header=FALSE)
         tmp$dt  <- cxt[2,2, drop=TRUE]
         tmp$tm  <- cxt[3,2, drop=TRUE]
+         tmp$tm <- fix.time(tmp$tm) ## fix 24hr AM/PM glitch
         tmp$dt <- as.Date(tmp$dt, format="%d/%m/%y")
         tmp<-transform(tmp, dt.tm = paste(dt, tm, sep=' '))
         tmp$dt.tm<-as.POSIXct(tmp$dt.tm, format="%Y-%m-%d %I:%M:%S %p")

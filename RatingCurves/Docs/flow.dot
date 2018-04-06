@@ -1,0 +1,7 @@
+digraph G{
+	rankdir = LR;
+	// {rank = same "site.R"  "useful.functs.R"  "managefiles.R"  "libs.R"};
+	// {rank = same  "ExtractStage.R"  "pyg.R"  "AppendSDG.R"  "fig.R"};
+
+	"site.R" -> "useful.functs.R" -> "managefiles.R" -> "libs.R" -> "ExtractStage.R" -> "disch_pyg_figs.R" -> "pyg.R" -> "flt.R" -> "AppendSDG.R" -> "fig.R";
+}

@@ -4,9 +4,7 @@ catch.type <- "Wattle Catchment"
 wlr.flnm <- "wlr_101_1 min.csv"
 wlr.flnm.full <- paste(wlr.dir, wlr.flnm, sep="")
 
-for(i in 1:length(wlr.flnm))(assign(wlr.flnm[i], read.csv(wlr.flnm.full[i], row.names=1))) 
-wlr.dat.all <- get(wlr.flnm[1])
-if(length(wlr.flnm)>1)for(i in 2:length(wlr.flnm))(wlr.dat.all <- rbind(wlr.dat.all, get(wlr.flnm[i])))
+wlr.dat.all <- read.csv(wlr.flnm.full, row.names=1)
 wlr.dat.all <- wlr.dat.all[,-4]
 wlr.dat.all <- wlr.dat.all[!is.na(wlr.dat.all$cal),]
 names(wlr.dat.all) <- c("Capacitance", "Stage", "Timestamp")

@@ -13,11 +13,9 @@ for (j in 1:length(filelist)){
     tmp.raw$dt.tm<-as.POSIXct(tmp.raw$dt.tm, tz="Asia/Kolkata")
     tmp.year <- format(tmp.raw$dt.tm, "%Y")
     if(min(tmp.year) < 2012){
-        print(paste("File name ", filelist[j], " starts before 2012.", sep=""))
-        stop("script stopped")
+        stop(paste("File name", filelist[j], "starts before 2012.", sep=" "))
     } else if (max(tmp.year) > 2016) {
-        print(paste("File name ", filelist[j], " ends after 2015.", sep=""))
-        stop("script stopped")
+        stop(paste("File name", filelist[j], "ends after 2015.", sep=" "))
     }
     
     tmp.raw$dt.tm<-round(x=tmp.raw$dt.tm, units="mins")

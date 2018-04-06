@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>README.html</title>
+
+</head>
+
+<body>
+
+<h1>Tipping Bucket Rain Gauge (TBRG)</h1>
+
+<p>R scripts used to import, calibrate, aggregate and plot all rain gauge data for the CWC project. Note, we are using Rainwise Inc. Rain Loggers. Most of the units are using version 1 of the loggers, some are upgraded to version 2 which fixes the date settings for after 2016.</p>
+
+<p>Sequence of scripts is:
+[site].R --> import.R --> fillnull.R --> aggreg.R</p>
+
+<h3>Recent changes of import</h3>
+
+<ul>
+<li>Data aggregation now starts from the 15th of August 2012 - this is just before the first logger was installed and happens to be India's independence day :grin:.</li>
+<li>Attempted to fix the long-pending date/time regression. Seems to be working after setting the financial centre in the initialisation of the script.</li>
+</ul>
+
+<h3>TODO</h3>
+
+<p>Issues with the rain gauge processing:</p>
+
+<ul>
+<li>[ ] This is the first script written for data processing, can be cleaned up both in terms of creating functions for repetitive tasks and in fixing date/time issues. There have been difficulties in attempts to use the scripts for other kinds of loggers - probably to do with the importing of data.</li>
+<li>[x] @rsb Datestamp keeps switching back to GMT when timedate package is used. Setting time zone while initialising doesn't seem to work.</li>
+<li>[ ] Need to clean up code, insert if-else statements to allow a master routine to turn sub-routines on and off.</li>
+</ul>
+
+<h3>Wish List</h3>
+
+<p>Link up code to GIS. Need to discuss with JK, NC &amp; SV on what sort of outputs we should be looking at.</p>
+
+<h2><a href="tbrg_agn.R">[site].R</a></h2>
+
+<p>Both agn.R and nlg.R are the same, only site names and logger codes differ. Users can decide to process specific loggers by assigning them to the vector <code>num_tbrg</code>.</p>
+
+<p>This script essentially states the file names and paths and calls the other sub-routines via a loop which goes through all the listed loggers in sequence.</p>
+
+<h2><a href="tbrg_import.R">import.R</a></h2>
+
+<p>Imports the logs for each rain gauge, binds them together and calibrates the readings against a csv file based on annual calibration of the gauges.</p>
+
+<p>Sample of the calibration file for Aghnashini below:</p>
+
+<p>tbrg<em>id | rawml</em>tip | tbrg<em>area | mm</em>pertip
+------- | --------- | --------- | ---------
+tbrg<em>001 | 9.38 | 362.529 | 0.2587
+tbrg</em>002 | 9.19 | 362.529 | 0.2535
+tbrg<em>003 | 9.78 | 362.529 | 0.2698
+tbrg</em>004 | 9.48 | 362.529 | 0.2615</p>
+
+<h2><a href="tbrg_fillnull.R">fillnull.R</a></h2>
+
+<p>Imports null files, i.e. simple text files containing timestamps of periods where loggers were malfunctioning or not working correctly. This occasionally occurred during very cold/wet weather when batteries ran out or there were short-circuits in the logger unit due to moisture.</p>
+
+<p>A sample of the null file is as follows:</p>
+
+<pre><code>08/23/2015,21:30,0.00
+08/24/2015,18:03,0.00
+</code></pre>
+
+<p>It comprises of a start time-stamp comprising of date (mm/d/yyyy) followed by time (hr:min), followed by tips (usually 0.00, but any value will do as it is ignored). This file is saved with a name corresponding to the date of the null values, for e.g. "tbrg108<em>23</em>12_2014.dat".</p>
+
+<p>The file is saved in the "null" folder under a sub-folder with the name of the logger. For e.g. "/tbrg/null/tbrg_108".</p>
+
+<h2><a href="tbrg_aggreg.R">aggreg.R</a></h2>
+
+<p>Aggregates the merged rain gauge logs to different time periods, saves the output as CSV files and a figure containing a panel of the different aggregations. At present the aggregations are for 1 min, 15 min, 30 min, 1 hour, 6 hour, 12 hour, 1 day, 15 day and 1 month</p>
+
+</body>
+</html>

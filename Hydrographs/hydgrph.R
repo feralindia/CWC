@@ -6,15 +6,17 @@
 
 ##-- Load required libraries
 library(timeSeries)
-library(hydrostats)
+## library(hydrostats)
 library(EcoHydRology)
 library(ggplot2)
 library(reshape2)
 library(scales)
 setRmetricsOptions(myFinCenter = "Asia/Calcutta")
-##-- Set environment as appropriatestn
+
+##-- Set environment as appropriate stn
 setwd(dir="~/GitHub/CWC/Hydrographs/")
 dis.code.dir <- "~/GitHub/CWC/Discharge"
+hyd.code.dir <- "~/GitHub/CWC/Hydrographs/"
 wlr.dir <- "~/OngoingProjects/CWC/Data/Nilgiris/wlr/csv"
 tbrg.dir <- "~/OngoingProjects/CWC/Data/Nilgiris/tbrg/csv"
 hygch.dir <- "~/OngoingProjects/CWC/Data/Nilgiris/hygch/csv"
@@ -25,27 +27,24 @@ data.dir <- "~/OngoingProjects/CWC/Data/Nilgiris/"
 ####----SPECIFY DISCHARGE TYPE
 ## decide what type and units you want to show discharge (per hour) in.
 discharge.type <- "Discharge"## Options are c("Capacitance", "Stage", "Discharge", "DepthDischarge")
-
-####-------
-
 if(discharge.type=="Discharge"){
     dis.units <- "m^3/hr"}else if(discharge.type=="Stage"){
                              dis.units <- "m"}else {dis.units <- "farad"}
 ##--- Load Functions ---##
-## source("et_functions.R", echo=FALSE)
+source("hyd.functs.R", echo=FALSE)
 
 ##--- Write the numbers of the station and corresponding tbrg you'd like processed
-wlr.no <- c("115")## , "109")
-tbrg.no <- c("105")## , "116")
+wlr.no <- c("101", "104", "109")## , "109")
+tbrg.no <- c("102", "103", "112")## , "116")
 stn.no <- as.data.frame(matrix(nrow=length(wlr.no), ncol=2))
 names(stn.no) <- c("wlr", "tbrg")
 stn.no[,1] <- wlr.no
 stn.no[,2] <- tbrg.no
 
 ## Define start date, end date and interval in months
-ts.start.tmstmp <- as.POSIXct("2015-06-01 00:00:00", tz="Asia/Kolkata")
-ts.end.tmstmp <- as.POSIXct("2015-12-31 23:59:59", tz="Asia/Kolkata")
-ts.interval <- "1 month" ## period of reporting
+ts.start.tmstmp <- as.POSIXct("2012-08-15 00:00:00", tz="Asia/Kolkata")
+ts.end.tmstmp <- as.POSIXct("2016-03-31 23:59:59", tz="Asia/Kolkata")
+ts.interval <- "4 year" ## period of reporting
 ts.start <- seq(ts.start.tmstmp, ts.end.tmstmp, ts.interval)
 ts.end <- ts.start[-1] ## take all but first item of ts.start
 ts.end <- ts.end-1 ## end is one second less than pervious start
@@ -57,70 +56,40 @@ names(ts.years) <- c("start", "end") # "year",
 ts.years[,1] <- as.POSIXct(ts.start, tz="Asia/Kolkata")
 ts.years[,2] <- as.POSIXct(ts.end, tz="Asia/Kolkata")
 
-## ts.years$start <- as.POSIXct("2015-05-10 23:59:59", tz="Asia/Kolkata")
 
-##--- functions ----###
+##--- Define start date, end date and interval in months
+samp.int <- "15 min" # c("15 min", "1 hour", "1 day") ## Pick sampling interval
 
-## feed it x (name of station) and y (name of rain gaugge) to globally assign
-## names to files etc.
-stn.names <- function(x,y){
-    ## prd <- paste(start.month, "to", end.month, "", yr, sep="_")
+##--- Process hydrographs
 
-    hydrograph.pdf <<- paste(hydgrph.dir, "/fig/HydroGraph_stn", x, "_tbrg_", y, "_", discharge.type, "_", prd, ".pdf", sep="")
-    hydrograph.png <<- paste(hydgrph.dir, "/fig/HydroGraph_stn", x, "_tbrg_", y, "_", discharge.type,"_", prd, ".png", sep="")
-    hydrograph.csv <<- paste(hydgrph.dir, "/csv/HydroGraph_stn", x, "_tbrg_", y, "_", discharge.type, "_", prd, ".csv", sep="")
-    
-    tbrg.filename <<- paste("/tbrg_", y, "_1 hour.csv", sep="")
-    wlr.nm <<- paste("WLR ",x, sep="")
-    tbrg.nm <<- paste("TBRG ",y, sep="")
-}
-
-for(i in 1:nrow(stn.no)){
-    ##     i <- 1
-    pat <- paste(stn.no$wlr[i], "_1 hour.csv", sep="")
-    wlr.fn <- list.files(path=wlr.dir, pattern=pat, full.names=T)
-    wlr.dat.all <- read.csv(wlr.fn)
-    if(names(wlr.dat.all)[[3]]=="cal"){
-        names(wlr.dat.all)[[3]] <- "Stage"
-    }
-    wlr.dat.all$date_time <- as.POSIXct(wlr.dat.all$date_time, tz="Asia/Kolkata")
-    wlr.dat.all$date_time <- round.POSIXt(wlr.dat.all$date_time, "hours")
-    for(j in 1:nrow(ts.years)){
-        ## j <- 1 ## remove when script is fixed
+for(i in 1: nrow(stn.no)){}
+i <- 1
+    for(j in 1:nrow(ts.years)){}
+        j <- 1 ## remove when script is fixed
+##-- subset data according to dates
         ts.start <- ts.years$start[j]
         ts.end <- ts.years$end[j]
         yr <-  format(ts.start, "%Y") ## ts.years$year[n]
         start.month <- format(ts.start, "%d-%b-%Y")
         end.month <- format(ts.end, "%d-%b-%Y")
         prd <- paste(start.month, "to", end.month, sep="_")
-        
-        wlr.dat <- subset(wlr.dat.all, subset=(wlr.dat.all$date_time>=ts.start &
-                                               wlr.dat.all$date_time < ts.end),
-                          select=c("X", "raw", "Stage", "date_time"))
-        ##   if(nrow(wlr.dat)>0){ ## uncomment when fixed
-        wlr.dat$date_time <- as.POSIXct(wlr.dat$date_time, tz="Asia/Kolkata")
-        
-        ##--- Process station data ---##
-        stn.names(stn.no$wlr[i], stn.no$tbrg[i]) # assign names
+        stn.names(stn.no$wlr[i], stn.no$tbrg[i])
+        source(paste(hyd.code.dir, "/stn_", stn.no$wlr[i], ".R", sep=""), echo=FALSE) # get in discharge data
+        wlr.dat <- subset(wlr.dat.all, subset=(wlr.dat.all$Timestamp>=ts.start &
+                                               wlr.dat.all$Timestamp < ts.end),
+                          select=c("Capacitance", "Stage", "Timestamp", discharge.type))
 
-        ## run till here to initalise for stn_xxx.R
-        
-        source(paste(dis.code.dir, "/stn_", stn.no$wlr[i], ".R", sep=""), echo=FALSE) 
-        
-        ##--- Run hydrograph calculations----##
-        
-        summ.hyd.csv <- paste(hydgrph.dir, "/wlr", stn.no$wlr[i], "_tbrg", stn.no$tbrg[i], "_Hydrograph_stats_", prd, ".csv", sep="")
-
-        tbrg <- read.csv(paste(tbrg.dir,tbrg.filename, sep=""))
+        ### tbrg <- read.csv(paste(tbrg.dir,tbrg.filename, sep=""))
+tbrg <- read.csv(tbrg.filename.full)
         tbrg$dt.tm <- as.POSIXct(tbrg$dt.tm, tz="Asia/Kolkata")
         tbrg <- subset(tbrg, subset=(tbrg$dt.tm>=ts.start & tbrg$dt.tm < ts.end), select=c("mm", "dt.tm"))
         names(tbrg) <- c("mm","Timestamp")
         ## round off the time to hours for merge to work
 
-        tbrg$Timestamp <- round(tbrg$Timestamp, "hour")
+        ## tbrg$Timestamp <- round(tbrg$Timestamp, "hour") #done at tbrg aggregation
         tbrg$numtime <- as.numeric(tbrg$Timestamp)
-        wlr.dat$Timestamp <- round(wlr.dat$Timestamp, "hour")
-        wlr.dat$numtime <- as.numeric(wlr.dat$Timestamp)
+        ## wlr.dat$Timestamp <- round(wlr.dat$Timestamp, "hour") #done at wlr aggregation
+        wlr.dat$numtime <- as.numeric(wlr.dat$Timestamp) ## it is date_time not Timestamp
 
         wlr.tbrg <- merge(wlr.dat, tbrg, by="numtime", all=TRUE)
         ## complete cases won't work with date, using na.omit instead
@@ -150,7 +119,7 @@ for(i in 1:nrow(stn.no)){
         obj$lag[obj$acf==tmp.max]
         plot(obj[0:400],type="l",xlim=c(0,100),bty="l",ylab="Correlation Coefficient",
              main=main.title, xlab="Lag in hours")
-        wlr.dat <- wlr.tbrg
+        ## wlr.dat <- wlr.tbrg  # why do this????
 
         summ.hyd <- as.data.frame(as.matrix(summary(hyd.data)))
         names(summ.hyd) <- c("Variable", "Statistic", "Value")

@@ -3,12 +3,14 @@ print(paste("Aggregating data for TBRG No.", num_tbrg[i], sep=" "))
 charvec <- tbrg.merged$dt.tm
 tbrg.merged <- subset(tbrg.merged, select=c("tips", "mm"))
 ts.tbrg <- timeSeries(data=tbrg.merged, charvec=charvec)
+start.ts.tbrg <- "2012-08-15 00:00:00"
 agg <- c("1 min","15 min", "30 min", "1 hour", "6 hour", "12 hour", "1 day", "15 day", "1 month")
 gg.data <- data.frame(raw=numeric(0), cal=numeric(0), date_time=numeric(0), dt=numeric(), agg=character())
 ## setRmetricsOptions(myFinCenter = "GMT") ## Need to do this or timeSequence will mess up
 for (j in 1: length(agg)){
     csvout <- paste(csvdir, tbrgtab,"_", agg[j], ".csv", sep="")
-    by <- timeSequence(from=start(ts.tbrg), to=end(ts.tbrg), by=agg[j]) ##, FinCenter = "Asia/Calcutta"
+    by <- timeSequence(from=start.ts.tbrg, to=end(ts.tbrg), by=agg[j]) ##, FinCenter = "Asia/Calcutta"
+    ## note, by changed from start(ts.tbrg) to fixed date/time for standardisation
     data <- aggregate(ts.tbrg, by, sum)
     data$dt.tm<-row.names(data)
     data <- as.data.frame(data)

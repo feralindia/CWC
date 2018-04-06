@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<title>README.html</title>
+
+</head>
+
+<body>
+
+<h1>Rating Curves</h1>
+
+<p>This collection of scripts creates a rating or stage/discharge curve based on three kinds of datasets:</p>
+
+<ol>
+<li>Area/velocity measures using a pygmy current meter and a stream profile.</li>
+<li>Salt dilution gauging using:
+<ol>
+<li>Slug method and</li>
+<li>Constant release method.</li>
+</ol></li>
+<li>Float or orange method.</li>
+</ol>
+
+<p>Of these, we found estimates from the float and constant release method to give highly varying results between repeats and this data has been ignored. Also, field notes were used to finally de-select point which were outliers. This process has been documented in the datasets.</p>
+
+<p>Sequence of scripts:</p>
+
+<pre><code>"site.R" -&gt; "useful.functs.R" -&gt; "managefiles.R" -&gt; "libs.R" -&gt; "ExtractStage.R" -&gt; "disch_pyg_figs.R" -&gt; "pyg.R" -&gt; "flt.R" -&gt; "AppendSDG.R" -&gt; "fig.R"
+</code></pre>
+
+<h2>TODO</h2>
+
+<ul>
+<li>[ ] @rsbhalla, Add the <a href="../Discharge/Slug.R">Slug.R</a> script to the sequence of processing.</li>
+</ul>
+
+<h2><a href="disch_nlg.R">site.R</a></h2>
+
+<p>This script sets the environment for the two sites; agh.R for Aghnashini and nlg.R for Nilgiris. It then calls the other routines and optionally cleans up the memory (code needs uncommenting).</p>
+
+<h3>TODO:</h3>
+
+<ul>
+<li>[ ] Sub-routines require naming to be shifted to the site.R code.</li>
+<li>[ ] Rename scripts, remove "disch_" prefix.</li>
+</ul>
+
+<h2><a href="useful.functs.R">useful.functs.R</a></h2>
+
+<p>Functions used by the other routines to simplify procedures and reduce code size. Note, many code snippets are from <a href="http://stackoverflow.com/">http://stackoverflow.com/</a> and other on-line resources. I've tried to attribute them but may have missed a few :grimacing:</p>
+
+<h3>substrLeft/Right</h3>
+
+<p>Slight modification of the <code>substr</code> function allowing removal of "x" number of characters from a string.</p>
+
+<h3>is.even/odd</h3>
+
+<p>Test to see if a numeric vector is even/odd.</p>
+
+<h3>.ls.objects</h3>
+
+<p>From <a href="http://stackoverflow.com/questions/1358003/tricks-to-manage-the-available-memory-in-an-r-session">this link</a>, lists objects taking up most amount of memory. Used in conjunction with the <code>lsos</code> function which is shorthand for the <code>ls.objects</code> function. Follow link for more details.</p>
+
+<h3>delfiles</h3>
+
+<p>Deletes the list of file names - works on the sub-folders of the <code>rating</code> directory.</p>
+
+<h3>fixtime</h3>
+
+<p>Corrects goofs in date/time entries in the datasheets, specifically where time has been entered in the 24 hour format AND the AM/PM suffix is also used. Uses <a href="http://stackoverflow.com/questions/2261079/how-to-trim-leading-and-trailing-whitespace-in-r">this</a> source for removing leading spaces.</p>
+
+<h3>writeshape</h3>
+
+<p>Takes coordinates and file name to output a shapefile of the polygon representing the stream cross section. The output is to scale and allow the user to validate the area calculations via a GIS package such as Q-GIS.</p>
+
+<p>TODO</p>
+
+<ul>
+<li>[ ] @rsbhalla, Consider adding function for importing and binding data files.</li>
+<li>[ ] @rsbhalla, Function for generating graphs to be added to cut down code in <code>fig.R</code>.</li>
+<li>[ ] @rsbhalla, Function for naming files/folders for input/output.</li>
+</ul>
+
+<h2><a href="disch_managefiles.R">managefiles.R</a></h2>
+
+<p>Defines the folder/file names for the following:</p>
+
+<ul>
+<li>Location of types of data folders for pygmy current meters, float method data, stream profile data for pygmy meters, stream profile data for float method, folder where manual profiles (after checking) are saved, folder to hold (ESRI) shape files of the profile to make it easier to do area calculations for cross checking. Finally, names associated with the pygmy current meters for data output.</li>
+<li>List of folders under data types. Covers pygmy meters and floats.</li>
+<li>List all files contained in the various directories.</li>
+<li>List folder names to be deleted for post-script cleanup.</li>
+<li>List missing files between the velocity measures and cross section.</li>
+</ul>
+
+<p>TODO</p>
+
+<ul>
+<li>[ ] @rsbhalla, Add file naming for salt dilution gauging.</li>
+</ul>
+
+<h2><a href="disch_libs.R">libs.R</a></h2>
+
+<p>Load the various libraries required to run the script.</p>
+
+<h2><a href="disch_ExtractStage.R">ExtractStage.R</a></h2>
+
+<p>Extracts the stage for a water level recorder given the data and time of the stream profile and put in csv file and <code>R</code> object. Timestamps are read off the data sheets and matched with the outputs generated by the <a href="../WLR/README.md">WLR scripts.</a></p>
+
+<h2>pyg.figs.R</h2>
+
+<p>This script is to be run only if the cross sectional profiles have not been manually checked. The script simply assists in deciding the size of each cross sectional region for successive velocity profiles. It draws both the cross section of the stream and the locations at which the velocity meters were placed.
+<img src="Docs/pyg_man.png" alt="Example of figure output by the script" title="" /></p>
+
+<p>Based on these drawings, the user needs to create a new file under the folder 'cx<em>sec/wlr</em>XX' folder.
+An example of one such file (based on the figure above) is:</p>
+
+<p>secno | start | end | file_name
+----- | ----- | --- | ---------
+1 | 0 | 90 | 29Sep2013.csv
+2 | 90 | 147.6 | 29Sep2013.csv
+3 | 147.6 | 205 | 29Sep2013.csv</p>
+
+<h3>Chunk 1</h3>
+
+<p>For each station folder (i.e. wlr_XXX):</p>
+
+<ul>
+<li>Create dataframes to hold temporary and final results.</li>
+<li>List file names for the <code>cx_pyg</code> and <code>pyg</code> folder.</li>
+<li>Print message that the respective file is being processed.</li>
+</ul>
+
+<h3>Chunk 2</h3>
+
+<p>Plot the cross section by reading in the <code>cx_pyg</code> file, extracting coordinates and converting them into a polygon object. The output figure contains a grid with clear labels facilitating noting down of coordinates.</p>
+
+<h3>Chunk 3</h3>
+
+<p>Read in data from the velocity measurements. Extract the coordinates of where the velocity meter was placed for each velocity reading. Plot this over the figure for stream cross section and write the figure to file.</p>
+
+<h3>Chunk 4</h3>
+
+<p>Clean up temporary files and print completed message.</p>
+
+<h2><a href="disch_pyg.R">pyg.R</a></h2>
+
+<p>This script processes the data for velocity area profiles, with velocity measurements by the pygmy current meters.</p>
+
+<h3>Chunk 1</h3>
+
+<p>For each station folder (i.e. wlr_XXX):</p>
+
+<ul>
+<li>Print message with name of station being processed.</li>
+<li>Create dataframes to hold temporary as well as final results.</li>
+</ul>
+
+<h3>Chunk 2</h3>
+
+<p>For each file contained in the station folder:</p>
+
+<ul>
+<li>Create lists of files from different types of folders. Note: the contents of file names in the velocity reading folder <code>pyg</code> must match those in the stream profile or cross section survey <code>cx_pyg</code></li>
+</ul>
+
+<h3>TODO</h3>
+
+<ul>
+<li>[ ] @susan, Give details of model make.</li>
+<li>[ ] @saravanan. Provide data sheet and note on data organisation.</li>
+<li>[ ] @kumaran. Create EpiCollect based forms.</li>
+</ul>
+
+</body>
+</html>

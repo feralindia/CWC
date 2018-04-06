@@ -8,6 +8,7 @@ for (x in 1:length(csv.flst)){
     tmp <- read.csv(csv.file, header=FALSE, sep=",")
     tmp <- tmp[complete.cases(tmp[, c(5,6)]),] ## remove rows with missing data in stage or discharge column
     names(tmp) <- c("Sl.No.", "site", "obs.file", "method", "stage", "avg.disch", "timestamp")
+    tmp$timestamp <- as.POSIXct(tmp$timestamp,  tz="Asia/Kolkata")
     wlr.no <- csv.flno[x]
     ## wlr.no <- unlist(regmatches(csv.file, gregexpr('\\(?[0-9]+a?', csv.file)))
     figfile <- paste(fig.dr, "/WLR_", wlr.no, ".png", sep="")
@@ -15,7 +16,7 @@ for (x in 1:length(csv.flst)){
     ##  obsdate <- substr(tmp$obs.file, start=0, stop=nchar(tmp$obs.file)-4)
     ## plot using ggplot2
     ## timestamp <- as.POSIXct(tmp$timestamp, origin="1970-01-01", tz="Asia/Kolkata")
-    sd.plot <- ggplot(data = tmp, aes(stage, avg.disch, group=method, label=as.Date(as.POSIXct(timestamp, origin="1970-01-01")))) + 
+    sd.plot <-  ggplot(data = tmp, aes(stage, avg.disch, group=method, label=as.Date(as.POSIXct(as.numeric(timestamp), origin="1970-01-01")))) + 
         geom_point(aes(color=method, position="jitter")) +
             geom_text(size=1,angle = 45, position="jitter") +
             ggtitle(mn) + labs(x = "Stage (m)", y = "Discharge (m3/s)") +
